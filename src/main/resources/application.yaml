@@ -1,0 +1,21 @@
+spring:
+  application:
+    name: miniTrackingProject
+  datasource:
+    username: root
+    password: 123456
+    url: jdbc:mysql://localhost:3306/minitracking
+  jpa:
+    properties:
+      hibernate:
+        format_sql: true
+    show-sql: true
+
+server:
+  port: 8080
+
+logging:
+  level:
+    org:
+      hibernate:
+        SQL: DEBUG
