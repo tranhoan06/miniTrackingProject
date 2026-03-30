@@ -18,6 +18,7 @@ public enum ErrorCode {
     // User Management
     USER_EXISTED(400, "User already exists", HttpStatus.BAD_REQUEST),
     USER_NOT_FOUND(400, "User does not exist", HttpStatus.BAD_REQUEST),
+    ADDRESS_NOT_FOUND(400, "Address does not exist", HttpStatus.BAD_REQUEST),
     USERNAME_IS_DUPLICATED(400, "Username is duplicated", HttpStatus.BAD_REQUEST),
     // Course Management
     COURSE_NOT_FOUND(404, "Course not found", HttpStatus.NOT_FOUND),

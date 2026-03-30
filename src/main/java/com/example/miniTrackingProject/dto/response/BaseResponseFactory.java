@@ -7,13 +7,12 @@ import org.springframework.http.HttpStatus;
 import java.util.Date;
 public class  BaseResponseFactory{
 
-    public static <T> BaseResponse<T> success(T data, HttpServletRequest request) {
+    public static <T> BaseResponse<T> success(T data) {
         return BaseResponse.<T>builder()
                 .code(HttpStatus.OK.value())
                 .message("Success")
                 .data(data)
                 .timestamp(new Date())
-                .path(request.getRequestURI())
                 .build();
     }
 

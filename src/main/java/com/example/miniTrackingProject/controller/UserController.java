@@ -29,8 +29,7 @@ public class UserController {
     ) {
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(BaseResponseFactory.success(
-                        userService.createUser(request),
-                        httpRequest
+                        userService.createUser(request)
                 ));
     }
 
@@ -41,8 +40,7 @@ public class UserController {
                                                                  HttpServletRequest httpRequest) {
         return ResponseEntity.status(HttpStatus.OK)
                 .body(BaseResponseFactory.success(
-                        userService.updateUser(id, request),
-                        httpRequest
+                        userService.updateUser(id, request)
                 ));
     }
 
@@ -52,8 +50,7 @@ public class UserController {
                                                                   HttpServletRequest httpRequest) {
         return ResponseEntity.status(HttpStatus.OK)
                 .body(BaseResponseFactory.success(
-                        userService.getUserById(id),
-                        httpRequest
+                        userService.getUserById(id)
                 ));
     }
 }

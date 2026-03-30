@@ -5,6 +5,7 @@ import com.example.miniTrackingProject.dto.request.UserRequest;
 import com.example.miniTrackingProject.dto.response.UserResponse;
 import com.example.miniTrackingProject.entity.UserEntity;
 import com.example.miniTrackingProject.exception.JavaBuilderException;
+import com.example.miniTrackingProject.mapper.UserMapper;
 import com.example.miniTrackingProject.repository.UserRepository;
 import com.example.miniTrackingProject.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -24,6 +25,7 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final ModelMapper modelMapper;
     private final PasswordEncoder passwordEncoder;
+    private final UserMapper userMapper;
 
     @Override
     public UserResponse createUser(UserRequest request) {
@@ -40,8 +42,7 @@ public class UserServiceImpl implements UserService {
         userEntity.setCreatedAt(LocalDateTime.now());
         userEntity.setIsDelete(false);
         userRepository.save(userEntity);
-        UserResponse userResponse = modelMapper.map(userEntity, UserResponse.class);
-        return userResponse;
+        return userMapper.toResponse(userEntity);
     }
 
     @Override
@@ -52,15 +53,13 @@ public class UserServiceImpl implements UserService {
         userEntity.setUpdatedAt(LocalDateTime.now());
         userEntity.setRole(request.getRole());
         userRepository.save(userEntity);
-        UserResponse userResponse = modelMapper.map(userEntity, UserResponse.class);
-        return userResponse;
+        return userMapper.toResponse(userEntity);
     }
 
     @Override
     public UserResponse getUserById(Long id) {
         UserEntity userEntity = userRepository.findById(id)
                 .orElseThrow(() -> new JavaBuilderException(ErrorCode.USER_NOT_FOUND));
-        UserResponse userResponse = modelMapper.map(userEntity, UserResponse.class);
-        return userResponse;
+        return userMapper.toResponse(userEntity);
     }
 }
