@@ -1,13 +1,13 @@
 -- MySQL dump 10.13  Distrib 8.0.43, for Win64 (x86_64)
 --
--- Host: localhost    Database: minitrackingproject
+-- Host: 127.0.0.1    Database: minitrackingproject
 -- ------------------------------------------------------
 -- Server version	8.0.43
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
 /*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
-/*!50503 SET NAMES utf8mb4 */;
+/*!50503 SET NAMES utf8 */;
 /*!40103 SET @OLD_TIME_ZONE=@@TIME_ZONE */;
 /*!40103 SET TIME_ZONE='+00:00' */;
 /*!40014 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0 */;
@@ -68,10 +68,11 @@ CREATE TABLE `categories` (
   `is_active` tinyint(1) NOT NULL DEFAULT '1',
   `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `is_Delete` tinyint(1) DEFAULT '0',
   PRIMARY KEY (`id`),
   KEY `parent_id` (`parent_id`),
   CONSTRAINT `categories_ibfk_1` FOREIGN KEY (`parent_id`) REFERENCES `categories` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -80,6 +81,7 @@ CREATE TABLE `categories` (
 
 LOCK TABLES `categories` WRITE;
 /*!40000 ALTER TABLE `categories` DISABLE KEYS */;
+INSERT INTO `categories` VALUES (3,'Điện thoại, Tablet',NULL,1,'2026-03-31 09:50:19',NULL,0),(4,'Điện thoại, Tablet',3,1,'2026-03-31 10:01:24',NULL,0);
 /*!40000 ALTER TABLE `categories` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -96,9 +98,10 @@ CREATE TABLE `inventory` (
   `quantity_in_stock` int NOT NULL DEFAULT '0',
   `reserved_quantity` int NOT NULL DEFAULT '0',
   `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `is_Delete` tinyint(1) DEFAULT '0',
   PRIMARY KEY (`id`),
-  UNIQUE KEY `product_id` (`product_id`),
-  CONSTRAINT `inventory_ibfk_1` FOREIGN KEY (`product_id`) REFERENCES `products` (`id`)
+  KEY `idx_product_id` (`product_id`),
+  CONSTRAINT `fk_inventory_product` FOREIGN KEY (`product_id`) REFERENCES `products` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -124,6 +127,7 @@ CREATE TABLE `product_images` (
   `image_url` varchar(500) NOT NULL,
   `is_thumbnail` tinyint(1) DEFAULT '0',
   `sort_order` int DEFAULT '0',
+  `is_Delete` tinyint(1) DEFAULT '0',
   PRIMARY KEY (`id`),
   KEY `product_id` (`product_id`),
   CONSTRAINT `product_images_ibfk_1` FOREIGN KEY (`product_id`) REFERENCES `products` (`id`)
@@ -162,6 +166,7 @@ CREATE TABLE `products` (
   `status` varchar(30) NOT NULL,
   `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `is_Delete` tinyint(1) DEFAULT '0',
   PRIMARY KEY (`id`),
   KEY `seller_id` (`seller_id`),
   KEY `category_id` (`category_id`),
@@ -218,4 +223,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2026-03-30 17:33:34
+-- Dump completed on 2026-03-31 17:31:09

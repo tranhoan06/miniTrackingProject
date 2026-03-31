@@ -24,8 +24,7 @@ public class UserController {
 
     @PostMapping("/create")
     public ResponseEntity<BaseResponse<UserResponse>> createUser(
-            @Valid @RequestBody UserRequest request,
-            HttpServletRequest httpRequest
+            @Valid @RequestBody UserRequest request
     ) {
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(BaseResponseFactory.success(
@@ -36,8 +35,7 @@ public class UserController {
     @PostMapping("/update/{id}")
     @PreAuthorize("hasAnyRole('ROLE_SELLER')")
     public ResponseEntity<BaseResponse<UserResponse>> updateUser(@PathVariable Long id,
-                                                                 @RequestBody UserRequest request,
-                                                                 HttpServletRequest httpRequest) {
+                                                                 @RequestBody UserRequest request) {
         return ResponseEntity.status(HttpStatus.OK)
                 .body(BaseResponseFactory.success(
                         userService.updateUser(id, request)
@@ -46,8 +44,7 @@ public class UserController {
 
     @GetMapping("/{id}")
     @PreAuthorize("hasAnyRole('ROLE_SELLER')")
-    public ResponseEntity<BaseResponse<UserResponse>> getUserById(@PathVariable Long id,
-                                                                  HttpServletRequest httpRequest) {
+    public ResponseEntity<BaseResponse<UserResponse>> getUserById(@PathVariable Long id) {
         return ResponseEntity.status(HttpStatus.OK)
                 .body(BaseResponseFactory.success(
                         userService.getUserById(id)

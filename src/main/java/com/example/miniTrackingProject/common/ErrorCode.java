@@ -20,6 +20,8 @@ public enum ErrorCode {
     USER_NOT_FOUND(400, "User does not exist", HttpStatus.BAD_REQUEST),
     ADDRESS_NOT_FOUND(400, "Address does not exist", HttpStatus.BAD_REQUEST),
     USERNAME_IS_DUPLICATED(400, "Username is duplicated", HttpStatus.BAD_REQUEST),
+    CATEGORY_IS_DUPLICATED(400, "Category is duplicated", HttpStatus.BAD_REQUEST),
+    CATEGORYID_NOT_FOUND(400, "Category does not exist", HttpStatus.BAD_REQUEST),
     // Course Management
     COURSE_NOT_FOUND(404, "Course not found", HttpStatus.NOT_FOUND),
     LESSON_NOT_FOUND(404, "Lesson not found", HttpStatus.NOT_FOUND),
