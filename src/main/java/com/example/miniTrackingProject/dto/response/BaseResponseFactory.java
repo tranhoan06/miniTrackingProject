@@ -22,7 +22,6 @@ public class  BaseResponseFactory{
                 .message(errorCode.getMessage())
                 .error(message)
                 .timestamp(new Date())
-                .path(request.getRequestURI())
                 .build();
     }
 }

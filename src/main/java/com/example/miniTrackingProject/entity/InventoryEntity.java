@@ -34,6 +34,6 @@ public class InventoryEntity implements Serializable {
     @Column(name = "isDelete", columnDefinition = "BOOLEAN DEFAULT FALSE")
     private Boolean isDelete;
 
-    @Column(name = "update_at")
+    @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 }

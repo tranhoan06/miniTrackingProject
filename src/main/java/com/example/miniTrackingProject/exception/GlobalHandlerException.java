@@ -32,7 +32,6 @@ public class GlobalHandlerException {
                 .error(exception.getErrorCode().getStatus().getReasonPhrase())
                 .message(exception.getMessage())
                 .timestamp(new Date())
-                .path(request.getDescription(false).replace("uri=", ""))
                 .build();
 
         return ResponseEntity
@@ -62,7 +61,6 @@ public class GlobalHandlerException {
                 .code(HttpStatus.BAD_REQUEST.value())
                 .message(errors.size() > 1 ? errors.toString() : errors.get(0))
                 .error(HttpStatus.BAD_REQUEST.getReasonPhrase())
-                .path(request.getDescription(false).replace("uri=", ""))
                 .build();
 
         return ResponseEntity.badRequest().body(response);
@@ -88,7 +86,6 @@ public class GlobalHandlerException {
                 .code(HttpStatus.BAD_REQUEST.value())
                 .error(HttpStatus.BAD_REQUEST.getReasonPhrase())
                 .message("Required header '" + exception.getHeaderName() + "' is missing")
-                .path(request.getDescription(false).replace("uri=", ""))
                 .build();
 
         return ResponseEntity.badRequest().body(response);
@@ -121,7 +118,6 @@ public class GlobalHandlerException {
                 .code(errorCode.getCode())
                 .message(errorCode.getMessage())
                 .error(errorCode.getStatus().getReasonPhrase())
-                .path(request.getDescription(false).replace("uri=", ""))
                 .build();
     }
 }

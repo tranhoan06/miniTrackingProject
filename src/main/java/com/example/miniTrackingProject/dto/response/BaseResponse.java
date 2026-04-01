@@ -16,5 +16,4 @@ public class BaseResponse<T> implements Serializable {
     private T data;
     private Object error;
     private Date timestamp;
-    private String path;
 }

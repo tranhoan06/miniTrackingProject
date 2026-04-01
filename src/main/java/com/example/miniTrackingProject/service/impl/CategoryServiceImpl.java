@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -21,35 +22,19 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public CategoryResponse createCategory(CategoryRequest request) {
-        CategoriesEntity parent = null;
-        if (request.getParentId() != null) {
-            parent = categoryRepository.findById(request.getParentId())
-                    .orElseThrow(() -> new JavaBuilderException(ErrorCode.CATEGORYID_NOT_FOUND));
-        }
 
-        boolean exists;
-        if (parent == null) {
-            exists = categoryRepository
-                    .existsByCategoryNameAndParentIsNull(request.getCategoryName());
-        } else {
-            exists = categoryRepository
-                    .existsByCategoryNameAndParent_Id(request.getCategoryName(), parent.getId());
-        }
+        CategoriesEntity parent = getParent(request.getParentId());
 
-        if (exists) {
-            throw new JavaBuilderException(ErrorCode.CATEGORY_IS_DUPLICATED);
-        }
+        validateDuplicate(request.getCategoryName(), parent, null);
 
         CategoriesEntity category = new CategoriesEntity();
         category.setCategoryName(request.getCategoryName());
         category.setParent(parent);
-        category.setIsActive(request.getIsActive() != null ? request.getIsActive() : true);
+        category.setIsActive(Boolean.TRUE.equals(request.getIsActive()));
         category.setIsDelete(false);
         category.setCreatedAt(LocalDateTime.now());
 
-        categoryRepository.save(category);
-
-        return baseMapper.toCategoryResponse(category);
+        return baseMapper.toCategoryResponse(categoryRepository.save(category));
     }
 
     @Override
@@ -57,5 +42,63 @@ public class CategoryServiceImpl implements CategoryService {
         CategoriesEntity categories = categoryRepository.findById(id)
                 .orElseThrow(() -> new JavaBuilderException(ErrorCode.CATEGORYID_NOT_FOUND));
         return baseMapper.toCategoryResponse(categories);
+    }
+
+    @Override
+    public CategoryResponse updateCategory(Long id, CategoryRequest request) {
+
+        CategoriesEntity category = categoryRepository.findById(id)
+                .orElseThrow(() -> new JavaBuilderException(ErrorCode.CATEGORYID_NOT_FOUND));
+
+        CategoriesEntity parent = getParent(request.getParentId());
+
+        validateDuplicate(request.getCategoryName(), parent, id);
+
+        category.setCategoryName(request.getCategoryName());
+        category.setParent(parent);
+        category.setIsActive(request.getIsActive());
+        category.setUpdatedAt(LocalDateTime.now());
+
+        return baseMapper.toCategoryResponse(categoryRepository.save(category));
+    }
+
+    @Override
+    public void deleteCategory(Long id) {
+        CategoriesEntity categories = categoryRepository.findById(id)
+                .orElseThrow(() -> new JavaBuilderException(ErrorCode.CATEGORYID_NOT_FOUND));
+
+        List<CategoriesEntity> categoriesEntityList = categories.getChildren();
+        for (CategoriesEntity child: categoriesEntityList) {
+            child.setParent(null);
+        }
+        categories.setUpdatedAt(LocalDateTime.now());
+        categories.setIsDelete(true);
+        categoryRepository.save(categories);
+    }
+
+    private CategoriesEntity getParent(Long parentId) {
+        if (parentId == null) return null;
+
+        return categoryRepository.findById(parentId)
+                .orElseThrow(() -> new JavaBuilderException(ErrorCode.CATEGORYID_NOT_FOUND));
+    }
+
+    private void validateDuplicate(String name, CategoriesEntity parent, Long currentId) {
+
+        boolean exists;
+
+        if (parent == null) {
+            exists = (currentId == null)
+                    ? categoryRepository.existsByCategoryNameAndParentIsNull(name)
+                    : categoryRepository.existsByCategoryNameAndParentIsNullAndIdNot(name, currentId);
+        } else {
+            exists = (currentId == null)
+                    ? categoryRepository.existsByCategoryNameAndParent_Id(name, parent.getId())
+                    : categoryRepository.existsByCategoryNameAndParent_IdAndIdNot(name, parent.getId(), currentId);
+        }
+
+        if (exists) {
+            throw new JavaBuilderException(ErrorCode.CATEGORY_IS_DUPLICATED);
+        }
     }
 }

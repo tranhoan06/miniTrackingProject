@@ -5,6 +5,7 @@ import com.example.miniTrackingProject.dto.response.BaseResponse;
 import com.example.miniTrackingProject.dto.response.BaseResponseFactory;
 import com.example.miniTrackingProject.dto.response.CategoryResponse;
 import com.example.miniTrackingProject.service.CategoryService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -36,6 +37,22 @@ public class CategoryController {
                 .body(BaseResponseFactory.success(
                         categoryService.getCategoryById(id)
                 ));
+    }
+
+    @PostMapping("/updateCategory/{id}")
+    @PreAuthorize("hasAnyRole('ROLE_SELLER')")
+    public ResponseEntity<BaseResponse<CategoryResponse>> updateCategory(@PathVariable Long id, @RequestBody CategoryRequest categoryRequest) {
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(BaseResponseFactory.success(
+                        categoryService.updateCategory(id, categoryRequest)
+                ));
+    }
+
+    @DeleteMapping("{id}")
+    @PreAuthorize("hasAnyRole('ROLE_SELLER')")
+    public ResponseEntity<?> deleteCategory (@PathVariable Long id) {
+        categoryService.deleteCategory(id);
+        return ResponseEntity.ok("Xóa thành công");
     }
 
 }
