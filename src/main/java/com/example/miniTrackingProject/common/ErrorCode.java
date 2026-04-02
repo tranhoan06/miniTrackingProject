@@ -18,6 +18,7 @@ public enum ErrorCode {
     // User Management
     USER_EXISTED(400, "User already exists", HttpStatus.BAD_REQUEST),
     USER_NOT_FOUND(400, "User does not exist", HttpStatus.BAD_REQUEST),
+    PRODUCT_NOT_FOUND(400, "Product does not exist", HttpStatus.BAD_REQUEST),
     ADDRESS_NOT_FOUND(400, "Address does not exist", HttpStatus.BAD_REQUEST),
     USERNAME_IS_DUPLICATED(400, "Username is duplicated", HttpStatus.BAD_REQUEST),
     CATEGORY_IS_DUPLICATED(400, "Category is duplicated", HttpStatus.BAD_REQUEST),
@@ -25,8 +26,9 @@ public enum ErrorCode {
     // Course Management
     COURSE_NOT_FOUND(404, "Course not found", HttpStatus.NOT_FOUND),
     LESSON_NOT_FOUND(404, "Lesson not found", HttpStatus.NOT_FOUND),
-
+    INVENTORY_HAS_RESERVED_QUANTITY(400, "Cannot update inventory while orders are being processed", HttpStatus.BAD_REQUEST),
     DATA_INTEGRITY_VIOLATION(409, "Data integrity violation", HttpStatus.CONFLICT);
+
 
     private final int code;
     private final String message;

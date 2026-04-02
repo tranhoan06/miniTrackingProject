@@ -40,4 +40,19 @@ public class ProductController {
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(BaseResponseFactory.success(productResponse));
     }
+
+    @PostMapping("/update/{id}")
+    @PreAuthorize("hasAnyRole('ROLE_SELLER')")
+    public ResponseEntity<BaseResponse<ProductResponse>> updateProduct(@PathVariable Long id, @RequestBody ProductRequest request) {
+        ProductResponse productResponse = productService.updateProduct(id, request);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(BaseResponseFactory.success(productResponse));
+    }
+
+    @GetMapping("product-detail/{id}")
+    public ResponseEntity<BaseResponse<ProductResponse>> getProductDetail(@PathVariable Long id) {
+        ProductResponse productResponse = productService.getProductDetail(id);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(BaseResponseFactory.success(productResponse));
+    }
 }

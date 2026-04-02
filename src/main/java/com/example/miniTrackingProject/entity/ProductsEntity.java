@@ -1,7 +1,6 @@
 package com.example.miniTrackingProject.entity;
 
 import com.example.miniTrackingProject.common.StatusProduct;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -63,13 +62,13 @@ public class ProductsEntity implements Serializable {
     @Column(name = "status")
     private StatusProduct status;
 
-    @Column(name = "isDelete", columnDefinition = "BOOLEAN DEFAULT FALSE")
+    @Column(name = "is_Delete", columnDefinition = "BOOLEAN DEFAULT FALSE")
     private Boolean isDelete;
 
-    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
     private List<ProductImagesEntity> images = new ArrayList<>();
 
-    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
     private List<InventoryEntity> inventories = new ArrayList<>();
 
     @Column(name = "created_at")

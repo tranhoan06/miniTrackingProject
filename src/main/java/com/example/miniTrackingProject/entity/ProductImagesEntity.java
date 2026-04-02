@@ -30,6 +30,6 @@ public class ProductImagesEntity {
     @Column(name = "sort_order", columnDefinition = "BIGINT DEFAULT 0")
     private Long sortOrder;
 
-    @Column(name = "isDelete", columnDefinition = "BOOLEAN DEFAULT FALSE")
+    @Column(name = "is_Delete", columnDefinition = "BOOLEAN DEFAULT FALSE")
     private Boolean isDelete;
 }

@@ -2,6 +2,8 @@ package com.example.miniTrackingProject.service.impl;
 
 import com.example.miniTrackingProject.common.ErrorCode;
 import com.example.miniTrackingProject.common.StatusProduct;
+import com.example.miniTrackingProject.dto.request.InventoryRequest;
+import com.example.miniTrackingProject.dto.request.ProductImageRequest;
 import com.example.miniTrackingProject.dto.request.ProductRequest;
 import com.example.miniTrackingProject.dto.response.ProductResponse;
 import com.example.miniTrackingProject.entity.*;
@@ -10,14 +12,14 @@ import com.example.miniTrackingProject.mapper.BaseMapper;
 import com.example.miniTrackingProject.repository.*;
 import com.example.miniTrackingProject.service.ProductService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 
@@ -62,33 +64,133 @@ public class ProductServiceImpl implements ProductService {
         productsEntity.setCreatedAt(LocalDateTime.now());
 
         if (request.getImages() != null && !request.getImages().isEmpty()) {
-            List<ProductImagesEntity> images = request.getImages().stream()
-                    .map(img -> {
-                        ProductImagesEntity image = new ProductImagesEntity();
-                        image.setImageUrl(img.getImageUrl());
-                        image.setIsThumbnail(img.getIsThumbnail());
-                        image.setSortOrder(img.getSortOrder());
-                        image.setIsDelete(false);        // ✅ mặc định false
-                        image.setProduct(productsEntity);  // ✅ gắn product
-                        return image;
-                    }).collect(Collectors.toList());
-            productsEntity.setImages(images);
+            productsEntity.setImages(buildImages(request.getImages(), productsEntity));
         }
 
-        // 3. Xử lý inventories
         if (request.getInventories() != null && !request.getInventories().isEmpty()) {
-            List<InventoryEntity> inventories = request.getInventories().stream()
-                    .map(inv -> {
-                        InventoryEntity inventory = new InventoryEntity();
-                        inventory.setQuantityInStock(inv.getQuantityInStock());
-                        inventory.setReservedQuantity(0L); // ✅ mặc định 0
-                        inventory.setProduct(productsEntity); // ✅ gắn product
-                        return inventory;
-                    }).collect(Collectors.toList());
-            productsEntity.setInventories(inventories);
+            productsEntity.setInventories(buildInventories(request.getInventories(), productsEntity));
         }
 
         productRepository.save(productsEntity);
         return baseMapper.toProductResponse(productsEntity);
+    }
+
+    @Override
+    public ProductResponse updateProduct(Long id, ProductRequest request) {
+        ProductsEntity productsEntity = productRepository.findById(id)
+                .orElseThrow(() -> new JavaBuilderException(ErrorCode.PRODUCT_NOT_FOUND));
+
+        CategoriesEntity categories = categoryRepository.findById(request.getCategory())
+                .orElseThrow(() -> new JavaBuilderException(ErrorCode.CATEGORYID_NOT_FOUND));
+
+        productsEntity.setProductName(request.getProductName());
+        productsEntity.setCategory(categories);
+        productsEntity.setPrice(request.getPrice());
+        productsEntity.setOriginalPrice(request.getOriginalPrice());
+        productsEntity.setWeightGram(request.getWeightGram());
+        productsEntity.setLengthCm(request.getLengthCm());
+        productsEntity.setWidthCm(request.getWidthCm());
+        productsEntity.setHeightCm(request.getHeightCm());
+        productsEntity.setStatus(request.getStatus());
+        productsEntity.setUpdatedAt(LocalDateTime.now());
+
+        if (productsEntity.getImages() != null) {
+            productsEntity.getImages().forEach(img -> img.setIsDelete(true));
+            productImageRepository.saveAll(productsEntity.getImages());
+        }
+
+        if (productsEntity.getInventories() != null) {
+            validateNoReserved(productsEntity.getInventories());
+
+            productsEntity.getInventories().forEach(inv -> inv.setIsDelete(true));
+            inventoryRepository.saveAll(productsEntity.getInventories());
+        }
+
+        if (request.getImages() != null && !request.getImages().isEmpty()) {
+            productsEntity.setImages(buildImages(request.getImages(), productsEntity));
+        }
+
+        if (request.getInventories() != null && !request.getInventories().isEmpty()) {
+            productsEntity.setInventories(buildInventories(request.getInventories(), productsEntity));
+        }
+
+        productRepository.save(productsEntity);
+        return baseMapper.toProductResponse(productsEntity);
+    }
+
+    @Override
+    public ProductResponse getProductDetail(Long id) {
+        ProductsEntity productsEntity = productRepository.findById(id)
+                .orElseThrow(() -> new JavaBuilderException(ErrorCode.PRODUCT_NOT_FOUND));
+        List<ProductImagesEntity> productImagesEntityList = productsEntity.getImages().stream()
+                .filter(img -> !img.getIsDelete())
+                .collect(Collectors.toList());
+
+        List<InventoryEntity> inventoryEntityList = productsEntity.getInventories().stream()
+                .filter(img -> !img.getIsDelete())
+                .collect(Collectors.toList());
+
+        productsEntity.setImages(productImagesEntityList);
+        productsEntity.setInventories(inventoryEntityList);
+        return baseMapper.toProductResponse(productsEntity);
+    }
+
+    private List<ProductImagesEntity> buildImages(List<ProductImageRequest> requests, ProductsEntity product) {
+
+        List<ProductImageRequest> sortedRequests = requests.stream()
+                .sorted(Comparator.comparing(ProductImageRequest::getSortOrder))
+                .collect(Collectors.toList());
+
+        List<ProductImagesEntity> result = new ArrayList<>();
+
+        boolean hasThumbnail = false;
+        Long index = 1L;
+
+        for (ProductImageRequest img : sortedRequests) {
+
+            ProductImagesEntity image = new ProductImagesEntity();
+            image.setImageUrl(img.getImageUrl());
+
+            if (Boolean.TRUE.equals(img.getIsThumbnail()) && !hasThumbnail) {
+                image.setIsThumbnail(true);
+                hasThumbnail = true;
+            } else {
+                image.setIsThumbnail(false);
+            }
+
+            image.setSortOrder(index++);
+
+            image.setIsDelete(false);
+            image.setProduct(product);
+
+            result.add(image);
+        }
+
+        if (!hasThumbnail && !result.isEmpty()) {
+            result.get(0).setIsThumbnail(true);
+        }
+
+        return result;
+    }
+
+    private List<InventoryEntity> buildInventories(List<InventoryRequest> requests, ProductsEntity product) {
+        return requests.stream()
+                .map(inv -> {
+                    InventoryEntity inventory = new InventoryEntity();
+                    inventory.setQuantityInStock(inv.getQuantityInStock());
+                    inventory.setReservedQuantity(0L);
+                    inventory.setProduct(product);
+                    return inventory;
+                }).collect(Collectors.toList());
+    }
+
+    private void validateNoReserved(List<InventoryEntity> inventories) {
+        boolean hasReserved = inventories.stream()
+                .anyMatch(inv -> inv.getReservedQuantity() != null
+                        && inv.getReservedQuantity() > 0);
+
+        if (hasReserved) {
+            throw new JavaBuilderException(ErrorCode.INVENTORY_HAS_RESERVED_QUANTITY);
+        }
     }
 }

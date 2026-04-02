@@ -31,7 +31,7 @@ public class InventoryEntity implements Serializable {
     @Column(name = "reserved_quantity", nullable = false, columnDefinition = "INT DEFAULT 0")
     private Long reservedQuantity;
 
-    @Column(name = "isDelete", columnDefinition = "BOOLEAN DEFAULT FALSE")
+    @Column(name = "is_Delete", columnDefinition = "BOOLEAN DEFAULT FALSE")
     private Boolean isDelete;
 
     @Column(name = "updated_at")

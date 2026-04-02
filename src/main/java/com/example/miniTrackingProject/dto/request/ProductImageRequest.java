@@ -20,5 +20,6 @@ public class ProductImageRequest implements Serializable {
     @NotNull
     private Boolean isThumbnail;
 
+    @NotNull
     private Long sortOrder;
 }

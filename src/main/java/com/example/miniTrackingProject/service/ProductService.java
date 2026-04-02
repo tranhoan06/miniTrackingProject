@@ -8,4 +8,8 @@ public interface ProductService {
     Page<ProductResponse> getAll(Integer pageSize, Integer pageNumber);
 
     ProductResponse createProduct(ProductRequest request);
+
+    ProductResponse updateProduct(Long id, ProductRequest request);
+
+    ProductResponse getProductDetail(Long id);
 }

@@ -34,7 +34,7 @@ public class CategoriesEntity implements Serializable {
     @Column(name = "is_active", nullable = false, columnDefinition = "BOOLEAN DEFAULT TRUE")
     private Boolean isActive;
 
-    @Column(name = "isDelete", columnDefinition = "BOOLEAN DEFAULT FALSE")
+    @Column(name = "is_Delete", columnDefinition = "BOOLEAN DEFAULT FALSE")
     private Boolean isDelete;
 
     @Column(name = "created_at")

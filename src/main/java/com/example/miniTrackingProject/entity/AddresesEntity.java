@@ -51,7 +51,7 @@ public class AddresesEntity implements Serializable {
     @Column(name = "detail_address", length = 500)
     private String detailAddress;
 
-    @Column(name = "is_delete")
+    @Column(name = "is_Delete")
     private Boolean isDelete;
 
     @Column(name = "is_default")

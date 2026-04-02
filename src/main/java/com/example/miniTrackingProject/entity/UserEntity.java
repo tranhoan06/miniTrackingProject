@@ -41,7 +41,7 @@ public class UserEntity implements Serializable {
     @Column(name = "update_at")
     private LocalDateTime updatedAt;
 
-    @Column(name = "isDelete")
+    @Column(name = "is_Delete")
     private Boolean isDelete;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
