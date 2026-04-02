@@ -2,6 +2,7 @@ package com.example.miniTrackingProject.service.impl;
 
 import com.example.miniTrackingProject.common.ErrorCode;
 import com.example.miniTrackingProject.common.StatusProduct;
+import com.example.miniTrackingProject.dto.request.FilterProductRequest;
 import com.example.miniTrackingProject.dto.request.InventoryRequest;
 import com.example.miniTrackingProject.dto.request.ProductImageRequest;
 import com.example.miniTrackingProject.dto.request.ProductRequest;
@@ -37,7 +38,8 @@ public class ProductServiceImpl implements ProductService {
     public Page<ProductResponse> getAll(Integer pageSize, Integer pageNumber) {
         Pageable pageable = PageRequest.of(pageNumber - 1, pageSize, Sort.by("id").ascending());
 
-        Page<ProductsEntity> entityPage = productRepository.findAll(pageable);
+        Page<ProductsEntity> entityPage = productRepository.findByIsDeleteFalse(pageable);
+//        Page<ProductsEntity> entityPage = productRepository.findAllActive(pageable);
         return entityPage.map(baseMapper::toProductResponse);
     }
 
@@ -133,6 +135,12 @@ public class ProductServiceImpl implements ProductService {
         productsEntity.setImages(productImagesEntityList);
         productsEntity.setInventories(inventoryEntityList);
         return baseMapper.toProductResponse(productsEntity);
+    }
+
+    @Override
+    public Page<ProductResponse> filterProduct(FilterProductRequest request) {
+
+        return null;
     }
 
     private List<ProductImagesEntity> buildImages(List<ProductImageRequest> requests, ProductsEntity product) {

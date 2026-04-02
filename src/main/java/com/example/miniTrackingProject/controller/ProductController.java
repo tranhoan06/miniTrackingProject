@@ -1,5 +1,6 @@
 package com.example.miniTrackingProject.controller;
 
+import com.example.miniTrackingProject.dto.request.FilterProductRequest;
 import com.example.miniTrackingProject.dto.request.ProductRequest;
 import com.example.miniTrackingProject.dto.response.BaseResponse;
 import com.example.miniTrackingProject.dto.response.BaseResponseFactory;
@@ -54,5 +55,12 @@ public class ProductController {
         ProductResponse productResponse = productService.getProductDetail(id);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(BaseResponseFactory.success(productResponse));
+    }
+
+    @GetMapping("/filter")
+    public ResponseEntity<BaseResponse<List<ProductResponse>>> filterProduct(FilterProductRequest request){
+        Page<ProductResponse> productResponseList = productService.filterProduct(request);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(BaseResponseFactory.success(productResponseList.getContent()));
     }
 }
