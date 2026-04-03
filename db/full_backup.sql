@@ -102,7 +102,7 @@ CREATE TABLE `inventory` (
   PRIMARY KEY (`id`),
   KEY `idx_product_id` (`product_id`),
   CONSTRAINT `fk_inventory_product` FOREIGN KEY (`product_id`) REFERENCES `products` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=16 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -111,7 +111,7 @@ CREATE TABLE `inventory` (
 
 LOCK TABLES `inventory` WRITE;
 /*!40000 ALTER TABLE `inventory` DISABLE KEYS */;
-INSERT INTO `inventory` VALUES (1,2,100,0,NULL,1),(2,3,100,0,NULL,NULL),(3,7,100,0,NULL,NULL),(4,8,100,0,NULL,NULL),(5,9,100,0,NULL,NULL),(9,1,100,10,'2026-04-02 07:33:15',NULL),(10,2,100,0,NULL,1),(11,2,100,0,NULL,1),(12,2,100,0,NULL,1),(13,2,100,0,NULL,1),(14,2,100,0,NULL,NULL);
+INSERT INTO `inventory` VALUES (1,2,100,0,NULL,1),(2,3,100,0,NULL,NULL),(3,7,100,0,NULL,NULL),(4,8,100,0,NULL,NULL),(5,9,100,0,NULL,NULL),(9,1,100,10,'2026-04-02 07:33:15',NULL),(10,2,100,0,NULL,1),(11,2,100,0,NULL,1),(12,2,100,0,NULL,1),(13,2,100,0,NULL,1),(14,2,100,0,NULL,1),(15,2,100,0,NULL,NULL);
 /*!40000 ALTER TABLE `inventory` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -132,7 +132,7 @@ CREATE TABLE `product_images` (
   PRIMARY KEY (`id`),
   KEY `product_id` (`product_id`),
   CONSTRAINT `product_images_ibfk_1` FOREIGN KEY (`product_id`) REFERENCES `products` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=25 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=27 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -141,7 +141,7 @@ CREATE TABLE `product_images` (
 
 LOCK TABLES `product_images` WRITE;
 /*!40000 ALTER TABLE `product_images` DISABLE KEYS */;
-INSERT INTO `product_images` VALUES (1,1,'https://example.com/image1.jpg',1,1,1),(2,2,'https://example.com/image1.jpg',1,1,1),(3,3,'https://example.com/image1.jpg',1,1,0),(4,7,'https://example.com/image1.jpg',1,1,0),(5,8,'https://example.com/image1.jpg',1,1,0),(6,9,'https://example.com/image1.jpg',1,1,0),(13,1,'https://example.com/image1.jpg',1,1,1),(14,1,'https://example.com/image2.jpg',1,1,1),(15,2,'https://example.com/image1.jpg',1,1,1),(16,2,'https://example.com/image2.jpg',0,2,1),(17,2,'https://example.com/image1.jpg',1,1,1),(18,2,'https://example.com/image2.jpg',0,2,1),(19,2,'https://example.com/image2.jpg',1,1,1),(20,2,'https://example.com/image1.jpg',0,2,1),(21,2,'https://example.com/image1.jpg',1,1,1),(22,2,'https://example.com/image2.jpg',0,2,1),(23,2,'https://example.com/image1.jpg',1,1,0),(24,2,'https://example.com/image2.jpg',0,2,0);
+INSERT INTO `product_images` VALUES (1,1,'https://example.com/image1.jpg',1,1,1),(2,2,'https://example.com/image1.jpg',1,1,1),(3,3,'https://example.com/image1.jpg',1,1,0),(4,7,'https://example.com/image1.jpg',1,1,0),(5,8,'https://example.com/image1.jpg',1,1,0),(6,9,'https://example.com/image1.jpg',1,1,0),(13,1,'https://example.com/image1.jpg',1,1,1),(14,1,'https://example.com/image2.jpg',1,1,1),(15,2,'https://example.com/image1.jpg',1,1,1),(16,2,'https://example.com/image2.jpg',0,2,1),(17,2,'https://example.com/image1.jpg',1,1,1),(18,2,'https://example.com/image2.jpg',0,2,1),(19,2,'https://example.com/image2.jpg',1,1,1),(20,2,'https://example.com/image1.jpg',0,2,1),(21,2,'https://example.com/image1.jpg',1,1,1),(22,2,'https://example.com/image2.jpg',0,2,1),(23,2,'https://example.com/image1.jpg',1,1,1),(24,2,'https://example.com/image2.jpg',0,2,1),(25,2,'https://example.com/image1.jpg',1,1,0),(26,2,'https://example.com/image2.jpg',0,2,0);
 /*!40000 ALTER TABLE `product_images` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -183,7 +183,7 @@ CREATE TABLE `products` (
 
 LOCK TABLES `products` WRITE;
 /*!40000 ALTER TABLE `products` DISABLE KEYS */;
-INSERT INTO `products` VALUES (1,1,3,'Áo thun nam 01',NULL,199000.00,199000.00,1.00,1.00,1.00,1.00,NULL,'ACTIVE','2026-04-01 10:05:00','2026-04-02 07:33:38',0),(2,1,3,'Áo thun nam 02',NULL,199000.00,199000.00,1.00,1.00,1.00,1.00,NULL,'ACTIVE','2026-04-01 10:07:23','2026-04-02 07:47:37',0),(3,1,3,'Áo thun nam 3',NULL,199000.00,199000.00,1.00,1.00,1.00,1.00,NULL,'ACTIVE','2026-04-01 10:09:34',NULL,0),(6,1,3,'Áo thun nam 4',NULL,199000.00,199000.00,1.00,1.00,1.00,1.00,NULL,'ACTIVE','2026-04-01 10:30:39',NULL,0),(7,1,3,'Áo thun nam 5',NULL,199000.00,199000.00,1.00,1.00,1.00,1.00,NULL,'ACTIVE','2026-04-01 10:32:33',NULL,0),(8,1,3,'Áo thun nam 6',NULL,199000.00,199000.00,1.00,1.00,1.00,1.00,NULL,'ACTIVE','2026-04-01 10:40:05',NULL,0),(9,1,3,'Áo thun nam 7',NULL,199000.00,199000.00,1.00,1.00,1.00,1.00,NULL,'ACTIVE','2026-04-01 10:41:58',NULL,0);
+INSERT INTO `products` VALUES (1,1,3,'Áo thun nam 01',NULL,199000.00,199000.00,1.00,1.00,1.00,1.00,NULL,'ACTIVE','2026-04-01 10:05:00','2026-04-02 07:33:38',0),(2,1,4,'Áo thun nam 02',NULL,199000.00,199000.00,1.00,1.00,1.00,1.00,NULL,'ACTIVE','2026-04-01 10:07:23','2026-04-03 07:42:25',0),(3,1,3,'Áo thun nam 3',NULL,199000.00,199000.00,1.00,1.00,1.00,1.00,NULL,'ACTIVE','2026-04-01 10:09:34',NULL,0),(6,1,3,'Áo thun nam 4',NULL,199000.00,199000.00,1.00,1.00,1.00,1.00,NULL,'ACTIVE','2026-04-01 10:30:39',NULL,0),(7,1,3,'Áo thun nam 5',NULL,200000.00,199000.00,1.00,1.00,1.00,1.00,NULL,'ACTIVE','2026-04-01 10:32:33','2026-04-03 07:31:08',0),(8,1,3,'Áo thun nam 6',NULL,201000.00,199000.00,1.00,1.00,1.00,1.00,NULL,'DRAFT','2026-04-01 10:40:05','2026-04-03 07:31:17',0),(9,1,3,'Áo thun nam 7',NULL,199000.00,199000.00,1.00,1.00,1.00,1.00,NULL,'DRAFT','2026-04-01 10:41:58','2026-04-03 07:20:14',1);
 /*!40000 ALTER TABLE `products` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -226,4 +226,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2026-04-02 17:12:56
+-- Dump completed on 2026-04-03 17:43:31

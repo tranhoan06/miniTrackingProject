@@ -6,14 +6,17 @@ import com.example.miniTrackingProject.dto.request.FilterProductRequest;
 import com.example.miniTrackingProject.dto.request.InventoryRequest;
 import com.example.miniTrackingProject.dto.request.ProductImageRequest;
 import com.example.miniTrackingProject.dto.request.ProductRequest;
+import com.example.miniTrackingProject.dto.response.ProductOverviewResponse;
 import com.example.miniTrackingProject.dto.response.ProductResponse;
 import com.example.miniTrackingProject.entity.*;
 import com.example.miniTrackingProject.exception.JavaBuilderException;
 import com.example.miniTrackingProject.mapper.BaseMapper;
 import com.example.miniTrackingProject.repository.*;
 import com.example.miniTrackingProject.service.ProductService;
+import com.example.miniTrackingProject.service.spec.ProductSpecification;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.*;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -35,11 +38,31 @@ public class ProductServiceImpl implements ProductService {
     private final InventoryRepository inventoryRepository;
 
     @Override
-    public Page<ProductResponse> getAll(Integer pageSize, Integer pageNumber) {
-        Pageable pageable = PageRequest.of(pageNumber - 1, pageSize, Sort.by("id").ascending());
+    public Page<ProductResponse> getAll(Integer pageSize, Integer pageNumber, FilterProductRequest request) {
+        // tạo một điều kiện ban đầu luôn đúng để có thể .and() thêm các filter sau đó
+        Specification<ProductsEntity> specification =
+                (root, query, cb) -> cb.isFalse(root.get("isDelete"));
 
-        Page<ProductsEntity> entityPage = productRepository.findByIsDeleteFalse(pageable);
+        if (request.getKeyword() != null && !request.getKeyword().isEmpty()) {
+            specification = specification.and(ProductSpecification.likeKeyword(request.getKeyword()));
+        }
+
+        if (request.getMinPrice() != null) {
+            specification = specification.and(ProductSpecification.minPrice(request.getMinPrice()));
+        }
+
+        if (request.getMaxPrice() != null) {
+            specification = specification.and(ProductSpecification.maxPrice(request.getMaxPrice()));
+        }
+
+        if (request.getStatus() != null) {
+            specification = specification.and(ProductSpecification.filterStatus(request.getStatus()));
+        }
+
+        Pageable pageable = PageRequest.of(pageNumber - 1, pageSize, Sort.by("id").ascending());
+//        Page<ProductsEntity> entityPage = productRepository.findByIsDeleteFalse(specification, pageable);
 //        Page<ProductsEntity> entityPage = productRepository.findAllActive(pageable);
+        Page<ProductsEntity> entityPage = productRepository.findAll(specification, pageable);
         return entityPage.map(baseMapper::toProductResponse);
     }
 
@@ -138,9 +161,13 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public Page<ProductResponse> filterProduct(FilterProductRequest request) {
+    public ProductOverviewResponse getProductOverview() {
+        ProductOverviewResponse productOverviewResponse = new ProductOverviewResponse();
+        Long count = productRepository.countProduct();
 
-        return null;
+        productOverviewResponse.setTotalProduct(count);
+//        productOverviewResponse.setTotalPriceProuct();
+        return productOverviewResponse;
     }
 
     private List<ProductImagesEntity> buildImages(List<ProductImageRequest> requests, ProductsEntity product) {

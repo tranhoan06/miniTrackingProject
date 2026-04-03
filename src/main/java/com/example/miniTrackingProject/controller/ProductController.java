@@ -4,10 +4,12 @@ import com.example.miniTrackingProject.dto.request.FilterProductRequest;
 import com.example.miniTrackingProject.dto.request.ProductRequest;
 import com.example.miniTrackingProject.dto.response.BaseResponse;
 import com.example.miniTrackingProject.dto.response.BaseResponseFactory;
+import com.example.miniTrackingProject.dto.response.ProductOverviewResponse;
 import com.example.miniTrackingProject.dto.response.ProductResponse;
 import com.example.miniTrackingProject.service.ProductService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,15 +23,18 @@ import java.util.List;
 @RequiredArgsConstructor
 @Validated
 @RequestMapping("/v1/api/product")
+@Slf4j
 public class ProductController {
 
     private final ProductService productService;
 
     @GetMapping()
     @PreAuthorize("hasAnyRole('ROLE_SELLER')")
-    public ResponseEntity<BaseResponse<List<ProductResponse>>> getAll(@RequestParam(value = "page_size", required = true) Integer pageSize,
-                                                                     @RequestParam(value = "page_number", required = true) Integer pageNumber) {
-        Page<ProductResponse> responses = productService.getAll(pageSize, pageNumber);
+    public ResponseEntity<BaseResponse<List<?>>> getAll(@RequestParam(value = "page_size", required = true) Integer pageSize,
+                                                                     @RequestParam(value = "page_number", required = true) Integer pageNumber,
+                                                                      FilterProductRequest request
+                                                                      ) {
+        Page<ProductResponse> responses = productService.getAll(pageSize, pageNumber, request);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(BaseResponseFactory.success(responses.getContent()));
     }
@@ -51,16 +56,18 @@ public class ProductController {
     }
 
     @GetMapping("product-detail/{id}")
+    @PreAuthorize("hasAnyRole('ROLE_SELLER')")
     public ResponseEntity<BaseResponse<ProductResponse>> getProductDetail(@PathVariable Long id) {
         ProductResponse productResponse = productService.getProductDetail(id);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(BaseResponseFactory.success(productResponse));
     }
 
-    @GetMapping("/filter")
-    public ResponseEntity<BaseResponse<List<ProductResponse>>> filterProduct(FilterProductRequest request){
-        Page<ProductResponse> productResponseList = productService.filterProduct(request);
+    @GetMapping("/overview")
+    @PreAuthorize("hasAnyRole('ROLE_SELLER')")
+    public ResponseEntity<BaseResponse<ProductOverviewResponse>> getProductOverview() {
+        ProductOverviewResponse productOverviewResponse = productService.getProductOverview();
         return ResponseEntity.status(HttpStatus.OK)
-                .body(BaseResponseFactory.success(productResponseList.getContent()));
+                .body(BaseResponseFactory.success(productOverviewResponse));
     }
 }
