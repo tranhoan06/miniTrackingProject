@@ -17,8 +17,10 @@ import com.example.miniTrackingProject.service.spec.ProductSpecification;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.*;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -70,6 +72,13 @@ public class ProductServiceImpl implements ProductService {
     public ProductResponse createProduct(ProductRequest request) {
         UserEntity userEntity = userRepository.findById(request.getSeller())
                 .orElseThrow(() -> new JavaBuilderException(ErrorCode.USER_NOT_FOUND));
+
+        String username = SecurityContextHolder
+                .getContext()
+                .getAuthentication()
+                .getName();
+
+        System.out.println("nammmmmmm "+  username);
 
         CategoriesEntity categories = categoryRepository.findById(request.getCategory())
                 .orElseThrow(() -> new JavaBuilderException(ErrorCode.CATEGORYID_NOT_FOUND));
@@ -164,9 +173,12 @@ public class ProductServiceImpl implements ProductService {
     public ProductOverviewResponse getProductOverview() {
         ProductOverviewResponse productOverviewResponse = new ProductOverviewResponse();
         Long count = productRepository.countProduct();
+        BigDecimal totalPriceProduct = productRepository.getTotalPriceProuct();
+        Long otalAlmostOutOfStock = productRepository.getTotalAlmostOutOfStock();
 
         productOverviewResponse.setTotalProduct(count);
-//        productOverviewResponse.setTotalPriceProuct();
+        productOverviewResponse.setTotalPriceProuct(totalPriceProduct);
+        productOverviewResponse.setTotalAlmostOutOfStock(otalAlmostOutOfStock);
         return productOverviewResponse;
     }
 
@@ -215,6 +227,7 @@ public class ProductServiceImpl implements ProductService {
                     inventory.setQuantityInStock(inv.getQuantityInStock());
                     inventory.setReservedQuantity(0L);
                     inventory.setProduct(product);
+                    inventory.setIsDelete(false);
                     return inventory;
                 }).collect(Collectors.toList());
     }

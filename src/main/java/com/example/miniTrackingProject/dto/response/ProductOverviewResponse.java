@@ -18,4 +18,5 @@ public class ProductOverviewResponse implements Serializable {
     private Long totalActiveProduct;
     private Long totalInactiveProduct;
     private Long totalDraftProduct;
+    private Long totalAlmostOutOfStock;
 }

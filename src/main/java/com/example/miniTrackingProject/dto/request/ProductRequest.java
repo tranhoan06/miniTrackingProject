@@ -44,7 +44,6 @@ public class ProductRequest implements Serializable {
     @NotNull
     private BigDecimal heightCm;
 
-    @NotNull
     private StatusProduct status;
 
     private List<ProductImageRequest> images;

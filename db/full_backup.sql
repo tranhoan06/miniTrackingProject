@@ -55,6 +55,67 @@ INSERT INTO `addreses` VALUES (1,1,'Trần Việt Hoàn','012345678',1,'Ninh Bì
 UNLOCK TABLES;
 
 --
+-- Table structure for table `cart_items`
+--
+
+DROP TABLE IF EXISTS `cart_items`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `cart_items` (
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `card_id` bigint NOT NULL,
+  `product_id` bigint NOT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  `quantity` int NOT NULL,
+  `is_delete` tinyint(1) DEFAULT '0',
+  `price` decimal(10,0) DEFAULT '0',
+  `totalAmount` decimal(10,0) DEFAULT '0',
+  PRIMARY KEY (`id`),
+  KEY `card_id` (`card_id`),
+  KEY `product_id` (`product_id`),
+  CONSTRAINT `cart_items_ibfk_1` FOREIGN KEY (`card_id`) REFERENCES `carts` (`id`),
+  CONSTRAINT `cart_items_ibfk_2` FOREIGN KEY (`product_id`) REFERENCES `products` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `cart_items`
+--
+
+LOCK TABLES `cart_items` WRITE;
+/*!40000 ALTER TABLE `cart_items` DISABLE KEYS */;
+/*!40000 ALTER TABLE `cart_items` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `carts`
+--
+
+DROP TABLE IF EXISTS `carts`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `carts` (
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `user_id` bigint NOT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `unique_user_cart` (`user_id`),
+  CONSTRAINT `carts_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `carts`
+--
+
+LOCK TABLES `carts` WRITE;
+/*!40000 ALTER TABLE `carts` DISABLE KEYS */;
+/*!40000 ALTER TABLE `carts` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `categories`
 --
 
@@ -111,7 +172,7 @@ CREATE TABLE `inventory` (
 
 LOCK TABLES `inventory` WRITE;
 /*!40000 ALTER TABLE `inventory` DISABLE KEYS */;
-INSERT INTO `inventory` VALUES (1,2,100,0,NULL,1),(2,3,100,0,NULL,NULL),(3,7,100,0,NULL,NULL),(4,8,100,0,NULL,NULL),(5,9,100,0,NULL,NULL),(9,1,100,10,'2026-04-02 07:33:15',NULL),(10,2,100,0,NULL,1),(11,2,100,0,NULL,1),(12,2,100,0,NULL,1),(13,2,100,0,NULL,1),(14,2,100,0,NULL,1),(15,2,100,0,NULL,NULL);
+INSERT INTO `inventory` VALUES (1,2,100,0,NULL,1),(2,3,100,0,NULL,NULL),(3,7,100,0,NULL,NULL),(4,8,100,0,NULL,NULL),(5,9,100,0,NULL,NULL),(9,1,100,10,'2026-04-02 07:33:15',NULL),(10,2,100,0,NULL,1),(11,2,100,0,NULL,1),(12,2,100,0,NULL,1),(13,2,100,0,NULL,1),(14,2,100,0,NULL,1),(15,2,9,0,'2026-04-06 02:53:50',0);
 /*!40000 ALTER TABLE `inventory` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -226,4 +287,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2026-04-03 17:43:31
+-- Dump completed on 2026-04-06 17:43:01

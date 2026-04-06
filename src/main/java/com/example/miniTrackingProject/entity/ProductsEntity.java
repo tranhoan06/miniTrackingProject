@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.SQLRestriction;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -66,9 +67,11 @@ public class ProductsEntity implements Serializable {
     private Boolean isDelete;
 
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
+    @SQLRestriction("is_Delete = false")
     private List<ProductImagesEntity> images = new ArrayList<>();
 
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
+    @SQLRestriction("is_Delete = false")
     private List<InventoryEntity> inventories = new ArrayList<>();
 
     @Column(name = "created_at")
