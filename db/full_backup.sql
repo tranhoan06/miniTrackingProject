@@ -1,8 +1,8 @@
--- MySQL dump 10.13  Distrib 8.0.43, for Win64 (x86_64)
+-- MySQL dump 10.13  Distrib 8.0.45, for Win64 (x86_64)
 --
--- Host: 127.0.0.1    Database: minitrackingproject
+-- Host: localhost    Database: minitracking
 -- ------------------------------------------------------
--- Server version	8.0.43
+-- Server version	8.0.45
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -55,67 +55,6 @@ INSERT INTO `addreses` VALUES (1,1,'Trần Việt Hoàn','012345678',1,'Ninh Bì
 UNLOCK TABLES;
 
 --
--- Table structure for table `cart_items`
---
-
-DROP TABLE IF EXISTS `cart_items`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `cart_items` (
-  `id` bigint NOT NULL AUTO_INCREMENT,
-  `card_id` bigint NOT NULL,
-  `product_id` bigint NOT NULL,
-  `created_at` timestamp NULL DEFAULT NULL,
-  `updated_at` timestamp NULL DEFAULT NULL,
-  `quantity` int NOT NULL,
-  `is_delete` tinyint(1) DEFAULT '0',
-  `price` decimal(10,0) DEFAULT '0',
-  `totalAmount` decimal(10,0) DEFAULT '0',
-  PRIMARY KEY (`id`),
-  KEY `card_id` (`card_id`),
-  KEY `product_id` (`product_id`),
-  CONSTRAINT `cart_items_ibfk_1` FOREIGN KEY (`card_id`) REFERENCES `carts` (`id`),
-  CONSTRAINT `cart_items_ibfk_2` FOREIGN KEY (`product_id`) REFERENCES `products` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `cart_items`
---
-
-LOCK TABLES `cart_items` WRITE;
-/*!40000 ALTER TABLE `cart_items` DISABLE KEYS */;
-/*!40000 ALTER TABLE `cart_items` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Table structure for table `carts`
---
-
-DROP TABLE IF EXISTS `carts`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `carts` (
-  `id` bigint NOT NULL AUTO_INCREMENT,
-  `user_id` bigint NOT NULL,
-  `created_at` timestamp NULL DEFAULT NULL,
-  `updated_at` timestamp NULL DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `unique_user_cart` (`user_id`),
-  CONSTRAINT `carts_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `carts`
---
-
-LOCK TABLES `carts` WRITE;
-/*!40000 ALTER TABLE `carts` DISABLE KEYS */;
-/*!40000 ALTER TABLE `carts` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
 -- Table structure for table `categories`
 --
 
@@ -163,7 +102,7 @@ CREATE TABLE `inventory` (
   PRIMARY KEY (`id`),
   KEY `idx_product_id` (`product_id`),
   CONSTRAINT `fk_inventory_product` FOREIGN KEY (`product_id`) REFERENCES `products` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=16 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -172,7 +111,7 @@ CREATE TABLE `inventory` (
 
 LOCK TABLES `inventory` WRITE;
 /*!40000 ALTER TABLE `inventory` DISABLE KEYS */;
-INSERT INTO `inventory` VALUES (1,2,100,0,NULL,1),(2,3,100,0,NULL,NULL),(3,7,100,0,NULL,NULL),(4,8,100,0,NULL,NULL),(5,9,100,0,NULL,NULL),(9,1,100,10,'2026-04-02 07:33:15',NULL),(10,2,100,0,NULL,1),(11,2,100,0,NULL,1),(12,2,100,0,NULL,1),(13,2,100,0,NULL,1),(14,2,100,0,NULL,1),(15,2,9,0,'2026-04-06 02:53:50',0);
+INSERT INTO `inventory` VALUES (1,2,100,0,NULL,1),(2,3,100,0,NULL,NULL),(3,7,100,0,NULL,NULL),(4,8,100,0,NULL,NULL),(5,9,100,0,NULL,NULL),(9,1,100,10,'2026-04-02 07:33:15',NULL),(10,2,100,0,NULL,1),(11,2,100,0,NULL,1),(12,2,100,0,NULL,1),(13,2,100,0,NULL,1),(14,2,100,0,NULL,NULL);
 /*!40000 ALTER TABLE `inventory` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -193,7 +132,7 @@ CREATE TABLE `product_images` (
   PRIMARY KEY (`id`),
   KEY `product_id` (`product_id`),
   CONSTRAINT `product_images_ibfk_1` FOREIGN KEY (`product_id`) REFERENCES `products` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=27 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=25 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -202,7 +141,7 @@ CREATE TABLE `product_images` (
 
 LOCK TABLES `product_images` WRITE;
 /*!40000 ALTER TABLE `product_images` DISABLE KEYS */;
-INSERT INTO `product_images` VALUES (1,1,'https://example.com/image1.jpg',1,1,1),(2,2,'https://example.com/image1.jpg',1,1,1),(3,3,'https://example.com/image1.jpg',1,1,0),(4,7,'https://example.com/image1.jpg',1,1,0),(5,8,'https://example.com/image1.jpg',1,1,0),(6,9,'https://example.com/image1.jpg',1,1,0),(13,1,'https://example.com/image1.jpg',1,1,1),(14,1,'https://example.com/image2.jpg',1,1,1),(15,2,'https://example.com/image1.jpg',1,1,1),(16,2,'https://example.com/image2.jpg',0,2,1),(17,2,'https://example.com/image1.jpg',1,1,1),(18,2,'https://example.com/image2.jpg',0,2,1),(19,2,'https://example.com/image2.jpg',1,1,1),(20,2,'https://example.com/image1.jpg',0,2,1),(21,2,'https://example.com/image1.jpg',1,1,1),(22,2,'https://example.com/image2.jpg',0,2,1),(23,2,'https://example.com/image1.jpg',1,1,1),(24,2,'https://example.com/image2.jpg',0,2,1),(25,2,'https://example.com/image1.jpg',1,1,0),(26,2,'https://example.com/image2.jpg',0,2,0);
+INSERT INTO `product_images` VALUES (1,1,'https://example.com/image1.jpg',1,1,1),(2,2,'https://example.com/image1.jpg',1,1,1),(3,3,'https://example.com/image1.jpg',1,1,0),(4,7,'https://example.com/image1.jpg',1,1,0),(5,8,'https://example.com/image1.jpg',1,1,0),(6,9,'https://example.com/image1.jpg',1,1,0),(13,1,'https://example.com/image1.jpg',1,1,1),(14,1,'https://example.com/image2.jpg',1,1,1),(15,2,'https://example.com/image1.jpg',1,1,1),(16,2,'https://example.com/image2.jpg',0,2,1),(17,2,'https://example.com/image1.jpg',1,1,1),(18,2,'https://example.com/image2.jpg',0,2,1),(19,2,'https://example.com/image2.jpg',1,1,1),(20,2,'https://example.com/image1.jpg',0,2,1),(21,2,'https://example.com/image1.jpg',1,1,1),(22,2,'https://example.com/image2.jpg',0,2,1),(23,2,'https://example.com/image1.jpg',1,1,0),(24,2,'https://example.com/image2.jpg',0,2,0);
 /*!40000 ALTER TABLE `product_images` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -244,7 +183,7 @@ CREATE TABLE `products` (
 
 LOCK TABLES `products` WRITE;
 /*!40000 ALTER TABLE `products` DISABLE KEYS */;
-INSERT INTO `products` VALUES (1,1,3,'Áo thun nam 01',NULL,199000.00,199000.00,1.00,1.00,1.00,1.00,NULL,'ACTIVE','2026-04-01 10:05:00','2026-04-02 07:33:38',0),(2,1,4,'Áo thun nam 02',NULL,199000.00,199000.00,1.00,1.00,1.00,1.00,NULL,'ACTIVE','2026-04-01 10:07:23','2026-04-03 07:42:25',0),(3,1,3,'Áo thun nam 3',NULL,199000.00,199000.00,1.00,1.00,1.00,1.00,NULL,'ACTIVE','2026-04-01 10:09:34',NULL,0),(6,1,3,'Áo thun nam 4',NULL,199000.00,199000.00,1.00,1.00,1.00,1.00,NULL,'ACTIVE','2026-04-01 10:30:39',NULL,0),(7,1,3,'Áo thun nam 5',NULL,200000.00,199000.00,1.00,1.00,1.00,1.00,NULL,'ACTIVE','2026-04-01 10:32:33','2026-04-03 07:31:08',0),(8,1,3,'Áo thun nam 6',NULL,201000.00,199000.00,1.00,1.00,1.00,1.00,NULL,'DRAFT','2026-04-01 10:40:05','2026-04-03 07:31:17',0),(9,1,3,'Áo thun nam 7',NULL,199000.00,199000.00,1.00,1.00,1.00,1.00,NULL,'DRAFT','2026-04-01 10:41:58','2026-04-03 07:20:14',1);
+INSERT INTO `products` VALUES (1,1,3,'Áo thun nam 01',NULL,199000.00,199000.00,1.00,1.00,1.00,1.00,NULL,'ACTIVE','2026-04-01 10:05:00','2026-04-02 07:33:38',0),(2,1,3,'Áo thun nam 02',NULL,199000.00,199000.00,1.00,1.00,1.00,1.00,NULL,'ACTIVE','2026-04-01 10:07:23','2026-04-02 07:47:37',0),(3,1,3,'Áo thun nam 3',NULL,199000.00,199000.00,1.00,1.00,1.00,1.00,NULL,'ACTIVE','2026-04-01 10:09:34',NULL,0),(6,1,3,'Áo thun nam 4',NULL,199000.00,199000.00,1.00,1.00,1.00,1.00,NULL,'ACTIVE','2026-04-01 10:30:39',NULL,0),(7,1,3,'Áo thun nam 5',NULL,199000.00,199000.00,1.00,1.00,1.00,1.00,NULL,'ACTIVE','2026-04-01 10:32:33',NULL,0),(8,1,3,'Áo thun nam 6',NULL,199000.00,199000.00,1.00,1.00,1.00,1.00,NULL,'ACTIVE','2026-04-01 10:40:05',NULL,0),(9,1,3,'Áo thun nam 7',NULL,199000.00,199000.00,1.00,1.00,1.00,1.00,NULL,'ACTIVE','2026-04-01 10:41:58',NULL,0);
 /*!40000 ALTER TABLE `products` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -265,7 +204,7 @@ CREATE TABLE `users` (
   `update_at` timestamp NULL DEFAULT NULL,
   `is_Delete` tinyint(1) DEFAULT '0',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -274,7 +213,7 @@ CREATE TABLE `users` (
 
 LOCK TABLES `users` WRITE;
 /*!40000 ALTER TABLE `users` DISABLE KEYS */;
-INSERT INTO `users` VALUES (1,'hoan1','$2a$10$XTiwpuyBBiOmW6x8n2BS5eL4Eh/TOVmBaOKC2SnXuuG1hS5dzh7NC','hoan11','SELLER','2026-03-29 08:53:09','2026-03-29 09:17:09',0),(2,'hoan2','$2a$10$nJYf1KqS2hrg4vVM3aaU9u3fiDHW2t5hANFl4n4494EdjZXRIJUP2','hoan2','BUYER','2026-03-29 08:57:41',NULL,0),(3,'hoan3','$2a$10$/HC998rbtXcnCEanWVtQ7Ok.aZj8lm1XbOKjGM1Nc55zIbR4SQqhS','hoan3','SHIPPER','2026-03-29 09:16:52',NULL,0),(4,'hoan4','$2a$10$hCssKUftpqKp5ltxmdtzUuSmqAOmC4IqA..y4pm.Mq/fovnN6UN2.','hoan3','SHIPPER','2026-03-29 09:27:29',NULL,0),(5,'hoan5','$2a$10$005Na/EQQ7PW4MQTB6TUUOjY941HXnNzVUg4XLSVuhyZ7irkg8yUe','hoan5','SHIPPER','2026-03-29 12:48:35',NULL,0);
+INSERT INTO `users` VALUES (1,'hoan1','$2a$10$XTiwpuyBBiOmW6x8n2BS5eL4Eh/TOVmBaOKC2SnXuuG1hS5dzh7NC','hoan11','SELLER','2026-03-29 08:53:09','2026-03-29 09:17:09',0),(2,'hoan2','$2a$10$nJYf1KqS2hrg4vVM3aaU9u3fiDHW2t5hANFl4n4494EdjZXRIJUP2','hoan2','BUYER','2026-03-29 08:57:41',NULL,0),(3,'hoan3','$2a$10$/HC998rbtXcnCEanWVtQ7Ok.aZj8lm1XbOKjGM1Nc55zIbR4SQqhS','hoan3','SHIPPER','2026-03-29 09:16:52',NULL,0),(4,'hoan4','$2a$10$hCssKUftpqKp5ltxmdtzUuSmqAOmC4IqA..y4pm.Mq/fovnN6UN2.','hoan3','SHIPPER','2026-03-29 09:27:29',NULL,0),(5,'hoan5','$2a$10$005Na/EQQ7PW4MQTB6TUUOjY941HXnNzVUg4XLSVuhyZ7irkg8yUe','hoan5','SHIPPER','2026-03-29 12:48:35',NULL,0),(6,'hoandeptrai','$2a$10$2p4DY4rEKbWG9LbjWtSmc.WUagJxuM3rZz.Sdj8WGy7lvUqf.enq.','hoandeptrai','SHIPPER','2026-04-04 10:29:14',NULL,0),(7,'hoandeptrai1','$2a$10$C/KZGM5fvjYTqubsQtxfwO2uL4K1ajO4JuROReUw7mgTpoh4.TQ0G','hoandeptrai','SHIPPER','2026-04-04 10:30:46',NULL,0),(8,'hoandeptrai2','$2a$10$W.wCbzPS.H6vUCqS/t9lLe71aCN60z2aLBevgcdGNefLxExvuu.sy','hoandeptrai','SHIPPER','2026-04-04 10:33:45',NULL,0),(9,'viethoan','$2a$10$UQzV5zREgdyL2nUlQklik.qa5Qr5sfosKe4hc7wWN4DoLjC.XPu4K','hoandeptrai','SELLER','2026-04-06 16:36:23',NULL,0);
 /*!40000 ALTER TABLE `users` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -287,4 +226,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2026-04-06 17:43:01
+-- Dump completed on 2026-04-06 23:46:47

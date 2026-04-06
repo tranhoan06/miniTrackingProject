@@ -70,15 +70,12 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public ProductResponse createProduct(ProductRequest request) {
-        UserEntity userEntity = userRepository.findById(request.getSeller())
-                .orElseThrow(() -> new JavaBuilderException(ErrorCode.USER_NOT_FOUND));
-
         String username = SecurityContextHolder
                 .getContext()
                 .getAuthentication()
                 .getName();
-
-        System.out.println("nammmmmmm "+  username);
+        UserEntity userEntity = userRepository.findByUsername(username)
+                .orElseThrow(() -> new JavaBuilderException(ErrorCode.USER_NOT_FOUND));
 
         CategoriesEntity categories = categoryRepository.findById(request.getCategory())
                 .orElseThrow(() -> new JavaBuilderException(ErrorCode.CATEGORYID_NOT_FOUND));
