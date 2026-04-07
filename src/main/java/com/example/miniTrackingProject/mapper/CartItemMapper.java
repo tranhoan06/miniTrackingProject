@@ -13,6 +13,8 @@ import java.math.BigDecimal;
 public interface CartItemMapper {
     @Mapping(target = "price", source = "product.price")
     @Mapping(target = "totalAmount", expression = "java(calculateTotal(entity))")
+    // expression: “đoạn code Java” để tính giá trị cho field đó.
+    // java(...): prefix MapStruct yêu cầu để biết đây là biểu thức Java (không phải tên property).
     CartsItemResponse toCartsItemResponse(CartItemsEntity entity);
 
     default BigDecimal calculateTotal(CartItemsEntity entity) {
