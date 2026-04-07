@@ -70,4 +70,12 @@ public class ProductController {
         return ResponseEntity.status(HttpStatus.OK)
                 .body(BaseResponseFactory.success(productOverviewResponse));
     }
+
+    @DeleteMapping("/delete-product/{id}")
+    @PreAuthorize("hasAnyRole('ROLE_SELLER')")
+    public ResponseEntity<BaseResponse<String>> deleteProduct(@PathVariable Long id) {
+        productService.deleteProduct(id);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(BaseResponseFactory.success("Xóa sản phẩm thành công"));
+    }
 }

@@ -6,20 +6,22 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 
 @Setter
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class CartResponse implements Serializable {
-    private Long id;
+public class CartsItemResponse implements Serializable {
 
-    private Long user;
+    private ProductCartResponse product;
 
-    private List<CartsItemResponse> cartItems = new ArrayList<>();
+    private Integer quantity;
+
+    private BigDecimal price;
+
+    private BigDecimal totalAmount;
 
     private LocalDateTime createdAt;
 

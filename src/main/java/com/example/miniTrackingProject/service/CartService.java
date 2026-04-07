@@ -6,4 +6,8 @@ import com.example.miniTrackingProject.dto.response.CartResponse;
 public interface CartService {
 
     void addCart(CartRequest request);
+
+    CartResponse getAllCartByUser();
+
+    void removeFromCart(Long id);
 }

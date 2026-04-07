@@ -28,7 +28,7 @@ public class CartEntity implements Serializable {
     private UserEntity user;
 
     @OneToMany(mappedBy = "cart", cascade = CascadeType.ALL)
-    @SQLRestriction("is_Delete = false")
+    @SQLRestriction("is_delete = false")
     private List<CartItemsEntity> cartItems = new ArrayList<>();
 
     @Column(name = "created_at")

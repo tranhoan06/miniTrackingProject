@@ -22,7 +22,11 @@ public class CartController implements Serializable {
     private final CartService cartService;
 
     @GetMapping("")
-
+    public ResponseEntity<BaseResponse<CartResponse>> getAllCartByUser() {
+        CartResponse response = cartService.getAllCartByUser();
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(BaseResponseFactory.success(response));
+    }
 
     @PostMapping("/add")
     public ResponseEntity<BaseResponse<String>> addCart(@Valid @RequestBody CartRequest request) {
@@ -30,4 +34,12 @@ public class CartController implements Serializable {
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(BaseResponseFactory.success("Đã thêm vào giỏ hàng"));
     }
+
+    @DeleteMapping("remove-from-cart/{id}")
+    public ResponseEntity<BaseResponse<String>> removeFromCart(@PathVariable Long id) {
+        cartService.removeFromCart(id);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(BaseResponseFactory.success("Đã xóa khỏi giỏ hàng"));
+    }
+
 }

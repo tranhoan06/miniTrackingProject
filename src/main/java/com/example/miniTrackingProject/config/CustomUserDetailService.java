@@ -30,6 +30,8 @@ public class CustomUserDetailService implements UserDetailsService {
         RoleEnum role = user.get().getRole();
         SimpleGrantedAuthority authority = new SimpleGrantedAuthority("ROLE_" + role);
 
-        return new User(username, user.get().getPassword(), List.of(authority));
+//        return new User(username, user.get().getPassword(), List.of(authority));
+        return user.get();
     }
+
 }

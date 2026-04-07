@@ -179,6 +179,16 @@ public class ProductServiceImpl implements ProductService {
         return productOverviewResponse;
     }
 
+    @Override
+    public void deleteProduct(Long id) {
+        ProductsEntity productsEntity = productRepository.findById(id)
+                .orElseThrow(() -> new JavaBuilderException(ErrorCode.PRODUCT_NOT_FOUND));
+
+        productsEntity.setIsDelete(true);
+        productsEntity.setUpdatedAt(LocalDateTime.now());
+        productRepository.save(productsEntity);
+    }
+
     private List<ProductImagesEntity> buildImages(List<ProductImageRequest> requests, ProductsEntity product) {
 
         List<ProductImageRequest> sortedRequests = requests.stream()

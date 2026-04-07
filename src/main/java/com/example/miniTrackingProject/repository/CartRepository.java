@@ -1,6 +1,7 @@
 package com.example.miniTrackingProject.repository;
 
 import com.example.miniTrackingProject.entity.CartEntity;
+import com.example.miniTrackingProject.entity.UserEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -9,5 +10,5 @@ import java.util.Optional;
 @Repository
 public interface CartRepository extends JpaRepository<CartEntity, Long> {
 
-    Optional<CartEntity> findByUser(Long id);
+    Optional<CartEntity> findByUser(UserEntity user);
 }

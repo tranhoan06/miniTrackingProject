@@ -18,4 +18,6 @@ public interface ProductService {
     ProductResponse getProductDetail(Long id);
 
     ProductOverviewResponse getProductOverview();
+
+    void deleteProduct(Long id);
 }
