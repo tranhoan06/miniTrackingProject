@@ -28,6 +28,10 @@ public class VouchersEntity {
 
     private String description;
 
+    @ManyToOne
+    @JoinColumn(name = "seller_id")
+    private UserEntity seller;
+
     @Enumerated(EnumType.STRING)
     @Column(name = "discount_type", nullable = false)
     private DiscountType discountType;
