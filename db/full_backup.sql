@@ -179,6 +179,84 @@ INSERT INTO `inventory` VALUES (1,2,100,0,NULL,1),(2,3,100,0,NULL,NULL),(3,7,100
 UNLOCK TABLES;
 
 --
+-- Table structure for table `order_items`
+--
+
+DROP TABLE IF EXISTS `order_items`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `order_items` (
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `order_id` bigint NOT NULL,
+  `product_id` bigint NOT NULL,
+  `seller_id` bigint NOT NULL,
+  `quantity` int NOT NULL,
+  `price` decimal(15,0) NOT NULL,
+  `total_amount` decimal(15,0) NOT NULL,
+  `product_name_snapshot` varchar(255) NOT NULL,
+  `product_image_snapshot` varchar(500) DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  KEY `fk_order_items_order` (`order_id`),
+  KEY `fk_order_items_product` (`product_id`),
+  KEY `fk_order_items_seller` (`seller_id`),
+  CONSTRAINT `fk_order_items_order` FOREIGN KEY (`order_id`) REFERENCES `orders` (`id`),
+  CONSTRAINT `fk_order_items_product` FOREIGN KEY (`product_id`) REFERENCES `products` (`id`),
+  CONSTRAINT `fk_order_items_seller` FOREIGN KEY (`seller_id`) REFERENCES `users` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `order_items`
+--
+
+LOCK TABLES `order_items` WRITE;
+/*!40000 ALTER TABLE `order_items` DISABLE KEYS */;
+/*!40000 ALTER TABLE `order_items` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `orders`
+--
+
+DROP TABLE IF EXISTS `orders`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `orders` (
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `buyer_id` bigint NOT NULL,
+  `total_product_amount` decimal(15,0) NOT NULL,
+  `shipping_fee` decimal(15,0) NOT NULL,
+  `voucher_discount` decimal(15,0) NOT NULL DEFAULT '0',
+  `final_amount` decimal(15,0) NOT NULL,
+  `payment_method` varchar(30) NOT NULL,
+  `payment_status` varchar(30) NOT NULL,
+  `voucher_id` bigint DEFAULT NULL,
+  `shipping_address_id` int NOT NULL,
+  `shipping_address_snapshot` json NOT NULL,
+  `order_status` varchar(30) NOT NULL,
+  `order_note` varchar(500) DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  KEY `fk_orders_user` (`buyer_id`),
+  KEY `fk_orders_address` (`shipping_address_id`),
+  KEY `fk_orders_voucher` (`voucher_id`),
+  CONSTRAINT `fk_orders_address` FOREIGN KEY (`shipping_address_id`) REFERENCES `addreses` (`id`),
+  CONSTRAINT `fk_orders_user` FOREIGN KEY (`buyer_id`) REFERENCES `users` (`id`),
+  CONSTRAINT `fk_orders_voucher` FOREIGN KEY (`voucher_id`) REFERENCES `vouchers` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `orders`
+--
+
+LOCK TABLES `orders` WRITE;
+/*!40000 ALTER TABLE `orders` DISABLE KEYS */;
+/*!40000 ALTER TABLE `orders` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `product_images`
 --
 
@@ -279,6 +357,42 @@ LOCK TABLES `users` WRITE;
 INSERT INTO `users` VALUES (1,'hoan1','$2a$10$XTiwpuyBBiOmW6x8n2BS5eL4Eh/TOVmBaOKC2SnXuuG1hS5dzh7NC','hoan11','SELLER','2026-03-29 08:53:09','2026-03-29 09:17:09',0),(2,'hoan2','$2a$10$nJYf1KqS2hrg4vVM3aaU9u3fiDHW2t5hANFl4n4494EdjZXRIJUP2','hoan2','BUYER','2026-03-29 08:57:41',NULL,0),(3,'hoan3','$2a$10$/HC998rbtXcnCEanWVtQ7Ok.aZj8lm1XbOKjGM1Nc55zIbR4SQqhS','hoan3','SHIPPER','2026-03-29 09:16:52',NULL,0),(4,'hoan4','$2a$10$hCssKUftpqKp5ltxmdtzUuSmqAOmC4IqA..y4pm.Mq/fovnN6UN2.','hoan3','SHIPPER','2026-03-29 09:27:29',NULL,0),(5,'hoan5','$2a$10$005Na/EQQ7PW4MQTB6TUUOjY941HXnNzVUg4XLSVuhyZ7irkg8yUe','hoan5','SHIPPER','2026-03-29 12:48:35',NULL,0);
 /*!40000 ALTER TABLE `users` ENABLE KEYS */;
 UNLOCK TABLES;
+
+--
+-- Table structure for table `vouchers`
+--
+
+DROP TABLE IF EXISTS `vouchers`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `vouchers` (
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `code` varchar(50) NOT NULL,
+  `description` varchar(255) DEFAULT NULL,
+  `discount_type` varchar(20) NOT NULL,
+  `discount_value` decimal(15,0) NOT NULL,
+  `max_discount` decimal(15,0) DEFAULT NULL,
+  `min_order_amount` decimal(15,0) DEFAULT NULL,
+  `quantity` int NOT NULL,
+  `used_count` int DEFAULT '0',
+  `start_date` timestamp NULL DEFAULT NULL,
+  `end_date` timestamp NULL DEFAULT NULL,
+  `status` varchar(20) NOT NULL DEFAULT 'ACTIVE',
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `code` (`code`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `vouchers`
+--
+
+LOCK TABLES `vouchers` WRITE;
+/*!40000 ALTER TABLE `vouchers` DISABLE KEYS */;
+/*!40000 ALTER TABLE `vouchers` ENABLE KEYS */;
+UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
@@ -289,4 +403,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2026-04-07 16:34:03
+-- Dump completed on 2026-04-09  9:02:39
