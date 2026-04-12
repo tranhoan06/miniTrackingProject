@@ -1,14 +1,18 @@
 package com.example.miniTrackingProject.controller;
 
 import com.example.miniTrackingProject.dto.request.OrderRequest;
+import com.example.miniTrackingProject.dto.request.PreviewOrderRequest;
 import com.example.miniTrackingProject.dto.response.BaseResponse;
+import com.example.miniTrackingProject.dto.response.BaseResponseFactory;
 import com.example.miniTrackingProject.dto.response.OrderResponse;
-import com.example.miniTrackingProject.dto.response.ProductOverviewResponse;
+import com.example.miniTrackingProject.dto.response.PreviewOrderResponse;
 import com.example.miniTrackingProject.service.OrderService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -20,9 +24,18 @@ import org.springframework.web.bind.annotation.RestController;
 public class OrderController {
     private final OrderService orderService;
 
-    private ResponseEntity<BaseResponse<OrderResponse>> createOrder(@Valid @RequestBody OrderRequest request) {
-        OrderResponse response = orderService.createOrder(request);
-        return null;
+    @PostMapping("/preview")
+    public ResponseEntity<BaseResponse<PreviewOrderResponse>> previewOrder(@RequestBody PreviewOrderRequest request) {
+        PreviewOrderResponse response = orderService.previewOrder(request);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(BaseResponseFactory.success(response));
+    }
+
+    @PostMapping("/create")
+    public ResponseEntity<BaseResponse<String>> createOrder(@Valid @RequestBody OrderRequest request) {
+        String response = orderService.createOrder(request);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(BaseResponseFactory.success(response));
     }
 
 }

@@ -1,8 +1,8 @@
--- MySQL dump 10.13  Distrib 8.0.43, for Win64 (x86_64)
+-- MySQL dump 10.13  Distrib 8.0.45, for Win64 (x86_64)
 --
--- Host: 127.0.0.1    Database: minitrackingproject
+-- Host: localhost    Database: minitracking
 -- ------------------------------------------------------
--- Server version	8.0.43
+-- Server version	8.0.45
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -76,7 +76,7 @@ CREATE TABLE `cart_items` (
   KEY `product_id` (`product_id`),
   CONSTRAINT `cart_items_ibfk_1` FOREIGN KEY (`cart_id`) REFERENCES `carts` (`id`),
   CONSTRAINT `cart_items_ibfk_2` FOREIGN KEY (`product_id`) REFERENCES `products` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -85,7 +85,7 @@ CREATE TABLE `cart_items` (
 
 LOCK TABLES `cart_items` WRITE;
 /*!40000 ALTER TABLE `cart_items` DISABLE KEYS */;
-INSERT INTO `cart_items` VALUES (1,1,2,'2026-04-07 07:07:32',NULL,4,1,199000,796000),(2,1,2,'2026-04-07 07:21:37',NULL,2,0,199000,398000);
+INSERT INTO `cart_items` VALUES (1,1,2,'2026-04-07 07:07:32',NULL,4,1,199000,796000),(2,1,2,'2026-04-12 04:09:02',NULL,12,0,199000,398000),(3,1,11,'2026-04-11 11:19:53',NULL,2,0,0,NULL);
 /*!40000 ALTER TABLE `cart_items` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -203,7 +203,7 @@ CREATE TABLE `order_items` (
   CONSTRAINT `fk_order_items_order` FOREIGN KEY (`order_id`) REFERENCES `orders` (`id`),
   CONSTRAINT `fk_order_items_product` FOREIGN KEY (`product_id`) REFERENCES `products` (`id`),
   CONSTRAINT `fk_order_items_seller` FOREIGN KEY (`seller_id`) REFERENCES `users` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -212,6 +212,7 @@ CREATE TABLE `order_items` (
 
 LOCK TABLES `order_items` WRITE;
 /*!40000 ALTER TABLE `order_items` DISABLE KEYS */;
+INSERT INTO `order_items` VALUES (1,1,2,1,2,200000,400000,'Áo thun nam 02','https://example.com/image1.jpg','2026-04-11 12:30:52'),(2,2,11,2,2,199000,398000,'Áo thun nam 17','https://example.com/image1.jpg','2026-04-11 12:30:52'),(3,3,2,1,3,200000,600000,'Áo thun nam 02','https://example.com/image1.jpg','2026-04-12 03:33:23'),(4,4,11,2,2,199000,398000,'Áo thun nam 17','https://example.com/image1.jpg','2026-04-12 03:33:23'),(5,5,2,1,1000,200000,200000000,'Áo thun nam 02','https://example.com/image1.jpg','2026-04-12 03:35:47'),(6,6,11,2,2,199000,398000,'Áo thun nam 17','https://example.com/image1.jpg','2026-04-12 03:35:47');
 /*!40000 ALTER TABLE `order_items` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -244,7 +245,7 @@ CREATE TABLE `orders` (
   CONSTRAINT `fk_orders_address` FOREIGN KEY (`shipping_address_id`) REFERENCES `addreses` (`id`),
   CONSTRAINT `fk_orders_user` FOREIGN KEY (`buyer_id`) REFERENCES `users` (`id`),
   CONSTRAINT `fk_orders_voucher` FOREIGN KEY (`voucher_id`) REFERENCES `vouchers` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -253,6 +254,7 @@ CREATE TABLE `orders` (
 
 LOCK TABLES `orders` WRITE;
 /*!40000 ALTER TABLE `orders` DISABLE KEYS */;
+INSERT INTO `orders` VALUES (1,1,400000,30000,25065,404935,'PENDING','PREPAY',NULL,1,'{\"phone\": \"012345678\", \"wardId\": 3, \"wardName\": \"Test\", \"districtId\": 2, \"provinceId\": 1, \"districtName\": \"Hoa Lư\", \"provinceName\": \"Ninh Bình\", \"receiverName\": \"Trần Việt Hoàn\", \"detailAddress\": \"Ngõ 67 Vạn Xuân 1\"}','PENDING',NULL,'2026-04-11 12:30:52'),(2,1,398000,30000,24935,403065,'PENDING','PREPAY',NULL,1,'{\"phone\": \"012345678\", \"wardId\": 3, \"wardName\": \"Test\", \"districtId\": 2, \"provinceId\": 1, \"districtName\": \"Hoa Lư\", \"provinceName\": \"Ninh Bình\", \"receiverName\": \"Trần Việt Hoàn\", \"detailAddress\": \"Ngõ 67 Vạn Xuân 1\"}','PENDING',NULL,'2026-04-11 12:30:52'),(3,1,600000,30000,30060,599940,'PENDING','PREPAY',8,1,'{\"phone\": \"012345678\", \"wardId\": 3, \"wardName\": \"Test\", \"districtId\": 2, \"provinceId\": 1, \"districtName\": \"Hoa Lư\", \"provinceName\": \"Ninh Bình\", \"receiverName\": \"Trần Việt Hoàn\", \"detailAddress\": \"Ngõ 67 Vạn Xuân 1\"}','PENDING',NULL,'2026-04-12 03:33:23'),(4,1,398000,30000,19940,408060,'PENDING','PREPAY',8,1,'{\"phone\": \"012345678\", \"wardId\": 3, \"wardName\": \"Test\", \"districtId\": 2, \"provinceId\": 1, \"districtName\": \"Hoa Lư\", \"provinceName\": \"Ninh Bình\", \"receiverName\": \"Trần Việt Hoàn\", \"detailAddress\": \"Ngõ 67 Vạn Xuân 1\"}','PENDING',NULL,'2026-04-12 03:33:23'),(5,1,200000000,30000,49900,199980100,'PENDING','PREPAY',8,1,'{\"phone\": \"012345678\", \"wardId\": 3, \"wardName\": \"Test\", \"districtId\": 2, \"provinceId\": 1, \"districtName\": \"Hoa Lư\", \"provinceName\": \"Ninh Bình\", \"receiverName\": \"Trần Việt Hoàn\", \"detailAddress\": \"Ngõ 67 Vạn Xuân 1\"}','PENDING',NULL,'2026-04-12 03:35:47'),(6,1,398000,30000,100,427900,'PENDING','PREPAY',8,1,'{\"phone\": \"012345678\", \"wardId\": 3, \"wardName\": \"Test\", \"districtId\": 2, \"provinceId\": 1, \"districtName\": \"Hoa Lư\", \"provinceName\": \"Ninh Bình\", \"receiverName\": \"Trần Việt Hoàn\", \"detailAddress\": \"Ngõ 67 Vạn Xuân 1\"}','PENDING',NULL,'2026-04-12 03:35:47');
 /*!40000 ALTER TABLE `orders` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -324,7 +326,7 @@ CREATE TABLE `products` (
 
 LOCK TABLES `products` WRITE;
 /*!40000 ALTER TABLE `products` DISABLE KEYS */;
-INSERT INTO `products` VALUES (1,1,3,'Áo thun nam 01',NULL,199000.00,199000.00,1.00,1.00,1.00,1.00,NULL,'ACTIVE','2026-04-01 10:05:00','2026-04-02 07:33:38',0),(2,1,4,'Áo thun nam 02',NULL,200000.00,200000.00,1.00,1.00,1.00,1.00,NULL,'ACTIVE','2026-04-01 10:07:23','2026-04-07 09:00:17',0),(3,1,3,'Áo thun nam 3',NULL,199000.00,199000.00,1.00,1.00,1.00,1.00,NULL,'ACTIVE','2026-04-01 10:09:34',NULL,0),(6,1,3,'Áo thun nam 4',NULL,199000.00,199000.00,1.00,1.00,1.00,1.00,NULL,'ACTIVE','2026-04-01 10:30:39',NULL,0),(7,1,3,'Áo thun nam 5',NULL,200000.00,199000.00,1.00,1.00,1.00,1.00,NULL,'ACTIVE','2026-04-01 10:32:33','2026-04-03 07:31:08',0),(8,1,3,'Áo thun nam 6',NULL,201000.00,199000.00,1.00,1.00,1.00,1.00,NULL,'DRAFT','2026-04-01 10:40:05','2026-04-03 07:31:17',0),(9,1,3,'Áo thun nam 7',NULL,199000.00,199000.00,1.00,1.00,1.00,1.00,NULL,'DRAFT','2026-04-01 10:41:58','2026-04-03 07:20:14',1),(10,1,3,'Áo thun nam 17',NULL,199000.00,199000.00,1.00,1.00,1.00,1.00,NULL,'ACTIVE','2026-04-06 10:52:49',NULL,0),(11,1,3,'Áo thun nam 17',NULL,199000.00,199000.00,1.00,1.00,1.00,1.00,NULL,'ACTIVE','2026-04-06 10:54:18',NULL,0);
+INSERT INTO `products` VALUES (1,1,3,'Áo thun nam 01',NULL,199000.00,199000.00,1.00,1.00,1.00,1.00,NULL,'ACTIVE','2026-04-01 10:05:00','2026-04-02 07:33:38',0),(2,1,4,'Áo thun nam 02',NULL,200000.00,200000.00,1.00,1.00,1.00,1.00,NULL,'ACTIVE','2026-04-01 10:07:23','2026-04-07 09:00:17',0),(3,1,3,'Áo thun nam 3',NULL,199000.00,199000.00,1.00,1.00,1.00,1.00,NULL,'ACTIVE','2026-04-01 10:09:34',NULL,0),(6,1,3,'Áo thun nam 4',NULL,199000.00,199000.00,1.00,1.00,1.00,1.00,NULL,'ACTIVE','2026-04-01 10:30:39',NULL,0),(7,1,3,'Áo thun nam 5',NULL,200000.00,199000.00,1.00,1.00,1.00,1.00,NULL,'ACTIVE','2026-04-01 10:32:33','2026-04-03 07:31:08',0),(8,1,3,'Áo thun nam 6',NULL,201000.00,199000.00,1.00,1.00,1.00,1.00,NULL,'DRAFT','2026-04-01 10:40:05','2026-04-03 07:31:17',0),(9,1,3,'Áo thun nam 7',NULL,199000.00,199000.00,1.00,1.00,1.00,1.00,NULL,'DRAFT','2026-04-01 10:41:58','2026-04-03 07:20:14',1),(10,1,3,'Áo thun nam 17',NULL,199000.00,199000.00,1.00,1.00,1.00,1.00,NULL,'ACTIVE','2026-04-06 10:52:49',NULL,0),(11,2,3,'Áo thun nam 17',NULL,199000.00,199000.00,1.00,1.00,1.00,1.00,NULL,'ACTIVE','2026-04-06 10:54:18','2026-04-11 11:18:27',0);
 /*!40000 ALTER TABLE `products` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -381,11 +383,12 @@ CREATE TABLE `vouchers` (
   `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `seller_id` bigint DEFAULT NULL,
+  `is_delete` tinyint(1) DEFAULT '0',
   PRIMARY KEY (`id`),
   UNIQUE KEY `code` (`code`),
   KEY `fk_voucher_seller` (`seller_id`),
   CONSTRAINT `fk_voucher_seller` FOREIGN KEY (`seller_id`) REFERENCES `users` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -394,7 +397,7 @@ CREATE TABLE `vouchers` (
 
 LOCK TABLES `vouchers` WRITE;
 /*!40000 ALTER TABLE `vouchers` DISABLE KEYS */;
-INSERT INTO `vouchers` VALUES (1,'SALE50',NULL,'PERCENT',50,NULL,NULL,100,0,'2026-04-09 10:30:00','2026-04-30 16:59:59','ACTIVE','2026-04-09 10:29:15','2026-04-09 10:29:15',1);
+INSERT INTO `vouchers` VALUES (1,'SALE50',NULL,'PERCENT',50,NULL,NULL,100,0,'2026-04-09 10:30:00','2026-04-30 16:59:59','ACTIVE','2026-04-09 10:29:15','2026-04-11 07:47:58',1,1),(2,'SALE20','Voucher giảm 20%','PERCENT',20,50000,200000,100,0,'2026-04-11 02:20:00','2026-04-11 02:30:00','INACTIVE','2026-04-11 02:17:10','2026-04-11 07:47:55',1,1),(5,'SALE30','Voucher giảm 30%','PERCENT',30,50000,200000,100,0,'2026-04-11 02:20:00','2026-04-13 03:30:00','ACTIVE','2026-04-11 03:05:21','2026-04-11 07:48:04',1,1),(7,'SALE40','Voucher giảm 40%','PERCENT',40,50000,200000,100,0,'2026-04-11 07:45:00','2026-04-13 03:30:00','ACTIVE','2026-04-11 07:40:51','2026-04-11 07:48:08',1,1),(8,'SALE60','Voucher giảm 60%','PERCENT',60,50000,200000,100,0,'2026-04-11 07:50:00','2026-04-13 03:30:00','ACTIVE','2026-04-11 07:48:45','2026-04-11 07:50:00',1,0);
 /*!40000 ALTER TABLE `vouchers` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -407,4 +410,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2026-04-09 17:31:01
+-- Dump completed on 2026-04-12 19:32:44

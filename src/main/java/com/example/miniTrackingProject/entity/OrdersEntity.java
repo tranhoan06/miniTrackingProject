@@ -1,14 +1,14 @@
 package com.example.miniTrackingProject.entity;
 
 import com.example.miniTrackingProject.common.OrderStatus;
-import com.example.miniTrackingProject.common.PayEnum;
+import com.example.miniTrackingProject.common.PayMethodEnum;
+import com.example.miniTrackingProject.common.PaymentStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -43,11 +43,11 @@ public class OrdersEntity {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "payment_method", nullable = false)
-    private PayEnum paymentMethod;
+    private PaymentStatus paymentMethod;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "payment_status", nullable = false)
-    private PayEnum paymentStatus; // 🔥 nên tách enum riêng
+    private PayMethodEnum paymentStatus; // 🔥 nên tách enum riêng
 
     // 🎁 voucher
     @ManyToOne(fetch = FetchType.LAZY)

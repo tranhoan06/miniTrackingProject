@@ -24,6 +24,9 @@ public enum ErrorCode {
     USERNAME_IS_DUPLICATED(400, "Username is duplicated", HttpStatus.BAD_REQUEST),
     CATEGORY_IS_DUPLICATED(400, "Category is duplicated", HttpStatus.BAD_REQUEST),
     CATEGORYID_NOT_FOUND(400, "Category does not exist", HttpStatus.BAD_REQUEST),
+    VOUCHER_NOT_FOUND(400, "Voucher does not exist", HttpStatus.BAD_REQUEST),
+    VOUCHER_EXPIRES(400, "Voucher expires", HttpStatus.BAD_REQUEST),
+    VOUCHER_HAS_NOT_STARTED_YET(400, "Voucher has not started yet", HttpStatus.BAD_REQUEST),
     // Course Management
     COURSE_NOT_FOUND(404, "Course not found", HttpStatus.NOT_FOUND),
     LESSON_NOT_FOUND(404, "Lesson not found", HttpStatus.NOT_FOUND),

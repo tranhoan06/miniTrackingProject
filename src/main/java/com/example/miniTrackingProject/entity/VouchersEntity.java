@@ -61,6 +61,9 @@ public class VouchersEntity {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
+    @Column(name = "is_delete", columnDefinition = "BOOLEAN DEFAULT FALSE")
+    private Boolean isDelete;
+
     @PrePersist
     public void prePersist() {
         this.createdAt = LocalDateTime.now();

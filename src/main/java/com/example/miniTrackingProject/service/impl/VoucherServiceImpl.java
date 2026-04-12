@@ -22,6 +22,7 @@ public class VoucherServiceImpl implements VoucherService {
     private final SecurityHelper securityHelper;
     private final VoucherMapper voucherMapper;
     private final VoucherRepository voucherRepository;
+
     @Override
     public VoucherResponse createVoucher(VoucherRequest request) {
         UserEntity userEntity = securityHelper.getCurrentUser();
@@ -37,7 +38,8 @@ public class VoucherServiceImpl implements VoucherService {
         vouchersEntity.setQuantity(request.getQuantity());
         vouchersEntity.setEndDate(request.getEndDate());
         vouchersEntity.setStartDate(request.getStartDate());
-        vouchersEntity.setStatus(StatusVoucher.ACTIVE);
+        vouchersEntity.setStatus(StatusVoucher.DRAFT);
+        vouchersEntity.setIsDelete(false);
         vouchersEntity.setCreatedAt(LocalDateTime.now());
 
         voucherRepository.save(vouchersEntity);
