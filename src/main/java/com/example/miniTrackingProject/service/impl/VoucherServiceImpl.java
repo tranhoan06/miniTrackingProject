@@ -38,7 +38,7 @@ public class VoucherServiceImpl implements VoucherService {
         vouchersEntity.setQuantity(request.getQuantity());
         vouchersEntity.setEndDate(request.getEndDate());
         vouchersEntity.setStartDate(request.getStartDate());
-        vouchersEntity.setStatus(StatusVoucher.DRAFT);
+        vouchersEntity.setStatus(StatusVoucher.ACTIVE);
         vouchersEntity.setIsDelete(false);
         vouchersEntity.setCreatedAt(LocalDateTime.now());
 

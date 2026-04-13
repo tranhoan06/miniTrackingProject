@@ -1,6 +1,8 @@
 package com.example.miniTrackingProject.dto.request;
 
 import com.example.miniTrackingProject.common.PayMethodEnum;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -13,15 +15,10 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class OrderRequest implements Serializable {
+public class PaymentRequest implements Serializable {
 
-    private Long voucherId;
+    @NotNull
+    private List<Long> orderIds;
 
-    private Long addressId;
-
-    private String orderNote;
-
-    private PayMethodEnum paymentMethod;
-
-    private List<OrderItemRequest> items;
+    private PayMethodEnum payMethod;
 }

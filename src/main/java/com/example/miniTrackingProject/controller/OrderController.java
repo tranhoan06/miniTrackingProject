@@ -12,10 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @Validated
@@ -34,6 +31,13 @@ public class OrderController {
     @PostMapping("/create")
     public ResponseEntity<BaseResponse<String>> createOrder(@Valid @RequestBody OrderRequest request) {
         String response = orderService.createOrder(request);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(BaseResponseFactory.success(response));
+    }
+
+    @GetMapping("/seller/{id}")
+    public ResponseEntity<BaseResponse<String>> getOrderBySeller(@PathVariable Long sellerId) {
+        String response = orderService.getOrderBySeller(sellerId);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(BaseResponseFactory.success(response));
     }

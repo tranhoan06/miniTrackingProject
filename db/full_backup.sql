@@ -1,8 +1,8 @@
--- MySQL dump 10.13  Distrib 8.0.45, for Win64 (x86_64)
+-- MySQL dump 10.13  Distrib 8.0.43, for Win64 (x86_64)
 --
--- Host: localhost    Database: minitracking
+-- Host: 127.0.0.1    Database: minitrackingproject
 -- ------------------------------------------------------
--- Server version	8.0.45
+-- Server version	8.0.43
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -85,7 +85,7 @@ CREATE TABLE `cart_items` (
 
 LOCK TABLES `cart_items` WRITE;
 /*!40000 ALTER TABLE `cart_items` DISABLE KEYS */;
-INSERT INTO `cart_items` VALUES (1,1,2,'2026-04-07 07:07:32',NULL,4,1,199000,796000),(2,1,2,'2026-04-12 04:09:02',NULL,12,0,199000,398000),(3,1,11,'2026-04-11 11:19:53',NULL,2,0,0,NULL);
+INSERT INTO `cart_items` VALUES (1,1,2,'2026-04-07 07:07:32',NULL,4,1,199000,796000),(2,1,2,'2026-04-12 04:09:02',NULL,12,0,199000,398000),(3,1,11,'2026-04-13 07:44:32',NULL,4,1,0,NULL);
 /*!40000 ALTER TABLE `cart_items` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -174,7 +174,7 @@ CREATE TABLE `inventory` (
 
 LOCK TABLES `inventory` WRITE;
 /*!40000 ALTER TABLE `inventory` DISABLE KEYS */;
-INSERT INTO `inventory` VALUES (1,2,100,0,NULL,1),(2,3,100,0,NULL,NULL),(3,7,100,0,NULL,NULL),(4,8,100,0,NULL,NULL),(5,9,100,0,NULL,NULL),(9,1,100,10,'2026-04-02 07:33:15',NULL),(10,2,100,0,NULL,1),(11,2,100,0,NULL,1),(12,2,100,0,NULL,1),(13,2,100,0,NULL,1),(14,2,100,0,NULL,1),(15,2,9,0,'2026-04-06 02:53:50',1),(16,10,100,0,NULL,0),(17,11,100,0,NULL,0),(18,2,100,0,NULL,0);
+INSERT INTO `inventory` VALUES (1,2,100,0,NULL,1),(2,3,100,0,NULL,NULL),(3,7,100,0,NULL,NULL),(4,8,100,0,NULL,NULL),(5,9,100,0,NULL,NULL),(9,1,100,10,'2026-04-02 07:33:15',NULL),(10,2,100,0,NULL,1),(11,2,100,0,NULL,1),(12,2,100,0,NULL,1),(13,2,100,0,NULL,1),(14,2,100,0,NULL,1),(15,2,9,0,'2026-04-06 02:53:50',1),(16,10,100,0,NULL,0),(17,11,100,12,'2026-04-13 09:39:38',0),(18,2,100,100,'2026-04-13 06:19:57',0);
 /*!40000 ALTER TABLE `inventory` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -203,7 +203,7 @@ CREATE TABLE `order_items` (
   CONSTRAINT `fk_order_items_order` FOREIGN KEY (`order_id`) REFERENCES `orders` (`id`),
   CONSTRAINT `fk_order_items_product` FOREIGN KEY (`product_id`) REFERENCES `products` (`id`),
   CONSTRAINT `fk_order_items_seller` FOREIGN KEY (`seller_id`) REFERENCES `users` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -212,7 +212,7 @@ CREATE TABLE `order_items` (
 
 LOCK TABLES `order_items` WRITE;
 /*!40000 ALTER TABLE `order_items` DISABLE KEYS */;
-INSERT INTO `order_items` VALUES (1,1,2,1,2,200000,400000,'Áo thun nam 02','https://example.com/image1.jpg','2026-04-11 12:30:52'),(2,2,11,2,2,199000,398000,'Áo thun nam 17','https://example.com/image1.jpg','2026-04-11 12:30:52'),(3,3,2,1,3,200000,600000,'Áo thun nam 02','https://example.com/image1.jpg','2026-04-12 03:33:23'),(4,4,11,2,2,199000,398000,'Áo thun nam 17','https://example.com/image1.jpg','2026-04-12 03:33:23'),(5,5,2,1,1000,200000,200000000,'Áo thun nam 02','https://example.com/image1.jpg','2026-04-12 03:35:47'),(6,6,11,2,2,199000,398000,'Áo thun nam 17','https://example.com/image1.jpg','2026-04-12 03:35:47');
+INSERT INTO `order_items` VALUES (1,1,11,2,2,199000,398000,'Áo thun nam 17','https://example.com/image1.jpg','2026-04-13 09:39:39');
 /*!40000 ALTER TABLE `order_items` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -238,14 +238,17 @@ CREATE TABLE `orders` (
   `order_status` varchar(30) NOT NULL,
   `order_note` varchar(500) DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `seller_id` bigint DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `fk_orders_user` (`buyer_id`),
   KEY `fk_orders_address` (`shipping_address_id`),
   KEY `fk_orders_voucher` (`voucher_id`),
+  KEY `idx_orders_seller_status` (`seller_id`,`order_status`),
   CONSTRAINT `fk_orders_address` FOREIGN KEY (`shipping_address_id`) REFERENCES `addreses` (`id`),
+  CONSTRAINT `fk_orders_seller` FOREIGN KEY (`seller_id`) REFERENCES `users` (`id`),
   CONSTRAINT `fk_orders_user` FOREIGN KEY (`buyer_id`) REFERENCES `users` (`id`),
   CONSTRAINT `fk_orders_voucher` FOREIGN KEY (`voucher_id`) REFERENCES `vouchers` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -254,7 +257,7 @@ CREATE TABLE `orders` (
 
 LOCK TABLES `orders` WRITE;
 /*!40000 ALTER TABLE `orders` DISABLE KEYS */;
-INSERT INTO `orders` VALUES (1,1,400000,30000,25065,404935,'PENDING','PREPAY',NULL,1,'{\"phone\": \"012345678\", \"wardId\": 3, \"wardName\": \"Test\", \"districtId\": 2, \"provinceId\": 1, \"districtName\": \"Hoa Lư\", \"provinceName\": \"Ninh Bình\", \"receiverName\": \"Trần Việt Hoàn\", \"detailAddress\": \"Ngõ 67 Vạn Xuân 1\"}','PENDING',NULL,'2026-04-11 12:30:52'),(2,1,398000,30000,24935,403065,'PENDING','PREPAY',NULL,1,'{\"phone\": \"012345678\", \"wardId\": 3, \"wardName\": \"Test\", \"districtId\": 2, \"provinceId\": 1, \"districtName\": \"Hoa Lư\", \"provinceName\": \"Ninh Bình\", \"receiverName\": \"Trần Việt Hoàn\", \"detailAddress\": \"Ngõ 67 Vạn Xuân 1\"}','PENDING',NULL,'2026-04-11 12:30:52'),(3,1,600000,30000,30060,599940,'PENDING','PREPAY',8,1,'{\"phone\": \"012345678\", \"wardId\": 3, \"wardName\": \"Test\", \"districtId\": 2, \"provinceId\": 1, \"districtName\": \"Hoa Lư\", \"provinceName\": \"Ninh Bình\", \"receiverName\": \"Trần Việt Hoàn\", \"detailAddress\": \"Ngõ 67 Vạn Xuân 1\"}','PENDING',NULL,'2026-04-12 03:33:23'),(4,1,398000,30000,19940,408060,'PENDING','PREPAY',8,1,'{\"phone\": \"012345678\", \"wardId\": 3, \"wardName\": \"Test\", \"districtId\": 2, \"provinceId\": 1, \"districtName\": \"Hoa Lư\", \"provinceName\": \"Ninh Bình\", \"receiverName\": \"Trần Việt Hoàn\", \"detailAddress\": \"Ngõ 67 Vạn Xuân 1\"}','PENDING',NULL,'2026-04-12 03:33:23'),(5,1,200000000,30000,49900,199980100,'PENDING','PREPAY',8,1,'{\"phone\": \"012345678\", \"wardId\": 3, \"wardName\": \"Test\", \"districtId\": 2, \"provinceId\": 1, \"districtName\": \"Hoa Lư\", \"provinceName\": \"Ninh Bình\", \"receiverName\": \"Trần Việt Hoàn\", \"detailAddress\": \"Ngõ 67 Vạn Xuân 1\"}','PENDING',NULL,'2026-04-12 03:35:47'),(6,1,398000,30000,100,427900,'PENDING','PREPAY',8,1,'{\"phone\": \"012345678\", \"wardId\": 3, \"wardName\": \"Test\", \"districtId\": 2, \"provinceId\": 1, \"districtName\": \"Hoa Lư\", \"provinceName\": \"Ninh Bình\", \"receiverName\": \"Trần Việt Hoàn\", \"detailAddress\": \"Ngõ 67 Vạn Xuân 1\"}','PENDING',NULL,'2026-04-12 03:35:47');
+INSERT INTO `orders` VALUES (1,1,398000,30000,100000,328000,'PREPAY','PENDING',10,1,'{\"phone\": \"012345678\", \"wardId\": 3, \"wardName\": \"Test\", \"districtId\": 2, \"provinceId\": 1, \"districtName\": \"Hoa Lư\", \"provinceName\": \"Ninh Bình\", \"receiverName\": \"Trần Việt Hoàn\", \"detailAddress\": \"Ngõ 67 Vạn Xuân 1\"}','PENDING',NULL,'2026-04-13 09:39:38',2);
 /*!40000 ALTER TABLE `orders` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -388,7 +391,7 @@ CREATE TABLE `vouchers` (
   UNIQUE KEY `code` (`code`),
   KEY `fk_voucher_seller` (`seller_id`),
   CONSTRAINT `fk_voucher_seller` FOREIGN KEY (`seller_id`) REFERENCES `users` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -397,7 +400,7 @@ CREATE TABLE `vouchers` (
 
 LOCK TABLES `vouchers` WRITE;
 /*!40000 ALTER TABLE `vouchers` DISABLE KEYS */;
-INSERT INTO `vouchers` VALUES (1,'SALE50',NULL,'PERCENT',50,NULL,NULL,100,0,'2026-04-09 10:30:00','2026-04-30 16:59:59','ACTIVE','2026-04-09 10:29:15','2026-04-11 07:47:58',1,1),(2,'SALE20','Voucher giảm 20%','PERCENT',20,50000,200000,100,0,'2026-04-11 02:20:00','2026-04-11 02:30:00','INACTIVE','2026-04-11 02:17:10','2026-04-11 07:47:55',1,1),(5,'SALE30','Voucher giảm 30%','PERCENT',30,50000,200000,100,0,'2026-04-11 02:20:00','2026-04-13 03:30:00','ACTIVE','2026-04-11 03:05:21','2026-04-11 07:48:04',1,1),(7,'SALE40','Voucher giảm 40%','PERCENT',40,50000,200000,100,0,'2026-04-11 07:45:00','2026-04-13 03:30:00','ACTIVE','2026-04-11 07:40:51','2026-04-11 07:48:08',1,1),(8,'SALE60','Voucher giảm 60%','PERCENT',60,50000,200000,100,0,'2026-04-11 07:50:00','2026-04-13 03:30:00','ACTIVE','2026-04-11 07:48:45','2026-04-11 07:50:00',1,0);
+INSERT INTO `vouchers` VALUES (1,'SALE50',NULL,'PERCENT',50,NULL,NULL,100,0,'2026-04-09 10:30:00','2026-04-30 16:59:59','ACTIVE','2026-04-09 10:29:15','2026-04-11 07:47:58',1,1),(2,'SALE20','Voucher giảm 20%','PERCENT',20,50000,200000,100,0,'2026-04-11 02:20:00','2026-04-11 02:30:00','INACTIVE','2026-04-11 02:17:10','2026-04-11 07:47:55',1,1),(5,'SALE30','Voucher giảm 30%','PERCENT',30,50000,200000,100,0,'2026-04-11 02:20:00','2026-04-13 03:30:00','ACTIVE','2026-04-11 03:05:21','2026-04-11 07:48:04',1,1),(7,'SALE40','Voucher giảm 40%','PERCENT',40,50000,200000,100,0,'2026-04-11 07:45:00','2026-04-13 03:30:00','ACTIVE','2026-04-11 07:40:51','2026-04-11 07:48:08',1,1),(8,'SALE60','Voucher giảm 60%','PERCENT',60,50000,200000,100,0,'2026-04-11 07:50:00','2026-04-13 03:30:00','INACTIVE','2026-04-11 07:48:45','2026-04-13 03:30:00',1,0),(10,'BIGSALE',NULL,'PERCENT',50,100000,200000,20,4,'2026-04-13 06:18:00','2026-04-17 16:59:59','ACTIVE','2026-04-13 06:17:12','2026-04-13 09:39:39',1,0);
 /*!40000 ALTER TABLE `vouchers` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -410,4 +413,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2026-04-12 19:32:44
+-- Dump completed on 2026-04-13 16:52:41

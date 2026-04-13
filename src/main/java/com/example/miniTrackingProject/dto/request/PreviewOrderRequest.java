@@ -4,6 +4,7 @@ import lombok.*;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.util.List;
 
 @Getter
 @Setter
@@ -12,7 +13,7 @@ import java.math.BigDecimal;
 public class PreviewOrderRequest implements Serializable {
 
     @NonNull
-    private BigDecimal subtotal;
+    private List<Long> productId;
 
     @NonNull
     private Long voucherId;

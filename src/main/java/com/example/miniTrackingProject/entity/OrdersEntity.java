@@ -29,6 +29,10 @@ public class OrdersEntity {
     @JoinColumn(name = "buyer_id", nullable = false)
     private UserEntity buyer;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "seller_id", nullable = false)
+    private UserEntity seller;
+
     @Column(name = "total_product_amount", nullable = false)
     private BigDecimal totalProductAmount = BigDecimal.ZERO;
 
@@ -43,11 +47,11 @@ public class OrdersEntity {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "payment_method", nullable = false)
-    private PaymentStatus paymentMethod;
+    private PayMethodEnum paymentMethod;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "payment_status", nullable = false)
-    private PayMethodEnum paymentStatus; // 🔥 nên tách enum riêng
+    private PaymentStatus paymentStatus; // 🔥 nên tách enum riêng
 
     // 🎁 voucher
     @ManyToOne(fetch = FetchType.LAZY)

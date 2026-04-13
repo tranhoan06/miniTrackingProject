@@ -17,6 +17,7 @@ public enum ErrorCode {
 
     // User Management
     USER_EXISTED(400, "User already exists", HttpStatus.BAD_REQUEST),
+    NOT_FOUND(400, "Error not found", HttpStatus.BAD_REQUEST),
     USER_NOT_FOUND(400, "User does not exist", HttpStatus.BAD_REQUEST),
     CART_NOT_FOUND(400, "Cart does not exist", HttpStatus.BAD_REQUEST),
     PRODUCT_NOT_FOUND(400, "Product does not exist", HttpStatus.BAD_REQUEST),
@@ -29,8 +30,11 @@ public enum ErrorCode {
     VOUCHER_HAS_NOT_STARTED_YET(400, "Voucher has not started yet", HttpStatus.BAD_REQUEST),
     // Course Management
     COURSE_NOT_FOUND(404, "Course not found", HttpStatus.NOT_FOUND),
+    PRODUCT_NOT_ENOUGH_STOCK(404, "Product not enough stock", HttpStatus.NOT_FOUND),
+
     LESSON_NOT_FOUND(404, "Lesson not found", HttpStatus.NOT_FOUND),
     INVENTORY_HAS_RESERVED_QUANTITY(400, "Cannot update inventory while orders are being processed", HttpStatus.BAD_REQUEST),
+    SOME_ORDERS_NOT_FOUND_OR_INVALID(404, "Some orders were not found or are invalid\n", HttpStatus.NOT_FOUND),
     DATA_INTEGRITY_VIOLATION(409, "Data integrity violation", HttpStatus.CONFLICT);
 
 
