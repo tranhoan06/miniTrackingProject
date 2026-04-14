@@ -1,8 +1,8 @@
--- MySQL dump 10.13  Distrib 8.0.43, for Win64 (x86_64)
+-- MySQL dump 10.13  Distrib 8.0.45, for Win64 (x86_64)
 --
--- Host: 127.0.0.1    Database: minitrackingproject
+-- Host: localhost    Database: minitracking
 -- ------------------------------------------------------
--- Server version	8.0.43
+-- Server version	8.0.45
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -244,6 +244,7 @@ CREATE TABLE `orders` (
   `cancelled_at` datetime DEFAULT NULL,
   `cancel_reason` varchar(255) DEFAULT NULL,
   `shipper_id` bigint DEFAULT NULL,
+  `shipping_provider_id` bigint DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `fk_orders_user` (`buyer_id`),
   KEY `fk_orders_address` (`shipping_address_id`),
@@ -251,12 +252,14 @@ CREATE TABLE `orders` (
   KEY `idx_orders_seller_status` (`seller_id`,`order_status`),
   KEY `fk_orders_shipper` (`shipper_id`),
   KEY `fk_orders_cancel` (`cancel_id`),
+  KEY `fk_shipping_provider` (`shipping_provider_id`),
   CONSTRAINT `fk_orders_address` FOREIGN KEY (`shipping_address_id`) REFERENCES `addreses` (`id`),
   CONSTRAINT `fk_orders_cancel` FOREIGN KEY (`cancel_id`) REFERENCES `users` (`id`),
   CONSTRAINT `fk_orders_seller` FOREIGN KEY (`seller_id`) REFERENCES `users` (`id`),
   CONSTRAINT `fk_orders_shipper` FOREIGN KEY (`shipper_id`) REFERENCES `users` (`id`),
   CONSTRAINT `fk_orders_user` FOREIGN KEY (`buyer_id`) REFERENCES `users` (`id`),
-  CONSTRAINT `fk_orders_voucher` FOREIGN KEY (`voucher_id`) REFERENCES `vouchers` (`id`)
+  CONSTRAINT `fk_orders_voucher` FOREIGN KEY (`voucher_id`) REFERENCES `vouchers` (`id`),
+  CONSTRAINT `fk_shipping_provider` FOREIGN KEY (`shipping_provider_id`) REFERENCES `shipping_providers` (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -266,7 +269,7 @@ CREATE TABLE `orders` (
 
 LOCK TABLES `orders` WRITE;
 /*!40000 ALTER TABLE `orders` DISABLE KEYS */;
-INSERT INTO `orders` VALUES (1,1,398000,30000,100000,328000,'PREPAY','PENDING',10,1,'{\"phone\": \"012345678\", \"wardId\": 3, \"wardName\": \"Test\", \"districtId\": 2, \"provinceId\": 1, \"districtName\": \"Hoa Lư\", \"provinceName\": \"Ninh Bình\", \"receiverName\": \"Trần Việt Hoàn\", \"detailAddress\": \"Ngõ 67 Vạn Xuân 1\"}','CONFIRMED',NULL,'2026-04-13 09:39:38',2,'2026-04-14 07:22:55',NULL,NULL,NULL,NULL),(2,1,400000,30000,100000,330000,'PREPAY','PENDING',10,1,'{\"phone\": \"012345678\", \"wardId\": 3, \"wardName\": \"Test\", \"districtId\": 2, \"provinceId\": 1, \"districtName\": \"Hoa Lư\", \"provinceName\": \"Ninh Bình\", \"receiverName\": \"Trần Việt Hoàn\", \"detailAddress\": \"Ngõ 67 Vạn Xuân 1\"}','CANCELLED',NULL,'2026-04-14 09:19:39',1,'2026-04-14 09:27:38',1,'2026-04-14 16:27:38','Trả',NULL);
+INSERT INTO `orders` VALUES (1,1,398000,30000,100000,328000,'PREPAY','PENDING',10,1,'{\"phone\": \"012345678\", \"wardId\": 3, \"wardName\": \"Test\", \"districtId\": 2, \"provinceId\": 1, \"districtName\": \"Hoa Lư\", \"provinceName\": \"Ninh Bình\", \"receiverName\": \"Trần Việt Hoàn\", \"detailAddress\": \"Ngõ 67 Vạn Xuân 1\"}','PACKED',NULL,'2026-04-13 09:39:38',2,'2026-04-14 15:58:07',NULL,NULL,NULL,NULL,3),(2,1,400000,30000,100000,330000,'PREPAY','PENDING',10,1,'{\"phone\": \"012345678\", \"wardId\": 3, \"wardName\": \"Test\", \"districtId\": 2, \"provinceId\": 1, \"districtName\": \"Hoa Lư\", \"provinceName\": \"Ninh Bình\", \"receiverName\": \"Trần Việt Hoàn\", \"detailAddress\": \"Ngõ 67 Vạn Xuân 1\"}','CANCELLED',NULL,'2026-04-14 09:19:39',1,'2026-04-14 09:27:38',1,'2026-04-14 16:27:38','Trả',NULL,NULL);
 /*!40000 ALTER TABLE `orders` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -340,6 +343,38 @@ LOCK TABLES `products` WRITE;
 /*!40000 ALTER TABLE `products` DISABLE KEYS */;
 INSERT INTO `products` VALUES (1,1,3,'Áo thun nam 01',NULL,199000.00,199000.00,1.00,1.00,1.00,1.00,NULL,'ACTIVE','2026-04-01 10:05:00','2026-04-02 07:33:38',0),(2,1,4,'Áo thun nam 02',NULL,200000.00,200000.00,1.00,1.00,1.00,1.00,NULL,'ACTIVE','2026-04-01 10:07:23','2026-04-07 09:00:17',0),(3,1,3,'Áo thun nam 3',NULL,199000.00,199000.00,1.00,1.00,1.00,1.00,NULL,'ACTIVE','2026-04-01 10:09:34',NULL,0),(6,1,3,'Áo thun nam 4',NULL,199000.00,199000.00,1.00,1.00,1.00,1.00,NULL,'ACTIVE','2026-04-01 10:30:39',NULL,0),(7,1,3,'Áo thun nam 5',NULL,200000.00,199000.00,1.00,1.00,1.00,1.00,NULL,'ACTIVE','2026-04-01 10:32:33','2026-04-03 07:31:08',0),(8,1,3,'Áo thun nam 6',NULL,201000.00,199000.00,1.00,1.00,1.00,1.00,NULL,'DRAFT','2026-04-01 10:40:05','2026-04-03 07:31:17',0),(9,1,3,'Áo thun nam 7',NULL,199000.00,199000.00,1.00,1.00,1.00,1.00,NULL,'DRAFT','2026-04-01 10:41:58','2026-04-03 07:20:14',1),(10,1,3,'Áo thun nam 17',NULL,199000.00,199000.00,1.00,1.00,1.00,1.00,NULL,'ACTIVE','2026-04-06 10:52:49',NULL,0),(11,2,3,'Áo thun nam 17',NULL,199000.00,199000.00,1.00,1.00,1.00,1.00,NULL,'ACTIVE','2026-04-06 10:54:18','2026-04-11 11:18:27',0);
 /*!40000 ALTER TABLE `products` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `shipping_providers`
+--
+
+DROP TABLE IF EXISTS `shipping_providers`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `shipping_providers` (
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `name` varchar(100) NOT NULL,
+  `code` varchar(50) DEFAULT NULL,
+  `phone` varchar(20) DEFAULT NULL,
+  `email` varchar(100) DEFAULT NULL,
+  `website` varchar(255) DEFAULT NULL,
+  `is_active` tinyint(1) DEFAULT '1',
+  `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `code` (`code`)
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `shipping_providers`
+--
+
+LOCK TABLES `shipping_providers` WRITE;
+/*!40000 ALTER TABLE `shipping_providers` DISABLE KEYS */;
+INSERT INTO `shipping_providers` VALUES (1,'Giao Hang Nhanh','GHN','1900636123','support@ghn.vn','https://ghn.vn',1,'2026-04-14 22:37:30','2026-04-14 22:37:30'),(2,'Giao Hang Tiet Kiem','GHTK','19006092','support@ghtk.vn','https://ghtk.vn',1,'2026-04-14 22:37:30','2026-04-14 22:37:30'),(3,'Viettel Post','VTPOST','19008095','support@viettelpost.vn','https://viettelpost.vn',1,'2026-04-14 22:37:30','2026-04-14 22:37:30'),(4,'VNPost','VNPOST','1900545481','support@vnpost.vn','https://vnpost.vn',1,'2026-04-14 22:37:30','2026-04-14 22:37:30'),(5,'J&T Express','JNT','19001088','support@jtexpress.vn','https://jtexpress.vn',1,'2026-04-14 22:37:30','2026-04-14 22:37:30'),(6,'Shopee Express','SPX','19001221','support@spx.vn','https://spx.vn',1,'2026-04-14 22:37:30','2026-04-14 22:37:30');
+/*!40000 ALTER TABLE `shipping_providers` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -422,4 +457,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2026-04-14 17:19:32
+-- Dump completed on 2026-04-14 22:59:07

@@ -1,9 +1,6 @@
 package com.example.miniTrackingProject.controller;
 
-import com.example.miniTrackingProject.dto.request.CancelOrderRequest;
-import com.example.miniTrackingProject.dto.request.ConfirmStatusRequest;
-import com.example.miniTrackingProject.dto.request.OrderRequest;
-import com.example.miniTrackingProject.dto.request.PreviewOrderRequest;
+import com.example.miniTrackingProject.dto.request.*;
 import com.example.miniTrackingProject.dto.response.*;
 import com.example.miniTrackingProject.service.OrderService;
 import jakarta.validation.Valid;
@@ -61,12 +58,12 @@ public class OrderController {
                 .body(BaseResponseFactory.success(response));
     }
 
-//    @PostMapping("/packed")
-//    @PreAuthorize("hasAnyRole('ROLE_SELLER')")
-//    public ResponseEntity<BaseResponse<ConfirmOrderResponse>> packedOrder(@Valid @RequestBody ConfirmOrderRequest request) {
-//        ConfirmOrderResponse response = orderService.confirmOrder(request);
-//        return ResponseEntity.status(HttpStatus.OK)
-//                .body(BaseResponseFactory.success(response));
-//    }
+    @PostMapping("/packed")
+    @PreAuthorize("hasAnyRole('ROLE_SELLER')")
+    public ResponseEntity<BaseResponse<OrderStatusResponse>> packedOrder(@Valid @RequestBody OrderStatusRequest request) {
+        OrderStatusResponse response = orderService.packedOrder(request);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(BaseResponseFactory.success(response));
+    }
 
 }

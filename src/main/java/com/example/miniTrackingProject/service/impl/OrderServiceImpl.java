@@ -39,6 +39,7 @@ public class OrderServiceImpl implements OrderService {
     private final InventoryRepository inventoryRepository;
     private final UserRepository userRepository;
     private final OrderMapper orderMapper;
+    private final ShippingProviderRepository shippingProviderRepository;
 
     @Override
     public PreviewOrderResponse previewOrder(PreviewOrderRequest request) {
@@ -190,13 +191,13 @@ public class OrderServiceImpl implements OrderService {
         OrdersEntity order = orderRepository.findById(request.getOrderId())
                 .orElseThrow(() -> new JavaBuilderException(ErrorCode.NOT_FOUND));
 
-        if (!order.getOrderStatus().equals(OrderStatus.PENDING)) {
-            throw new JavaBuilderException(ErrorCode.INVALID_STATUS);
-        }
-
         boolean isNotSeller = order.getSeller() == null || !order.getSeller().getId().equals(user.getId());
         if (isNotSeller) {
             throw new JavaBuilderException(ErrorCode.ACCESS_DENIED);
+        }
+
+        if (!order.getOrderStatus().equals(OrderStatus.PENDING)) {
+            throw new JavaBuilderException(ErrorCode.INVALID_STATUS);
         }
 
         if (order.getItems() != null) {
@@ -226,15 +227,47 @@ public class OrderServiceImpl implements OrderService {
         return mapToConfirmOrderResponse("CANCELLED", List.of(order), 1);
     }
 
+    @Override
+    @Transactional
+    public OrderStatusResponse packedOrder(OrderStatusRequest request) {
+        UserEntity user = securityHelper.getCurrentUser();
+        OrdersEntity order = orderRepository.findById(request.getOrderId())
+                .orElseThrow(() -> new JavaBuilderException(ErrorCode.NOT_FOUND));
+
+        boolean isNotSeller = order.getSeller() == null || !order.getSeller().getId().equals(user.getId());
+        if (isNotSeller) {
+            throw new JavaBuilderException(ErrorCode.ACCESS_DENIED);
+        }
+
+        if (!order.getOrderStatus().equals(OrderStatus.CONFIRMED)) {
+            throw new JavaBuilderException(ErrorCode.INVALID_STATUS);
+        }
+
+        List<ShippingProviderEntity> shippingProvider = shippingProviderRepository.findAll();
+        if (shippingProvider.isEmpty()) {
+            throw new RuntimeException("No shipping provider found");
+        }
+        ShippingProviderEntity randomProvider =
+                shippingProvider.get(new Random().nextInt(shippingProvider.size()));
+
+        order.setShippingProvider(randomProvider);
+
+        order.setOrderStatus(OrderStatus.PACKED);
+        order.setUpdatedAt(LocalDateTime.now());
+        orderRepository.save(order);
+
+        return mapToConfirmOrderResponse("PACKED", List.of(order), 1);
+    }
+
     private void validateOrdersForSellerAction(List<OrdersEntity> ordersList, UserEntity user) {
         ordersList.forEach(order -> {
-            if (!order.getOrderStatus().equals(OrderStatus.PENDING)) {
-                throw new JavaBuilderException(ErrorCode.INVALID_STATUS);
-            }
-
             boolean isNotSeller = order.getSeller() == null || !order.getSeller().getId().equals(user.getId());
             if (isNotSeller) {
                 throw new JavaBuilderException(ErrorCode.ACCESS_DENIED);
+            }
+
+            if (!order.getOrderStatus().equals(OrderStatus.PENDING)) {
+                throw new JavaBuilderException(ErrorCode.INVALID_STATUS);
             }
         });
     }

@@ -89,6 +89,10 @@ public class OrdersEntity {
     @JoinColumn(name = "cancel_id")
     private UserEntity cancel;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "shipping_provider_id")
+    private ShippingProviderEntity shippingProvider;
+
     // 🔥 items
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<OrderItemsEntity> items;
