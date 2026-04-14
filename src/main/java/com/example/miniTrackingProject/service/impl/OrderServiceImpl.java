@@ -1,18 +1,19 @@
 package com.example.miniTrackingProject.service.impl;
 
 import com.example.miniTrackingProject.common.*;
-import com.example.miniTrackingProject.dto.request.OrderItemRequest;
-import com.example.miniTrackingProject.dto.request.OrderRequest;
-import com.example.miniTrackingProject.dto.request.PreviewOrderRequest;
-import com.example.miniTrackingProject.dto.response.AddressSnapshotResponse;
-import com.example.miniTrackingProject.dto.response.OrderResponse;
-import com.example.miniTrackingProject.dto.response.PreviewOrderResponse;
+import com.example.miniTrackingProject.dto.request.*;
+import com.example.miniTrackingProject.dto.response.*;
 import com.example.miniTrackingProject.entity.*;
 import com.example.miniTrackingProject.exception.JavaBuilderException;
 import com.example.miniTrackingProject.mapper.AddressMapper;
+import com.example.miniTrackingProject.mapper.OrderMapper;
 import com.example.miniTrackingProject.repository.*;
 import com.example.miniTrackingProject.service.OrderService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import tools.jackson.databind.ObjectMapper;
@@ -20,10 +21,8 @@ import tools.jackson.databind.ObjectMapper;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -39,6 +38,7 @@ public class OrderServiceImpl implements OrderService {
     private final CartItemRepository cartItemRepository;
     private final InventoryRepository inventoryRepository;
     private final UserRepository userRepository;
+    private final OrderMapper orderMapper;
 
     @Override
     public PreviewOrderResponse previewOrder(PreviewOrderRequest request) {
@@ -158,8 +158,105 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public List<OrderResponse> getOrderBySeller(Long sellerId) {
-        return List.of();
+    public Page<OrderResponse> getBySeller(Integer pageSize, Integer pageNumber) {
+        UserEntity seller = securityHelper.getCurrentUser();
+        Pageable pageable = PageRequest.of(pageNumber - 1, pageSize, Sort.by("id").ascending());
+
+        Page<OrdersEntity> entityPage = orderRepository.findBySeller(seller, pageable);
+        return entityPage.map(orderMapper::toOrderResponse);
+    }
+
+    @Override
+    @Transactional
+    public OrderStatusResponse confirmOrder(ConfirmStatusRequest request) {
+        UserEntity user = securityHelper.getCurrentUser();
+        List<OrdersEntity> ordersList = orderRepository.findAllById(request.getOrderId());
+
+        validateOrdersForSellerAction(ordersList, user);
+
+        ordersList.forEach(order -> {
+            order.setOrderStatus(OrderStatus.CONFIRMED);
+            order.setUpdatedAt(LocalDateTime.now());
+        });
+        orderRepository.saveAll(ordersList);
+
+        return mapToConfirmOrderResponse("CONFIRM", ordersList, request.getOrderId().size());
+    }
+
+    @Override
+    @Transactional
+    public OrderStatusResponse cancelOrder(CancelOrderRequest request) {
+        UserEntity user = securityHelper.getCurrentUser();
+        OrdersEntity order = orderRepository.findById(request.getOrderId())
+                .orElseThrow(() -> new JavaBuilderException(ErrorCode.NOT_FOUND));
+
+        if (!order.getOrderStatus().equals(OrderStatus.PENDING)) {
+            throw new JavaBuilderException(ErrorCode.INVALID_STATUS);
+        }
+
+        boolean isNotSeller = order.getSeller() == null || !order.getSeller().getId().equals(user.getId());
+        if (isNotSeller) {
+            throw new JavaBuilderException(ErrorCode.ACCESS_DENIED);
+        }
+
+        if (order.getItems() != null) {
+            for (OrderItemsEntity item : order.getItems()) {
+                if (item.getProduct() == null || item.getProduct().getId() == null) continue;
+                long qty = item.getQuantity() == null ? 0L : item.getQuantity().longValue();
+                InventoryEntity inv = inventoryRepository.findByProductIdForUpdate(item.getProduct().getId())
+                        .orElseThrow(() -> new JavaBuilderException(ErrorCode.NOT_FOUND));
+                long currentReserved = inv.getReservedQuantity() == null ? 0L : inv.getReservedQuantity();
+                long newReserved = currentReserved - qty;
+                if (newReserved < 0) {
+                    newReserved = 0;
+                }
+                inv.setReservedQuantity(newReserved);
+                inv.setUpdatedAt(LocalDateTime.now());
+                inventoryRepository.save(inv);
+            }
+        }
+
+        order.setOrderStatus(OrderStatus.CANCELLED);
+        order.setUpdatedAt(LocalDateTime.now());
+        order.setCancelledAt(LocalDateTime.now());
+        order.setCancelReason(request.getReason());
+        order.setCancel(user);
+        orderRepository.save(order);
+
+        return mapToConfirmOrderResponse("CANCELLED", List.of(order), 1);
+    }
+
+    private void validateOrdersForSellerAction(List<OrdersEntity> ordersList, UserEntity user) {
+        ordersList.forEach(order -> {
+            if (!order.getOrderStatus().equals(OrderStatus.PENDING)) {
+                throw new JavaBuilderException(ErrorCode.INVALID_STATUS);
+            }
+
+            boolean isNotSeller = order.getSeller() == null || !order.getSeller().getId().equals(user.getId());
+            if (isNotSeller) {
+                throw new JavaBuilderException(ErrorCode.ACCESS_DENIED);
+            }
+        });
+    }
+
+    private OrderStatusResponse mapToConfirmOrderResponse(String action, List<OrdersEntity> ordersList, int totalRequested) {
+        List<OrderResultDetailResponse> details = ordersList.stream()
+                .map(order -> {
+                    OrderResultDetailResponse detail = new OrderResultDetailResponse();
+                    detail.setOrderId(order.getId());
+                    detail.setStatus(order.getOrderStatus().name());
+                    detail.setMessage(action + " thành công");
+                    detail.setIsSuccess(true);
+                    return detail;
+                })
+                .collect(Collectors.toList());
+
+        OrderStatusResponse response = new OrderStatusResponse();
+        response.setAction(action);
+        response.setTotalRequested(totalRequested);
+        response.setTotalSuccess(ordersList.size());
+        response.setDetails(details);
+        return response;
     }
 
     private OrderItemsEntity buildOrderItem(ProductsEntity product, Integer quantity) {

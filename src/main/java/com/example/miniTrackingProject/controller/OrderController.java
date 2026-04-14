@@ -1,18 +1,21 @@
 package com.example.miniTrackingProject.controller;
 
+import com.example.miniTrackingProject.dto.request.CancelOrderRequest;
+import com.example.miniTrackingProject.dto.request.ConfirmStatusRequest;
 import com.example.miniTrackingProject.dto.request.OrderRequest;
 import com.example.miniTrackingProject.dto.request.PreviewOrderRequest;
-import com.example.miniTrackingProject.dto.response.BaseResponse;
-import com.example.miniTrackingProject.dto.response.BaseResponseFactory;
-import com.example.miniTrackingProject.dto.response.OrderResponse;
-import com.example.miniTrackingProject.dto.response.PreviewOrderResponse;
+import com.example.miniTrackingProject.dto.response.*;
 import com.example.miniTrackingProject.service.OrderService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @Validated
@@ -35,11 +38,35 @@ public class OrderController {
                 .body(BaseResponseFactory.success(response));
     }
 
-    @GetMapping("/seller/{id}")
-    public ResponseEntity<BaseResponse<String>> getOrderBySeller(@PathVariable Long sellerId) {
-        String response = orderService.getOrderBySeller(sellerId);
+    @GetMapping("/seller")
+    public ResponseEntity<BaseResponse<List<?>>> getBySeller(Integer pageSize, Integer pageNumber) {
+        Page<OrderResponse> response = orderService.getBySeller(pageSize, pageNumber);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(BaseResponseFactory.success(response.getContent()));
+    }
+
+    @PostMapping("/confirm")
+    @PreAuthorize("hasAnyRole('ROLE_SELLER')")
+    public ResponseEntity<BaseResponse<OrderStatusResponse>> confirmOrder(@Valid @RequestBody ConfirmStatusRequest request) {
+        OrderStatusResponse response = orderService.confirmOrder(request);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(BaseResponseFactory.success(response));
     }
+
+    @PostMapping("/cancel")
+    @PreAuthorize("hasAnyRole('ROLE_SELLER')")
+    public ResponseEntity<BaseResponse<OrderStatusResponse>> cancelOrder(@Valid @RequestBody CancelOrderRequest request) {
+        OrderStatusResponse response = orderService.cancelOrder(request);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(BaseResponseFactory.success(response));
+    }
+
+//    @PostMapping("/packed")
+//    @PreAuthorize("hasAnyRole('ROLE_SELLER')")
+//    public ResponseEntity<BaseResponse<ConfirmOrderResponse>> packedOrder(@Valid @RequestBody ConfirmOrderRequest request) {
+//        ConfirmOrderResponse response = orderService.confirmOrder(request);
+//        return ResponseEntity.status(HttpStatus.OK)
+//                .body(BaseResponseFactory.success(response));
+//    }
 
 }

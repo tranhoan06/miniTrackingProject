@@ -22,10 +22,8 @@ public class OrderResponse implements Serializable {
     private Long id;
 
     private Long buyerId;
-    private String buyerUsername;
 
     private Long sellerId;
-    private String sellerUsername;
 
     private BigDecimal totalProductAmount;
     private BigDecimal shippingFee;

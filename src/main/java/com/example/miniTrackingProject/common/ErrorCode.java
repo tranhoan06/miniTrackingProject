@@ -13,6 +13,7 @@ public enum ErrorCode {
     // Authentication & Authorization
     UNAUTHORIZED(401, "Email or password incorrect", HttpStatus.UNAUTHORIZED),
     ACCESS_DENIED(403, "Access denied", HttpStatus.FORBIDDEN),
+    INVALID_STATUS(403, "Invalid status", HttpStatus.FORBIDDEN),
     TOKEN_INVALID(401, "Invalid JWT token", HttpStatus.UNAUTHORIZED),
 
     // User Management
