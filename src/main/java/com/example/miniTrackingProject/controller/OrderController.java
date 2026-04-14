@@ -54,7 +54,7 @@ public class OrderController {
     }
 
     @PostMapping("/cancel")
-    @PreAuthorize("hasAnyRole('ROLE_SELLER')")
+    @PreAuthorize("hasAnyRole('ROLE_SELLER', 'ROLE_BUYER')")
     public ResponseEntity<BaseResponse<OrderStatusResponse>> cancelOrder(@Valid @RequestBody CancelOrderRequest request) {
         OrderStatusResponse response = orderService.cancelOrder(request);
         return ResponseEntity.status(HttpStatus.OK)
