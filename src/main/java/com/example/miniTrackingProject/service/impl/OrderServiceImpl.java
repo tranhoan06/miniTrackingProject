@@ -21,12 +21,21 @@ import tools.jackson.databind.ObjectMapper;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class OrderServiceImpl implements OrderService {
+
+    private static final BigDecimal DEFAULT_SHIPPING_FEE = BigDecimal.valueOf(30_000);
+    private static final int DEFAULT_PAGE_SIZE = 10;
+    private static final int MAX_PAGE_SIZE = 100;
     private final OrderRepository orderRepository;
     private final VoucherRepository voucherRepository;
     private final AddressRepository addressRepository;
@@ -43,25 +52,25 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public PreviewOrderResponse previewOrder(PreviewOrderRequest request) {
+        UserEntity user = securityHelper.getCurrentUser();
         LocalDateTime today = LocalDateTime.now();
         VouchersEntity voucher = voucherRepository.findVoucher(request.getVoucherId(), today)
                 .orElseThrow(() -> new JavaBuilderException(ErrorCode.VOUCHER_NOT_FOUND));
 
         validateVoucher(voucher);
 
-        List<CartItemsEntity> orderItems = request.getProductId().stream()
-                .map(cartItemRepository::findByProductId)
-                .flatMap(List::stream)
-                .toList();
-
-        if (orderItems.isEmpty()) {
-            throw new JavaBuilderException(ErrorCode.NOT_FOUND);
+        List<CartItemsEntity> orderItems = new ArrayList<>();
+        for (Long productId : request.getProductId()) {
+            CartItemsEntity line = cartItemRepository
+                    .findActiveByUserAndProduct(user.getId(), productId)
+                    .orElseThrow(() -> new JavaBuilderException(ErrorCode.CART_NOT_FOUND));
+            orderItems.add(line);
         }
 
         BigDecimal subtotal = calculateSubtotal(orderItems);
 
         if (subtotal.compareTo(voucher.getMinOrderAmount()) < 0) {
-            throw new RuntimeException("Đơn hàng chưa đạt giá trị tối thiểu");
+            throw new JavaBuilderException(ErrorCode.ORDER_BELOW_MIN_AMOUNT);
         }
 
         BigDecimal discount = calculateDiscount(subtotal, voucher);
@@ -130,7 +139,7 @@ public class OrderServiceImpl implements OrderService {
                     .divide(totalProductAmount, 4, RoundingMode.HALF_UP)
                     .multiply(totalDiscount);
 
-            BigDecimal shippingFee = BigDecimal.valueOf(30000);
+            BigDecimal shippingFee = DEFAULT_SHIPPING_FEE;
 
             OrdersEntity order = new OrdersEntity();
             order.setBuyer(user);
@@ -161,7 +170,9 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public Page<OrderResponse> getBySeller(Integer pageSize, Integer pageNumber) {
         UserEntity seller = securityHelper.getCurrentUser();
-        Pageable pageable = PageRequest.of(pageNumber - 1, pageSize, Sort.by("id").ascending());
+        int page = (pageNumber == null || pageNumber < 1) ? 1 : pageNumber;
+        int size = (pageSize == null || pageSize < 1) ? DEFAULT_PAGE_SIZE : Math.min(pageSize, MAX_PAGE_SIZE);
+        Pageable pageable = PageRequest.of(page - 1, size, Sort.by("id").ascending());
 
         Page<OrdersEntity> entityPage = orderRepository.findBySeller(seller, pageable);
         return entityPage.map(orderMapper::toOrderResponse);
@@ -172,6 +183,10 @@ public class OrderServiceImpl implements OrderService {
     public OrderStatusResponse confirmOrder(ConfirmStatusRequest request) {
         UserEntity user = securityHelper.getCurrentUser();
         List<OrdersEntity> ordersList = orderRepository.findAllById(request.getOrderId());
+
+        if (ordersList.size() != request.getOrderId().size()) {
+            throw new JavaBuilderException(ErrorCode.SOME_ORDERS_NOT_FOUND_OR_INVALID);
+        }
 
         validateOrdersForSellerAction(ordersList, user);
 
@@ -191,8 +206,9 @@ public class OrderServiceImpl implements OrderService {
         OrdersEntity order = orderRepository.findById(request.getOrderId())
                 .orElseThrow(() -> new JavaBuilderException(ErrorCode.NOT_FOUND));
 
-        boolean isNotSeller = order.getSeller() == null || !order.getSeller().getId().equals(user.getId());
-        if (isNotSeller) {
+        boolean isSeller = order.getSeller() != null && order.getSeller().getId().equals(user.getId());
+        boolean isBuyer = order.getBuyer() != null && order.getBuyer().getId().equals(user.getId());
+        if (!isSeller && !isBuyer) {
             throw new JavaBuilderException(ErrorCode.ACCESS_DENIED);
         }
 
@@ -231,13 +247,7 @@ public class OrderServiceImpl implements OrderService {
     @Transactional
     public OrderStatusResponse packedOrder(OrderStatusRequest request) {
         UserEntity user = securityHelper.getCurrentUser();
-        OrdersEntity order = orderRepository.findById(request.getOrderId())
-                .orElseThrow(() -> new JavaBuilderException(ErrorCode.NOT_FOUND));
-
-        boolean isNotSeller = order.getSeller() == null || !order.getSeller().getId().equals(user.getId());
-        if (isNotSeller) {
-            throw new JavaBuilderException(ErrorCode.ACCESS_DENIED);
-        }
+        OrdersEntity order = requireOrderOwnedBySeller(request.getOrderId(), user);
 
         if (!order.getOrderStatus().equals(OrderStatus.CONFIRMED)) {
             throw new JavaBuilderException(ErrorCode.INVALID_STATUS);
@@ -251,15 +261,10 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
+    @Transactional
     public OrderStatusResponse assignProviderOrder(OrderStatusRequest request) {
         UserEntity user = securityHelper.getCurrentUser();
-        OrdersEntity order = orderRepository.findById(request.getOrderId())
-                .orElseThrow(() -> new JavaBuilderException(ErrorCode.NOT_FOUND));
-
-        boolean isNotSeller = order.getSeller() == null || !order.getSeller().getId().equals(user.getId());
-        if (isNotSeller) {
-            throw new JavaBuilderException(ErrorCode.ACCESS_DENIED);
-        }
+        OrdersEntity order = requireOrderOwnedBySeller(request.getOrderId(), user);
 
         if (!order.getOrderStatus().equals(OrderStatus.PACKED)) {
             throw new JavaBuilderException(ErrorCode.INVALID_STATUS);
@@ -267,16 +272,26 @@ public class OrderServiceImpl implements OrderService {
 
         List<ShippingProviderEntity> shippingProvider = shippingProviderRepository.findAll();
         if (shippingProvider.isEmpty()) {
-            throw new RuntimeException("No shipping provider found");
+            throw new JavaBuilderException(ErrorCode.SHIPPING_PROVIDER_NOT_FOUND);
         }
-        ShippingProviderEntity randomProvider =
-                shippingProvider.get(new Random().nextInt(shippingProvider.size()));
+        ShippingProviderEntity randomProvider = shippingProvider.get(
+                ThreadLocalRandom.current().nextInt(shippingProvider.size()));
 
         order.setShippingProvider(randomProvider);
         order.setOrderStatus(OrderStatus.SHIPPED);
         order.setUpdatedAt(LocalDateTime.now());
         orderRepository.save(order);
         return mapToConfirmOrderResponse("SHIPPED", List.of(order), 1);
+    }
+
+    private OrdersEntity requireOrderOwnedBySeller(Long orderId, UserEntity user) {
+        OrdersEntity order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new JavaBuilderException(ErrorCode.NOT_FOUND));
+        boolean isNotSeller = order.getSeller() == null || !order.getSeller().getId().equals(user.getId());
+        if (isNotSeller) {
+            throw new JavaBuilderException(ErrorCode.ACCESS_DENIED);
+        }
+        return order;
     }
 
     private void validateOrdersForSellerAction(List<OrdersEntity> ordersList, UserEntity user) {
@@ -387,15 +402,17 @@ public class OrderServiceImpl implements OrderService {
                 .findByProductIdForUpdate(productId)
                 .orElseThrow(() -> new JavaBuilderException(ErrorCode.NOT_FOUND));
 
-        long available = inventory.getQuantityInStock() - inventory.getReservedQuantity();
+        long qty = quantity == null ? 0L : quantity.longValue();
+        long inStock = Objects.requireNonNullElse(inventory.getQuantityInStock(), 0L);
+        long reserved = Objects.requireNonNullElse(inventory.getReservedQuantity(), 0L);
 
-        if (available < quantity) {
+        long available = inStock - reserved;
+
+        if (available < qty) {
             throw new JavaBuilderException(ErrorCode.PRODUCT_NOT_ENOUGH_STOCK);
         }
 
-        inventory.setReservedQuantity(
-                inventory.getReservedQuantity() + quantity
-        );
+        inventory.setReservedQuantity(reserved + qty);
 
         inventory.setUpdatedAt(LocalDateTime.now());
 

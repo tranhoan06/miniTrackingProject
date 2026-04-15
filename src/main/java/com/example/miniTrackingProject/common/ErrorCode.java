@@ -36,7 +36,10 @@ public enum ErrorCode {
     LESSON_NOT_FOUND(404, "Lesson not found", HttpStatus.NOT_FOUND),
     INVENTORY_HAS_RESERVED_QUANTITY(400, "Cannot update inventory while orders are being processed", HttpStatus.BAD_REQUEST),
     SOME_ORDERS_NOT_FOUND_OR_INVALID(404, "Some orders were not found or are invalid\n", HttpStatus.NOT_FOUND),
-    DATA_INTEGRITY_VIOLATION(409, "Data integrity violation", HttpStatus.CONFLICT);
+    DATA_INTEGRITY_VIOLATION(409, "Data integrity violation", HttpStatus.CONFLICT),
+
+    ORDER_BELOW_MIN_AMOUNT(400, "Order does not meet minimum amount for voucher", HttpStatus.BAD_REQUEST),
+    SHIPPING_PROVIDER_NOT_FOUND(400, "No shipping provider available", HttpStatus.BAD_REQUEST);
 
 
     private final int code;
