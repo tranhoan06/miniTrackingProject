@@ -90,6 +90,13 @@ public class OrdersEntity {
     private UserEntity cancel;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "shipper_id")
+    private UserEntity shipper;
+
+    @Column(name = "tracking_code", length = 50)
+    private String trackingCode;
+
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "shipping_provider_id")
     private ShippingProviderEntity shippingProvider;
 

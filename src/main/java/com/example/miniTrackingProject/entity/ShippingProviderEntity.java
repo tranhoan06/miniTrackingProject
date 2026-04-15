@@ -30,6 +30,9 @@ public class ShippingProviderEntity implements Serializable {
 
     private Boolean isActive = true;
 
+    @OneToMany(mappedBy = "shippingProvider")
+    private List<UserEntity> shipper;
+
     @OneToMany(mappedBy = "shippingProvider", cascade = CascadeType.ALL)
     private List<OrdersEntity> orders = new ArrayList<>();
 }

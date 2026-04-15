@@ -60,6 +60,11 @@ public class UserEntity implements Serializable, UserDetails {
     @JsonIgnore
     private CartEntity cart;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "shipping_provider_id")
+    @JsonIgnore
+    private ShippingProviderEntity shippingProvider;
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(new SimpleGrantedAuthority("ROLE_" + this.role.name()));

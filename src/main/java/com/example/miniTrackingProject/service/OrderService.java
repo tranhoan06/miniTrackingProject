@@ -3,6 +3,7 @@ package com.example.miniTrackingProject.service;
 import com.example.miniTrackingProject.dto.request.*;
 import com.example.miniTrackingProject.dto.response.OrderStatusResponse;
 import com.example.miniTrackingProject.dto.response.OrderResponse;
+import com.example.miniTrackingProject.dto.response.OverviewOrderResponse;
 import com.example.miniTrackingProject.dto.response.PreviewOrderResponse;
 import org.springframework.data.domain.Page;
 
@@ -21,4 +22,6 @@ public interface OrderService {
     OrderStatusResponse packedOrder(OrderStatusRequest request);
 
     OrderStatusResponse assignProviderOrder(OrderStatusRequest request);
+
+    OverviewOrderResponse overviewOrder();
 }

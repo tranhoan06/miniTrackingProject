@@ -1,11 +1,14 @@
 package com.example.miniTrackingProject.service.impl;
 
 import com.example.miniTrackingProject.common.ErrorCode;
+import com.example.miniTrackingProject.common.RoleEnum;
 import com.example.miniTrackingProject.dto.request.UserRequest;
 import com.example.miniTrackingProject.dto.response.UserResponse;
+import com.example.miniTrackingProject.entity.ShippingProviderEntity;
 import com.example.miniTrackingProject.entity.UserEntity;
 import com.example.miniTrackingProject.exception.JavaBuilderException;
 import com.example.miniTrackingProject.mapper.UserMapper;
+import com.example.miniTrackingProject.repository.ShippingProviderRepository;
 import com.example.miniTrackingProject.repository.UserRepository;
 import com.example.miniTrackingProject.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -26,6 +29,7 @@ public class UserServiceImpl implements UserService {
     private final ModelMapper modelMapper;
     private final PasswordEncoder passwordEncoder;
     private final UserMapper userMapper;
+    private final ShippingProviderRepository shippingProviderRepository;
 
     @Override
     public UserResponse createUser(UserRequest request) {
@@ -41,6 +45,12 @@ public class UserServiceImpl implements UserService {
         userEntity.setRole(request.getRole());
         userEntity.setCreatedAt(LocalDateTime.now());
         userEntity.setIsDelete(false);
+        if(request.getRole().equals(RoleEnum.SHIPPER) && request.getShippingProviderId() != null) {
+            ShippingProviderEntity provider = shippingProviderRepository
+                    .findById(request.getShippingProviderId())
+                    .orElseThrow(() -> new JavaBuilderException(ErrorCode.NOT_FOUND)); // hoặc mã lỗi phù hợp
+            userEntity.setShippingProvider(provider);
+        }
         userRepository.save(userEntity);
         return userMapper.toResponse(userEntity);
     }

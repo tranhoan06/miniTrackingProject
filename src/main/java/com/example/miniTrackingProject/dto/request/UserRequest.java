@@ -28,4 +28,6 @@ public class UserRequest implements Serializable {
 
     @NotNull(message = "Không được để trống")
     private RoleEnum role;
+
+    private Long shippingProviderId;
 }

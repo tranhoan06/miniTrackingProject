@@ -74,4 +74,11 @@ public class OrderController {
                 .body(BaseResponseFactory.success(response));
     }
 
+    @PostMapping("/overview")
+    @PreAuthorize("hasAnyRole('ROLE_SELLER')")
+    public ResponseEntity<BaseResponse<OverviewOrderResponse>> overviewOrder(@RequestBody String overviewType) {
+        OverviewOrderResponse response = orderService.overviewOrder();
+
+    }
+
 }

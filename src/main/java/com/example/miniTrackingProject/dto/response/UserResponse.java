@@ -29,4 +29,6 @@ public class UserResponse implements Serializable {
     private LocalDateTime createdAt;
 
     private LocalDateTime updatedAt;
+
+    private Long shippingProviderId;
 }

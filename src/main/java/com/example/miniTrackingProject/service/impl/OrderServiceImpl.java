@@ -21,6 +21,7 @@ import tools.jackson.databind.ObjectMapper;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -265,7 +266,8 @@ public class OrderServiceImpl implements OrderService {
     public OrderStatusResponse assignProviderOrder(OrderStatusRequest request) {
         UserEntity user = securityHelper.getCurrentUser();
         OrdersEntity order = requireOrderOwnedBySeller(request.getOrderId(), user);
-
+        DateTimeFormatter fmt = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
+        String ts = LocalDateTime.now().format(fmt);
         if (!order.getOrderStatus().equals(OrderStatus.PACKED)) {
             throw new JavaBuilderException(ErrorCode.INVALID_STATUS);
         }
@@ -277,11 +279,19 @@ public class OrderServiceImpl implements OrderService {
         ShippingProviderEntity randomProvider = shippingProvider.get(
                 ThreadLocalRandom.current().nextInt(shippingProvider.size()));
 
+        String trackingCode = randomProvider.getCode() + "-" + ts + "-" + order.getId();
         order.setShippingProvider(randomProvider);
         order.setOrderStatus(OrderStatus.SHIPPED);
         order.setUpdatedAt(LocalDateTime.now());
+        order.setTrackingCode(trackingCode);
         orderRepository.save(order);
         return mapToConfirmOrderResponse("SHIPPED", List.of(order), 1);
+    }
+
+    @Override
+    public OverviewOrderResponse overviewOrder() {
+
+        return null;
     }
 
     private OrdersEntity requireOrderOwnedBySeller(Long orderId, UserEntity user) {

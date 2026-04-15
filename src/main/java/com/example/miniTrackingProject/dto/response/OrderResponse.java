@@ -44,4 +44,6 @@ public class OrderResponse implements Serializable {
     private LocalDateTime createdAt;
 
     private List<OrderItemsResponse> items;
+
+    private String trackingCode;
 }
