@@ -19,4 +19,6 @@ public interface OrderService {
     OrderStatusResponse cancelOrder(CancelOrderRequest request);
 
     OrderStatusResponse packedOrder(OrderStatusRequest request);
+
+    OrderStatusResponse assignProviderOrder(OrderStatusRequest request);
 }

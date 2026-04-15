@@ -243,6 +243,28 @@ public class OrderServiceImpl implements OrderService {
             throw new JavaBuilderException(ErrorCode.INVALID_STATUS);
         }
 
+        order.setOrderStatus(OrderStatus.PACKED);
+        order.setUpdatedAt(LocalDateTime.now());
+        orderRepository.save(order);
+
+        return mapToConfirmOrderResponse("PACKED", List.of(order), 1);
+    }
+
+    @Override
+    public OrderStatusResponse assignProviderOrder(OrderStatusRequest request) {
+        UserEntity user = securityHelper.getCurrentUser();
+        OrdersEntity order = orderRepository.findById(request.getOrderId())
+                .orElseThrow(() -> new JavaBuilderException(ErrorCode.NOT_FOUND));
+
+        boolean isNotSeller = order.getSeller() == null || !order.getSeller().getId().equals(user.getId());
+        if (isNotSeller) {
+            throw new JavaBuilderException(ErrorCode.ACCESS_DENIED);
+        }
+
+        if (!order.getOrderStatus().equals(OrderStatus.PACKED)) {
+            throw new JavaBuilderException(ErrorCode.INVALID_STATUS);
+        }
+
         List<ShippingProviderEntity> shippingProvider = shippingProviderRepository.findAll();
         if (shippingProvider.isEmpty()) {
             throw new RuntimeException("No shipping provider found");
@@ -251,12 +273,10 @@ public class OrderServiceImpl implements OrderService {
                 shippingProvider.get(new Random().nextInt(shippingProvider.size()));
 
         order.setShippingProvider(randomProvider);
-
-        order.setOrderStatus(OrderStatus.PACKED);
+        order.setOrderStatus(OrderStatus.SHIPPED);
         order.setUpdatedAt(LocalDateTime.now());
         orderRepository.save(order);
-
-        return mapToConfirmOrderResponse("PACKED", List.of(order), 1);
+        return mapToConfirmOrderResponse("SHIPPED", List.of(order), 1);
     }
 
     private void validateOrdersForSellerAction(List<OrdersEntity> ordersList, UserEntity user) {

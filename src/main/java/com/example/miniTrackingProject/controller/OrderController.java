@@ -66,4 +66,12 @@ public class OrderController {
                 .body(BaseResponseFactory.success(response));
     }
 
+    @PostMapping("/assign-provider")
+    @PreAuthorize("hasAnyRole('ROLE_SELLER')")
+    public ResponseEntity<BaseResponse<OrderStatusResponse>> assignProviderOrder(@Valid @RequestBody OrderStatusRequest request) {
+        OrderStatusResponse response = orderService.assignProviderOrder(request);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(BaseResponseFactory.success(response));
+    }
+
 }
