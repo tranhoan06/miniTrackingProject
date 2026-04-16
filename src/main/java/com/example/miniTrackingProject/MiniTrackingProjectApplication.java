@@ -9,6 +9,7 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 @EnableMethodSecurity
 @EnableScheduling
 public class MiniTrackingProjectApplication {
+	// NHỚ TÌM HIỀU KĨ VỀ REFLECTION VÀ TẠI SAO LẠI ƯU TIÊN DÙNG CONSTRUCTOR INJECTION THAY VÌ FIELD INJECTION
 
 //	1. Nhóm Luồng Thuận (Happy Path)
 //	Đây là luồng từ khi khách đặt hàng đến khi nhận hàng thành công.

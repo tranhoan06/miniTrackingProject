@@ -23,6 +23,7 @@ import java.util.List;
 public class GlobalHandlerException {
 
     // 1. Xử lý Custom Exception
+    // @ExceptionHandler nói với Spring: Khi gặp exception (JavaBuilderException) này, hãy chạy method này để xử lý.
     @ExceptionHandler(JavaBuilderException.class)
     public ResponseEntity<BaseResponse> handleJavaBuilderException(
             JavaBuilderException exception, WebRequest request) {
