@@ -22,7 +22,7 @@ public class OrderStatusLog {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "order_id", insertable = false, updatable = false)
+    @JoinColumn(name = "order_id")
     private OrdersEntity orderId;
 
     @Enumerated(EnumType.STRING)

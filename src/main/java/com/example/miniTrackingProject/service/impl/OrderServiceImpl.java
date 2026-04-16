@@ -175,8 +175,8 @@ public class OrderServiceImpl implements OrderService {
             order.setVoucher(voucher);
             order.setShippingAddressSnapshot(addressSnapshot);
 
-            orderRepository.save(order);
-            logOrderStatusChange(order, null, OrderStatus.PENDING, "CREATE_ORDER", user);
+            OrdersEntity saveOrder = orderRepository.save(order);
+            logOrderStatusChange(saveOrder, null, OrderStatus.PENDING, "CREATE_ORDER", user);
 
             for (OrderItemsEntity item : itemsBySeller.get(sellerId)) {
                 item.setOrder(order);

@@ -76,7 +76,7 @@ CREATE TABLE `cart_items` (
   KEY `product_id` (`product_id`),
   CONSTRAINT `cart_items_ibfk_1` FOREIGN KEY (`cart_id`) REFERENCES `carts` (`id`),
   CONSTRAINT `cart_items_ibfk_2` FOREIGN KEY (`product_id`) REFERENCES `products` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -85,7 +85,7 @@ CREATE TABLE `cart_items` (
 
 LOCK TABLES `cart_items` WRITE;
 /*!40000 ALTER TABLE `cart_items` DISABLE KEYS */;
-INSERT INTO `cart_items` VALUES (1,1,2,'2026-04-07 07:07:32',NULL,4,1,199000,796000),(2,1,2,'2026-04-12 04:09:02',NULL,12,0,199000,398000),(3,1,11,'2026-04-13 07:44:32',NULL,4,1,0,NULL);
+INSERT INTO `cart_items` VALUES (1,1,2,'2026-04-07 07:07:32',NULL,4,1,199000,796000),(2,1,2,'2026-04-12 04:09:02',NULL,12,0,199000,398000),(3,1,11,'2026-04-13 07:44:32',NULL,4,1,0,NULL),(4,2,11,'2026-04-16 09:48:42',NULL,2,0,0,NULL);
 /*!40000 ALTER TABLE `cart_items` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -104,7 +104,7 @@ CREATE TABLE `carts` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `unique_user_cart` (`user_id`),
   CONSTRAINT `carts_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -113,7 +113,7 @@ CREATE TABLE `carts` (
 
 LOCK TABLES `carts` WRITE;
 /*!40000 ALTER TABLE `carts` DISABLE KEYS */;
-INSERT INTO `carts` VALUES (1,1,'2026-04-07 02:27:33',NULL);
+INSERT INTO `carts` VALUES (1,1,'2026-04-07 02:27:33',NULL),(2,7,'2026-04-16 09:48:41',NULL);
 /*!40000 ALTER TABLE `carts` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -174,7 +174,7 @@ CREATE TABLE `inventory` (
 
 LOCK TABLES `inventory` WRITE;
 /*!40000 ALTER TABLE `inventory` DISABLE KEYS */;
-INSERT INTO `inventory` VALUES (1,2,100,0,NULL,1),(2,3,100,0,NULL,NULL),(3,7,100,0,NULL,NULL),(4,8,100,0,NULL,NULL),(5,9,100,0,NULL,NULL),(9,1,100,10,'2026-04-02 07:33:15',NULL),(10,2,100,0,NULL,1),(11,2,100,0,NULL,1),(12,2,100,0,NULL,1),(13,2,100,0,NULL,1),(14,2,100,0,NULL,1),(15,2,9,0,'2026-04-06 02:53:50',1),(16,10,100,0,NULL,0),(17,11,100,12,'2026-04-13 09:39:38',0),(18,2,100,0,'2026-04-14 09:27:38',0);
+INSERT INTO `inventory` VALUES (1,2,100,0,NULL,1),(2,3,100,0,NULL,NULL),(3,7,100,0,NULL,NULL),(4,8,100,0,NULL,NULL),(5,9,100,0,NULL,NULL),(9,1,100,10,'2026-04-02 07:33:15',NULL),(10,2,100,0,NULL,1),(11,2,100,0,NULL,1),(12,2,100,0,NULL,1),(13,2,100,0,NULL,1),(14,2,100,0,NULL,1),(15,2,9,0,'2026-04-06 02:53:50',1),(16,10,100,0,NULL,0),(17,11,100,14,'2026-04-16 10:03:42',0),(18,2,100,0,'2026-04-14 09:27:38',0);
 /*!40000 ALTER TABLE `inventory` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -203,7 +203,7 @@ CREATE TABLE `order_items` (
   CONSTRAINT `fk_order_items_order` FOREIGN KEY (`order_id`) REFERENCES `orders` (`id`),
   CONSTRAINT `fk_order_items_product` FOREIGN KEY (`product_id`) REFERENCES `products` (`id`),
   CONSTRAINT `fk_order_items_seller` FOREIGN KEY (`seller_id`) REFERENCES `users` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -212,7 +212,7 @@ CREATE TABLE `order_items` (
 
 LOCK TABLES `order_items` WRITE;
 /*!40000 ALTER TABLE `order_items` DISABLE KEYS */;
-INSERT INTO `order_items` VALUES (1,1,11,2,2,199000,398000,'Áo thun nam 17','https://example.com/image1.jpg','2026-04-13 09:39:39'),(2,2,2,1,2,200000,400000,'Áo thun nam 02','https://example.com/image1.jpg','2026-04-14 09:19:39');
+INSERT INTO `order_items` VALUES (1,1,11,2,2,199000,398000,'Áo thun nam 17','https://example.com/image1.jpg','2026-04-13 09:39:39'),(2,2,2,1,2,200000,400000,'Áo thun nam 02','https://example.com/image1.jpg','2026-04-14 09:19:39'),(3,9,11,2,2,199000,398000,'Áo thun nam 17','https://example.com/image1.jpg','2026-04-16 10:03:43');
 /*!40000 ALTER TABLE `order_items` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -233,7 +233,7 @@ CREATE TABLE `order_status_logs` (
   PRIMARY KEY (`id`),
   KEY `idx_order_status_logs_order_id` (`order_id`),
   CONSTRAINT `fk_order_status_logs_order` FOREIGN KEY (`order_id`) REFERENCES `orders` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -242,6 +242,7 @@ CREATE TABLE `order_status_logs` (
 
 LOCK TABLES `order_status_logs` WRITE;
 /*!40000 ALTER TABLE `order_status_logs` DISABLE KEYS */;
+INSERT INTO `order_status_logs` VALUES (1,9,'PENDING','CREATE_ORDER','mua hàng','2026-04-16 17:03:42.514');
 /*!40000 ALTER TABLE `order_status_logs` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -294,7 +295,7 @@ CREATE TABLE `orders` (
   CONSTRAINT `fk_orders_user` FOREIGN KEY (`buyer_id`) REFERENCES `users` (`id`),
   CONSTRAINT `fk_orders_voucher` FOREIGN KEY (`voucher_id`) REFERENCES `vouchers` (`id`),
   CONSTRAINT `fk_shipping_provider` FOREIGN KEY (`shipping_provider_id`) REFERENCES `shipping_providers` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -303,7 +304,7 @@ CREATE TABLE `orders` (
 
 LOCK TABLES `orders` WRITE;
 /*!40000 ALTER TABLE `orders` DISABLE KEYS */;
-INSERT INTO `orders` VALUES (1,7,398000,30000,100000,328000,'PREPAY','PAID',10,1,'{\"phone\": \"012345678\", \"wardId\": 3, \"wardName\": \"Test\", \"districtId\": 2, \"provinceId\": 1, \"districtName\": \"Hoa Lư\", \"provinceName\": \"Ninh Bình\", \"receiverName\": \"Trần Việt Hoàn\", \"detailAddress\": \"Ngõ 67 Vạn Xuân 1\"}','DELIVERED',NULL,'2026-04-13 09:39:38',2,'2026-04-16 08:14:48',NULL,NULL,NULL,6,3,'VTPOST-20260415141946-1','2026-04-16 08:14:48','Giao hàng thành công',NULL,NULL),(2,1,400000,30000,100000,330000,'PREPAY','PENDING',10,1,'{\"phone\": \"012345678\", \"wardId\": 3, \"wardName\": \"Test\", \"districtId\": 2, \"provinceId\": 1, \"districtName\": \"Hoa Lư\", \"provinceName\": \"Ninh Bình\", \"receiverName\": \"Trần Việt Hoàn\", \"detailAddress\": \"Ngõ 67 Vạn Xuân 1\"}','CANCELLED',NULL,'2026-04-14 09:19:39',1,'2026-04-14 09:27:38',1,'2026-04-14 16:27:38','Trả',NULL,NULL,NULL,NULL,NULL,NULL,NULL);
+INSERT INTO `orders` VALUES (1,7,398000,30000,100000,328000,'PREPAY','PAID',10,1,'{\"phone\": \"012345678\", \"wardId\": 3, \"wardName\": \"Test\", \"districtId\": 2, \"provinceId\": 1, \"districtName\": \"Hoa Lư\", \"provinceName\": \"Ninh Bình\", \"receiverName\": \"Trần Việt Hoàn\", \"detailAddress\": \"Ngõ 67 Vạn Xuân 1\"}','DELIVERED',NULL,'2026-04-13 09:39:38',2,'2026-04-16 08:14:48',NULL,NULL,NULL,6,3,'VTPOST-20260415141946-1','2026-04-16 08:14:48','Giao hàng thành công',NULL,NULL),(2,1,400000,30000,100000,330000,'PREPAY','PENDING',10,1,'{\"phone\": \"012345678\", \"wardId\": 3, \"wardName\": \"Test\", \"districtId\": 2, \"provinceId\": 1, \"districtName\": \"Hoa Lư\", \"provinceName\": \"Ninh Bình\", \"receiverName\": \"Trần Việt Hoàn\", \"detailAddress\": \"Ngõ 67 Vạn Xuân 1\"}','CANCELLED',NULL,'2026-04-14 09:19:39',1,'2026-04-14 09:27:38',1,'2026-04-14 16:27:38','Trả',NULL,NULL,NULL,NULL,NULL,NULL,NULL),(9,7,398000,30000,100000,328000,'PREPAY','PENDING',10,1,'{\"phone\": \"012345678\", \"wardId\": 3, \"wardName\": \"Test\", \"districtId\": 2, \"provinceId\": 1, \"districtName\": \"Hoa Lư\", \"provinceName\": \"Ninh Bình\", \"receiverName\": \"Trần Việt Hoàn\", \"detailAddress\": \"Ngõ 67 Vạn Xuân 1\"}','PENDING',NULL,'2026-04-16 10:03:42',2,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL);
 /*!40000 ALTER TABLE `orders` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -481,7 +482,7 @@ CREATE TABLE `vouchers` (
 
 LOCK TABLES `vouchers` WRITE;
 /*!40000 ALTER TABLE `vouchers` DISABLE KEYS */;
-INSERT INTO `vouchers` VALUES (1,'SALE50',NULL,'PERCENT',50,NULL,NULL,100,0,'2026-04-09 10:30:00','2026-04-30 16:59:59','ACTIVE','2026-04-09 10:29:15','2026-04-11 07:47:58',1,1),(2,'SALE20','Voucher giảm 20%','PERCENT',20,50000,200000,100,0,'2026-04-11 02:20:00','2026-04-11 02:30:00','INACTIVE','2026-04-11 02:17:10','2026-04-11 07:47:55',1,1),(5,'SALE30','Voucher giảm 30%','PERCENT',30,50000,200000,100,0,'2026-04-11 02:20:00','2026-04-13 03:30:00','ACTIVE','2026-04-11 03:05:21','2026-04-11 07:48:04',1,1),(7,'SALE40','Voucher giảm 40%','PERCENT',40,50000,200000,100,0,'2026-04-11 07:45:00','2026-04-13 03:30:00','ACTIVE','2026-04-11 07:40:51','2026-04-11 07:48:08',1,1),(8,'SALE60','Voucher giảm 60%','PERCENT',60,50000,200000,100,0,'2026-04-11 07:50:00','2026-04-13 03:30:00','INACTIVE','2026-04-11 07:48:45','2026-04-13 03:30:00',1,0),(10,'BIGSALE',NULL,'PERCENT',50,100000,200000,20,5,'2026-04-13 06:18:00','2026-04-17 16:59:59','ACTIVE','2026-04-13 06:17:12','2026-04-14 09:19:39',1,0);
+INSERT INTO `vouchers` VALUES (1,'SALE50',NULL,'PERCENT',50,NULL,NULL,100,0,'2026-04-09 10:30:00','2026-04-30 16:59:59','ACTIVE','2026-04-09 10:29:15','2026-04-11 07:47:58',1,1),(2,'SALE20','Voucher giảm 20%','PERCENT',20,50000,200000,100,0,'2026-04-11 02:20:00','2026-04-11 02:30:00','INACTIVE','2026-04-11 02:17:10','2026-04-11 07:47:55',1,1),(5,'SALE30','Voucher giảm 30%','PERCENT',30,50000,200000,100,0,'2026-04-11 02:20:00','2026-04-13 03:30:00','ACTIVE','2026-04-11 03:05:21','2026-04-11 07:48:04',1,1),(7,'SALE40','Voucher giảm 40%','PERCENT',40,50000,200000,100,0,'2026-04-11 07:45:00','2026-04-13 03:30:00','ACTIVE','2026-04-11 07:40:51','2026-04-11 07:48:08',1,1),(8,'SALE60','Voucher giảm 60%','PERCENT',60,50000,200000,100,0,'2026-04-11 07:50:00','2026-04-13 03:30:00','INACTIVE','2026-04-11 07:48:45','2026-04-13 03:30:00',1,0),(10,'BIGSALE',NULL,'PERCENT',50,100000,200000,20,6,'2026-04-13 06:18:00','2026-04-17 16:59:59','ACTIVE','2026-04-13 06:17:12','2026-04-16 10:03:43',1,0);
 /*!40000 ALTER TABLE `vouchers` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -494,4 +495,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2026-04-16 16:46:07
+-- Dump completed on 2026-04-16 17:06:36
