@@ -14,7 +14,10 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
-@Table(name = "orders")
+@Table(name = "orders", indexes = {
+        // Hỗ trợ overview / list theo seller + lọc theo trạng thái (tránh full scan bảng orders)
+        @Index(name = "idx_orders_seller_status", columnList = "seller_id, order_status")
+})
 @Getter @Setter
 @NoArgsConstructor
 @AllArgsConstructor
@@ -53,12 +56,10 @@ public class OrdersEntity {
     @Column(name = "payment_status", nullable = false)
     private PaymentStatus paymentStatus; // 🔥 nên tách enum riêng
 
-    // 🎁 voucher
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "voucher_id")
     private VouchersEntity voucher;
 
-    // 📍 address
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "shipping_address_id", nullable = false)
     private AddresesEntity address;
@@ -78,16 +79,6 @@ public class OrdersEntity {
 
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
-
-    @Column(name = "cancelled_at")
-    private LocalDateTime cancelledAt;
-
-    @Column(name = "cancel_reason", length = 255)
-    private String cancelReason;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "cancel_id")
-    private UserEntity cancel;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "shipper_id")

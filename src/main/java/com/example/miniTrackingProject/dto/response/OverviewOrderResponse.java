@@ -13,11 +13,12 @@ import java.math.BigDecimal;
 @NoArgsConstructor
 @AllArgsConstructor
 public class OverviewOrderResponse implements Serializable {
-    private BigDecimal totalPrice;
+    private BigDecimal totalAmount;
     private Long totalOrder;
     private Long totalPending;
     private Long totalIntransit;
     private Long totalCancel;
+    private Long totalFailed;
     private Long totalReturn; // (Đơn hàng đang trong quá trình đổi trả)
     private Long awaitingInspection; // (Đang chờ kiểm tra)
     private Long totalRefunds; // (Tổng số tiền hoàn lại)

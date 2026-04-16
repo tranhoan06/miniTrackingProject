@@ -74,11 +74,20 @@ public class OrderController {
                 .body(BaseResponseFactory.success(response));
     }
 
-    @PostMapping("/overview")
+    @GetMapping("/overview")
     @PreAuthorize("hasAnyRole('ROLE_SELLER')")
-    public ResponseEntity<BaseResponse<OverviewOrderResponse>> overviewOrder(@RequestBody String overviewType) {
-        OverviewOrderResponse response = orderService.overviewOrder();
+    public ResponseEntity<BaseResponse<OverviewOrderResponse>> overviewOrder(@RequestParam("type") String type) {
+        OverviewOrderResponse response = orderService.overviewOrder(type);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(BaseResponseFactory.success(response));
+    }
 
+    @PostMapping("/return-pending")
+    @PreAuthorize("hasAnyRole('ROLE_BUYER')")
+    public ResponseEntity<BaseResponse<OrderStatusResponse>> returnPendingOrder(@Valid @RequestBody CancelOrderRequest request) {
+        OrderStatusResponse response = orderService.returnPendingOrder(request);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(BaseResponseFactory.success(response));
     }
 
 }

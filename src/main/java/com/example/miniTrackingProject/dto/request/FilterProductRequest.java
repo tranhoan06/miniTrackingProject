@@ -18,9 +18,7 @@ public class FilterProductRequest implements Serializable {
 
     private String keyword;
     private StatusProduct status;
-//    @JsonProperty("min_price")
     private BigDecimal minPrice;
 
-//    @JsonProperty("max_price")
     private BigDecimal maxPrice;
 }

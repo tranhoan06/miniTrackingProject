@@ -8,6 +8,7 @@ import com.example.miniTrackingProject.exception.JavaBuilderException;
 import com.example.miniTrackingProject.mapper.AddressMapper;
 import com.example.miniTrackingProject.mapper.OrderMapper;
 import com.example.miniTrackingProject.repository.*;
+import com.example.miniTrackingProject.repository.projection.OrderOverviewProjection;
 import com.example.miniTrackingProject.service.OrderService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -50,6 +51,24 @@ public class OrderServiceImpl implements OrderService {
     private final UserRepository userRepository;
     private final OrderMapper orderMapper;
     private final ShippingProviderRepository shippingProviderRepository;
+    private final OrderStatusLogRepository orderStatusLogRepository;
+
+    private void logOrderStatusChange(OrdersEntity order, OrderStatus from, OrderStatus to, String note, UserEntity changedBy) {
+        if (order == null || order.getId() == null) return;
+        if (from == to) return;
+
+        OrderStatusLog log = new OrderStatusLog();
+        log.setOrderId(order);
+        log.setStatus(to);
+        log.setNote(note);
+
+        String changer = (changedBy != null && changedBy.getFullname() != null && !changedBy.getFullname().isBlank())
+                ? changedBy.getFullname()
+                : (changedBy != null ? changedBy.getUsername() : null);
+        log.setChangedBy(changer);
+
+        orderStatusLogRepository.save(log);
+    }
 
     @Override
     public PreviewOrderResponse previewOrder(PreviewOrderRequest request) {
@@ -157,6 +176,7 @@ public class OrderServiceImpl implements OrderService {
             order.setShippingAddressSnapshot(addressSnapshot);
 
             orderRepository.save(order);
+            logOrderStatusChange(order, null, OrderStatus.PENDING, "CREATE_ORDER", user);
 
             for (OrderItemsEntity item : itemsBySeller.get(sellerId)) {
                 item.setOrder(order);
@@ -192,8 +212,10 @@ public class OrderServiceImpl implements OrderService {
         validateOrdersForSellerAction(ordersList, user);
 
         ordersList.forEach(order -> {
+            OrderStatus from = order.getOrderStatus();
             order.setOrderStatus(OrderStatus.CONFIRMED);
             order.setUpdatedAt(LocalDateTime.now());
+            logOrderStatusChange(order, from, OrderStatus.CONFIRMED, "CONFIRM", user);
         });
         orderRepository.saveAll(ordersList);
 
@@ -234,12 +256,12 @@ public class OrderServiceImpl implements OrderService {
             }
         }
 
+        OrderStatus from = order.getOrderStatus();
         order.setOrderStatus(OrderStatus.CANCELLED);
         order.setUpdatedAt(LocalDateTime.now());
-        order.setCancelledAt(LocalDateTime.now());
-        order.setCancelReason(request.getReason());
-        order.setCancel(user);
+        order.setUpdatedAt(LocalDateTime.now());
         orderRepository.save(order);
+        logOrderStatusChange(order, from, OrderStatus.CANCELLED, request.getReason(), user);
 
         return mapToConfirmOrderResponse("CANCELLED", List.of(order), 1);
     }
@@ -254,9 +276,11 @@ public class OrderServiceImpl implements OrderService {
             throw new JavaBuilderException(ErrorCode.INVALID_STATUS);
         }
 
+        OrderStatus from = order.getOrderStatus();
         order.setOrderStatus(OrderStatus.PACKED);
         order.setUpdatedAt(LocalDateTime.now());
         orderRepository.save(order);
+        logOrderStatusChange(order, from, OrderStatus.PACKED, "PACKED", user);
 
         return mapToConfirmOrderResponse("PACKED", List.of(order), 1);
     }
@@ -281,17 +305,53 @@ public class OrderServiceImpl implements OrderService {
 
         String trackingCode = randomProvider.getCode() + "-" + ts + "-" + order.getId();
         order.setShippingProvider(randomProvider);
+        OrderStatus from = order.getOrderStatus();
         order.setOrderStatus(OrderStatus.SHIPPED);
         order.setUpdatedAt(LocalDateTime.now());
         order.setTrackingCode(trackingCode);
         orderRepository.save(order);
+        logOrderStatusChange(order, from, OrderStatus.SHIPPED, trackingCode, user);
         return mapToConfirmOrderResponse("SHIPPED", List.of(order), 1);
     }
 
     @Override
-    public OverviewOrderResponse overviewOrder() {
+    public OverviewOrderResponse overviewOrder(String type) {
+        UserEntity seller = securityHelper.getCurrentUser();
+        OrderOverviewProjection projection = orderRepository.getOverviewBySeller(seller);
 
-        return null;
+        OverviewOrderResponse response = new OverviewOrderResponse();
+        response.setTotalAmount(projection.getTotalAmount());
+        response.setTotalOrder(projection.getTotalOrder());
+        response.setTotalPending(projection.getTotalPending());
+        response.setTotalIntransit(projection.getTotalIntransit());
+        response.setTotalCancel(projection.getTotalCancel());
+        response.setTotalFailed(projection.getTotalFailed());
+        response.setTotalReturn(projection.getTotalReturn());
+        response.setAwaitingInspection(projection.getAwaitingInspection());
+        response.setTotalRefunds(projection.getTotalRefunds());
+        return response;
+    }
+
+    @Override
+    public OrderStatusResponse returnPendingOrder(CancelOrderRequest request) {
+        UserEntity user = securityHelper.getCurrentUser();
+        OrdersEntity order = orderRepository.findById(request.getOrderId())
+                .orElseThrow(() -> new JavaBuilderException(ErrorCode.NOT_FOUND));
+        boolean isNotBuyer = order.getBuyer() == null || !order.getBuyer().getId().equals(user.getId());
+        if (isNotBuyer) {
+            throw new JavaBuilderException(ErrorCode.ACCESS_DENIED);
+        }
+
+        if (!order.getOrderStatus().equals(OrderStatus.DELIVERED)) {
+            throw new JavaBuilderException(ErrorCode.INVALID_STATUS);
+        }
+
+        OrderStatus from = order.getOrderStatus();
+        order.setOrderStatus(OrderStatus.RETURN_PENDING);
+        order.setUpdatedAt(LocalDateTime.now());
+        orderRepository.save(order);
+        logOrderStatusChange(order, from, OrderStatus.RETURN_PENDING, request.getReason(), user);
+        return mapToConfirmOrderResponse("RETURN_PENDING", List.of(order), 1);
     }
 
     private OrdersEntity requireOrderOwnedBySeller(Long orderId, UserEntity user) {

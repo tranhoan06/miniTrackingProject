@@ -23,5 +23,7 @@ public interface OrderService {
 
     OrderStatusResponse assignProviderOrder(OrderStatusRequest request);
 
-    OverviewOrderResponse overviewOrder();
+    OverviewOrderResponse overviewOrder(String type);
+
+    OrderStatusResponse returnPendingOrder(CancelOrderRequest request);
 }

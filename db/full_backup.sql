@@ -217,6 +217,35 @@ INSERT INTO `order_items` VALUES (1,1,11,2,2,199000,398000,'Áo thun nam 17','ht
 UNLOCK TABLES;
 
 --
+-- Table structure for table `order_status_logs`
+--
+
+DROP TABLE IF EXISTS `order_status_logs`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `order_status_logs` (
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `order_id` bigint NOT NULL,
+  `status` varchar(50) NOT NULL,
+  `note` varchar(500) DEFAULT NULL,
+  `changed_by` varchar(200) DEFAULT NULL,
+  `created_at` datetime(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+  PRIMARY KEY (`id`),
+  KEY `idx_order_status_logs_order_id` (`order_id`),
+  CONSTRAINT `fk_order_status_logs_order` FOREIGN KEY (`order_id`) REFERENCES `orders` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `order_status_logs`
+--
+
+LOCK TABLES `order_status_logs` WRITE;
+/*!40000 ALTER TABLE `order_status_logs` DISABLE KEYS */;
+/*!40000 ALTER TABLE `order_status_logs` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `orders`
 --
 
@@ -246,6 +275,10 @@ CREATE TABLE `orders` (
   `shipper_id` bigint DEFAULT NULL,
   `shipping_provider_id` bigint DEFAULT NULL,
   `tracking_code` varchar(50) DEFAULT NULL,
+  `delivered_at` timestamp NULL DEFAULT NULL,
+  `delivery_note` varchar(255) DEFAULT NULL,
+  `return_at` timestamp NULL DEFAULT NULL,
+  `return_note` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `fk_orders_user` (`buyer_id`),
   KEY `fk_orders_address` (`shipping_address_id`),
@@ -270,7 +303,7 @@ CREATE TABLE `orders` (
 
 LOCK TABLES `orders` WRITE;
 /*!40000 ALTER TABLE `orders` DISABLE KEYS */;
-INSERT INTO `orders` VALUES (1,1,398000,30000,100000,328000,'PREPAY','PENDING',10,1,'{\"phone\": \"012345678\", \"wardId\": 3, \"wardName\": \"Test\", \"districtId\": 2, \"provinceId\": 1, \"districtName\": \"Hoa Lư\", \"provinceName\": \"Ninh Bình\", \"receiverName\": \"Trần Việt Hoàn\", \"detailAddress\": \"Ngõ 67 Vạn Xuân 1\"}','IN_TRANSIT',NULL,'2026-04-13 09:39:38',2,'2026-04-15 07:27:32',NULL,NULL,NULL,6,3,'VTPOST-20260415141946-1'),(2,1,400000,30000,100000,330000,'PREPAY','PENDING',10,1,'{\"phone\": \"012345678\", \"wardId\": 3, \"wardName\": \"Test\", \"districtId\": 2, \"provinceId\": 1, \"districtName\": \"Hoa Lư\", \"provinceName\": \"Ninh Bình\", \"receiverName\": \"Trần Việt Hoàn\", \"detailAddress\": \"Ngõ 67 Vạn Xuân 1\"}','CANCELLED',NULL,'2026-04-14 09:19:39',1,'2026-04-14 09:27:38',1,'2026-04-14 16:27:38','Trả',NULL,NULL,NULL);
+INSERT INTO `orders` VALUES (1,7,398000,30000,100000,328000,'PREPAY','PAID',10,1,'{\"phone\": \"012345678\", \"wardId\": 3, \"wardName\": \"Test\", \"districtId\": 2, \"provinceId\": 1, \"districtName\": \"Hoa Lư\", \"provinceName\": \"Ninh Bình\", \"receiverName\": \"Trần Việt Hoàn\", \"detailAddress\": \"Ngõ 67 Vạn Xuân 1\"}','DELIVERED',NULL,'2026-04-13 09:39:38',2,'2026-04-16 08:14:48',NULL,NULL,NULL,6,3,'VTPOST-20260415141946-1','2026-04-16 08:14:48','Giao hàng thành công',NULL,NULL),(2,1,400000,30000,100000,330000,'PREPAY','PENDING',10,1,'{\"phone\": \"012345678\", \"wardId\": 3, \"wardName\": \"Test\", \"districtId\": 2, \"provinceId\": 1, \"districtName\": \"Hoa Lư\", \"provinceName\": \"Ninh Bình\", \"receiverName\": \"Trần Việt Hoàn\", \"detailAddress\": \"Ngõ 67 Vạn Xuân 1\"}','CANCELLED',NULL,'2026-04-14 09:19:39',1,'2026-04-14 09:27:38',1,'2026-04-14 16:27:38','Trả',NULL,NULL,NULL,NULL,NULL,NULL,NULL);
 /*!40000 ALTER TABLE `orders` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -398,7 +431,7 @@ CREATE TABLE `users` (
   PRIMARY KEY (`id`),
   KEY `idx_users_shipping_provider_id` (`shipping_provider_id`),
   CONSTRAINT `fk_users_shipping_provider` FOREIGN KEY (`shipping_provider_id`) REFERENCES `shipping_providers` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -407,7 +440,7 @@ CREATE TABLE `users` (
 
 LOCK TABLES `users` WRITE;
 /*!40000 ALTER TABLE `users` DISABLE KEYS */;
-INSERT INTO `users` VALUES (1,'hoan1','$2a$10$XTiwpuyBBiOmW6x8n2BS5eL4Eh/TOVmBaOKC2SnXuuG1hS5dzh7NC','hoan11','SELLER','2026-03-29 08:53:09','2026-03-29 09:17:09',0,NULL),(2,'hoan2','$2a$10$nJYf1KqS2hrg4vVM3aaU9u3fiDHW2t5hANFl4n4494EdjZXRIJUP2','hoan2','SELLER','2026-03-29 08:57:41',NULL,0,NULL),(3,'hoan3','$2a$10$/HC998rbtXcnCEanWVtQ7Ok.aZj8lm1XbOKjGM1Nc55zIbR4SQqhS','hoan3','SHIPPER','2026-03-29 09:16:52',NULL,0,NULL),(4,'hoan4','$2a$10$hCssKUftpqKp5ltxmdtzUuSmqAOmC4IqA..y4pm.Mq/fovnN6UN2.','hoan3','SHIPPER','2026-03-29 09:27:29',NULL,0,NULL),(5,'hoan5','$2a$10$005Na/EQQ7PW4MQTB6TUUOjY941HXnNzVUg4XLSVuhyZ7irkg8yUe','hoan5','SHIPPER','2026-03-29 12:48:35',NULL,0,NULL),(6,'grabfood','$2a$10$BaPeZpW04JAXUCG3jNtTK.S3mFVJVWtZalwVAE9m.cqKTEbD0ffjG','Macbook Grabfood','SHIPPER','2026-04-15 03:41:16',NULL,0,1);
+INSERT INTO `users` VALUES (1,'hoan1','$2a$10$XTiwpuyBBiOmW6x8n2BS5eL4Eh/TOVmBaOKC2SnXuuG1hS5dzh7NC','hoan11','SELLER','2026-03-29 08:53:09','2026-03-29 09:17:09',0,NULL),(2,'hoan2','$2a$10$nJYf1KqS2hrg4vVM3aaU9u3fiDHW2t5hANFl4n4494EdjZXRIJUP2','hoan2','SELLER','2026-03-29 08:57:41',NULL,0,NULL),(3,'hoan3','$2a$10$/HC998rbtXcnCEanWVtQ7Ok.aZj8lm1XbOKjGM1Nc55zIbR4SQqhS','hoan3','SHIPPER','2026-03-29 09:16:52',NULL,0,NULL),(4,'hoan4','$2a$10$hCssKUftpqKp5ltxmdtzUuSmqAOmC4IqA..y4pm.Mq/fovnN6UN2.','hoan3','SHIPPER','2026-03-29 09:27:29',NULL,0,NULL),(5,'hoan5','$2a$10$005Na/EQQ7PW4MQTB6TUUOjY941HXnNzVUg4XLSVuhyZ7irkg8yUe','hoan5','SHIPPER','2026-03-29 12:48:35',NULL,0,NULL),(6,'grabfood','$2a$10$BaPeZpW04JAXUCG3jNtTK.S3mFVJVWtZalwVAE9m.cqKTEbD0ffjG','Macbook Grabfood','SHIPPER','2026-04-15 03:41:16',NULL,0,1),(7,'muahang','$2a$10$N5PRcxn2zvCID9P4rMybYOxDFS4yZ.cq9ILn0CQloGb7nNHkzX4Ua','mua hàng','BUYER','2026-04-16 08:13:18',NULL,0,NULL);
 /*!40000 ALTER TABLE `users` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -461,4 +494,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2026-04-15 17:12:25
+-- Dump completed on 2026-04-16 16:46:07
