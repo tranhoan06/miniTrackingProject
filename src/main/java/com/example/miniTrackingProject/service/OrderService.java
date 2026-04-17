@@ -1,10 +1,8 @@
 package com.example.miniTrackingProject.service;
 
+import com.example.miniTrackingProject.common.OrderStatus;
 import com.example.miniTrackingProject.dto.request.*;
-import com.example.miniTrackingProject.dto.response.OrderStatusResponse;
-import com.example.miniTrackingProject.dto.response.OrderResponse;
-import com.example.miniTrackingProject.dto.response.OverviewOrderResponse;
-import com.example.miniTrackingProject.dto.response.PreviewOrderResponse;
+import com.example.miniTrackingProject.dto.response.*;
 import org.springframework.data.domain.Page;
 
 public interface OrderService {
@@ -13,7 +11,7 @@ public interface OrderService {
 
     String createOrder(OrderRequest request);
 
-    Page<OrderResponse> getBySeller(Integer pageSize, Integer pageNumber);
+    Page<OrderResponse> getBySeller(Integer pageSize, Integer pageNumber, Boolean isReturn, OrderStatus status);
 
     OrderStatusResponse confirmOrder(ConfirmStatusRequest request);
 
@@ -26,4 +24,12 @@ public interface OrderService {
     OverviewOrderResponse overviewOrder(String type);
 
     OrderStatusResponse returnPendingOrder(CancelOrderRequest request);
+
+    OrderStatusResponse returnOrder(OrderStatusRequest request);
+
+    OrderStatusResponse warehouseReceivedOrder(OrderStatusRequest request);
+
+    OrderStatusResponse restockedOrder(OrderStatusRequest request);
+
+    OrderStatusResponse refundedOrder(OrderStatusRequest request);
 }

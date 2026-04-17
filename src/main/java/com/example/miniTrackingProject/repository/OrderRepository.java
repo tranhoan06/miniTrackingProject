@@ -9,15 +9,17 @@ import com.example.miniTrackingProject.repository.projection.OrderOverviewProjec
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface OrderRepository extends JpaRepository<OrdersEntity, Long> {
+public interface OrderRepository extends JpaRepository<OrdersEntity, Long>, JpaSpecificationExecutor<OrdersEntity> {
 
     @Query("SELECT o FROM OrdersEntity o " +
             "WHERE o.id IN :ids " +
@@ -31,7 +33,11 @@ public interface OrderRepository extends JpaRepository<OrdersEntity, Long> {
                                         @Param("paymentMethod") PayMethodEnum paymentMethod,
                                         @Param("paymentStatus") PaymentStatus paymentStatus);
 
-    Page<OrdersEntity> findBySeller(UserEntity seller, Pageable pageable);
+    // Lấy các đơn hàng KHÔNG THUỘC danh sách (cho đơn hàng bình thường)
+    Page<OrdersEntity> findBySellerAndOrderStatusNotIn(UserEntity seller, List<OrderStatus> statuses, Pageable pageable);
+
+    // Lấy các đơn hàng THUỘC danh sách (cho đơn hàng trả về)
+    Page<OrdersEntity> findBySellerAndOrderStatusIn(UserEntity seller, List<OrderStatus> statuses, Pageable pageable);
 
     Optional<OrdersEntity> findByTrackingCode(String trackingCode);
 

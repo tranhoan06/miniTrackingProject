@@ -4,7 +4,7 @@ import com.example.miniTrackingProject.common.*;
 import com.example.miniTrackingProject.dto.request.DeliveredOrderRequest;
 import com.example.miniTrackingProject.dto.request.ShippingOrderRequest;
 import com.example.miniTrackingProject.dto.response.ShippingProviderResponse;
-import com.example.miniTrackingProject.entity.OrderStatusLog;
+import com.example.miniTrackingProject.entity.OrderStatusLogEntity;
 import com.example.miniTrackingProject.entity.OrdersEntity;
 import com.example.miniTrackingProject.entity.ShippingProviderEntity;
 import com.example.miniTrackingProject.entity.UserEntity;
@@ -35,7 +35,7 @@ public class ShippingProviderServiceImpl implements ShippingProviderService {
         if (order == null || order.getId() == null) return;
         if (from == to) return;
 
-        OrderStatusLog log = new com.example.miniTrackingProject.entity.OrderStatusLog();
+        OrderStatusLogEntity log = new OrderStatusLogEntity();
         log.setOrderId(order);
         log.setStatus(to);
         log.setNote(note);

@@ -1,5 +1,6 @@
 package com.example.miniTrackingProject.controller;
 
+import com.example.miniTrackingProject.common.OrderStatus;
 import com.example.miniTrackingProject.dto.request.*;
 import com.example.miniTrackingProject.dto.response.*;
 import com.example.miniTrackingProject.service.OrderService;
@@ -36,8 +37,9 @@ public class OrderController {
     }
 
     @GetMapping("/seller")
-    public ResponseEntity<BaseResponse<List<?>>> getBySeller(Integer pageSize, Integer pageNumber) {
-        Page<OrderResponse> response = orderService.getBySeller(pageSize, pageNumber);
+    @PreAuthorize("hasAnyRole('ROLE_SELLER')")
+    public ResponseEntity<BaseResponse<List<?>>> getBySeller(Integer pageSize, Integer pageNumber, @RequestParam(required = false) Boolean isReturn, OrderStatus status) {
+        Page<OrderResponse> response = orderService.getBySeller(pageSize, pageNumber, isReturn, status);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(BaseResponseFactory.success(response.getContent()));
     }
@@ -86,6 +88,38 @@ public class OrderController {
     @PreAuthorize("hasAnyRole('ROLE_BUYER')")
     public ResponseEntity<BaseResponse<OrderStatusResponse>> returnPendingOrder(@Valid @RequestBody CancelOrderRequest request) {
         OrderStatusResponse response = orderService.returnPendingOrder(request);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(BaseResponseFactory.success(response));
+    }
+
+    @PostMapping("/return")
+    @PreAuthorize("hasAnyRole('ROLE_SHIPPER')")
+    public ResponseEntity<BaseResponse<OrderStatusResponse>> returnOrder(@Valid @RequestBody OrderStatusRequest request) {
+        OrderStatusResponse response = orderService.returnOrder(request);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(BaseResponseFactory.success(response));
+    }
+
+    @PostMapping("/warehouse-received")
+    @PreAuthorize("hasAnyRole('ROLE_SHIPPER')")
+    public ResponseEntity<BaseResponse<OrderStatusResponse>> warehouseReceivedOrder(@Valid @RequestBody OrderStatusRequest request) {
+        OrderStatusResponse response = orderService.warehouseReceivedOrder(request);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(BaseResponseFactory.success(response));
+    }
+
+    @PostMapping("/restocked")
+    @PreAuthorize("hasAnyRole('ROLE_SELLER')")
+    public ResponseEntity<BaseResponse<OrderStatusResponse>> restockedOrder(@Valid @RequestBody OrderStatusRequest request) {
+        OrderStatusResponse response = orderService.restockedOrder(request);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(BaseResponseFactory.success(response));
+    }
+
+    @PostMapping("/refunded")
+    @PreAuthorize("hasAnyRole('ROLE_SELLER')")
+    public ResponseEntity<BaseResponse<OrderStatusResponse>> refundedOrder(@Valid @RequestBody OrderStatusRequest request) {
+        OrderStatusResponse response = orderService.refundedOrder(request);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(BaseResponseFactory.success(response));
     }

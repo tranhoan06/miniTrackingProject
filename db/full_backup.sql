@@ -174,7 +174,7 @@ CREATE TABLE `inventory` (
 
 LOCK TABLES `inventory` WRITE;
 /*!40000 ALTER TABLE `inventory` DISABLE KEYS */;
-INSERT INTO `inventory` VALUES (1,2,100,0,NULL,1),(2,3,100,0,NULL,NULL),(3,7,100,0,NULL,NULL),(4,8,100,0,NULL,NULL),(5,9,100,0,NULL,NULL),(9,1,100,10,'2026-04-02 07:33:15',NULL),(10,2,100,0,NULL,1),(11,2,100,0,NULL,1),(12,2,100,0,NULL,1),(13,2,100,0,NULL,1),(14,2,100,0,NULL,1),(15,2,9,0,'2026-04-06 02:53:50',1),(16,10,100,0,NULL,0),(17,11,100,14,'2026-04-16 10:03:42',0),(18,2,100,0,'2026-04-14 09:27:38',0);
+INSERT INTO `inventory` VALUES (1,2,100,0,NULL,1),(2,3,100,0,NULL,NULL),(3,7,100,0,NULL,NULL),(4,8,100,0,NULL,NULL),(5,9,100,0,NULL,NULL),(9,1,100,10,'2026-04-02 07:33:15',NULL),(10,2,100,0,NULL,1),(11,2,100,0,NULL,1),(12,2,100,0,NULL,1),(13,2,100,0,NULL,1),(14,2,100,0,NULL,1),(15,2,9,0,'2026-04-06 02:53:50',1),(16,10,100,0,NULL,0),(17,11,100,12,'2026-04-17 06:46:57',0),(18,2,100,0,'2026-04-14 09:27:38',0);
 /*!40000 ALTER TABLE `inventory` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -233,7 +233,7 @@ CREATE TABLE `order_status_logs` (
   PRIMARY KEY (`id`),
   KEY `idx_order_status_logs_order_id` (`order_id`),
   CONSTRAINT `fk_order_status_logs_order` FOREIGN KEY (`order_id`) REFERENCES `orders` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -242,7 +242,7 @@ CREATE TABLE `order_status_logs` (
 
 LOCK TABLES `order_status_logs` WRITE;
 /*!40000 ALTER TABLE `order_status_logs` DISABLE KEYS */;
-INSERT INTO `order_status_logs` VALUES (1,9,'PENDING','CREATE_ORDER','mua hàng','2026-04-16 17:03:42.514');
+INSERT INTO `order_status_logs` VALUES (1,9,'PENDING','CREATE_ORDER','mua hàng','2026-04-16 17:03:42.514'),(2,9,'CONFIRMED','CONFIRM','hoan2','2026-04-17 10:32:01.987'),(3,9,'PACKED','PACKED','hoan2','2026-04-17 10:34:11.254'),(4,9,'SHIPPED','VTPOST-20260417103540-9','hoan2','2026-04-17 10:35:40.420'),(5,9,'IN_TRANSIT','SHIPPER_START','Macbook Grabfood','2026-04-17 10:36:21.605'),(6,9,'DELIVERED','Giao hàng thành công','Macbook Grabfood','2026-04-17 10:37:48.242'),(7,9,'RETURN_PENDING','K thích','mua hàng','2026-04-17 10:54:14.675'),(8,9,'RETURNED','','Macbook Grabfood','2026-04-17 10:55:52.013'),(9,9,'WAREHOUSE_RECEIVED','RETURNED','Macbook Grabfood','2026-04-17 13:43:57.778'),(10,9,'RESTOCKED','RESTOCKED','hoan2','2026-04-17 13:46:57.141'),(11,9,'REFUNDED','Hoàn tiền thành công','hoan2','2026-04-17 14:01:35.763');
 /*!40000 ALTER TABLE `order_status_logs` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -304,7 +304,7 @@ CREATE TABLE `orders` (
 
 LOCK TABLES `orders` WRITE;
 /*!40000 ALTER TABLE `orders` DISABLE KEYS */;
-INSERT INTO `orders` VALUES (1,7,398000,30000,100000,328000,'PREPAY','PAID',10,1,'{\"phone\": \"012345678\", \"wardId\": 3, \"wardName\": \"Test\", \"districtId\": 2, \"provinceId\": 1, \"districtName\": \"Hoa Lư\", \"provinceName\": \"Ninh Bình\", \"receiverName\": \"Trần Việt Hoàn\", \"detailAddress\": \"Ngõ 67 Vạn Xuân 1\"}','DELIVERED',NULL,'2026-04-13 09:39:38',2,'2026-04-16 08:14:48',NULL,NULL,NULL,6,3,'VTPOST-20260415141946-1','2026-04-16 08:14:48','Giao hàng thành công',NULL,NULL),(2,1,400000,30000,100000,330000,'PREPAY','PENDING',10,1,'{\"phone\": \"012345678\", \"wardId\": 3, \"wardName\": \"Test\", \"districtId\": 2, \"provinceId\": 1, \"districtName\": \"Hoa Lư\", \"provinceName\": \"Ninh Bình\", \"receiverName\": \"Trần Việt Hoàn\", \"detailAddress\": \"Ngõ 67 Vạn Xuân 1\"}','CANCELLED',NULL,'2026-04-14 09:19:39',1,'2026-04-14 09:27:38',1,'2026-04-14 16:27:38','Trả',NULL,NULL,NULL,NULL,NULL,NULL,NULL),(9,7,398000,30000,100000,328000,'PREPAY','PENDING',10,1,'{\"phone\": \"012345678\", \"wardId\": 3, \"wardName\": \"Test\", \"districtId\": 2, \"provinceId\": 1, \"districtName\": \"Hoa Lư\", \"provinceName\": \"Ninh Bình\", \"receiverName\": \"Trần Việt Hoàn\", \"detailAddress\": \"Ngõ 67 Vạn Xuân 1\"}','PENDING',NULL,'2026-04-16 10:03:42',2,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL);
+INSERT INTO `orders` VALUES (1,7,398000,30000,100000,328000,'PREPAY','PAID',10,1,'{\"phone\": \"012345678\", \"wardId\": 3, \"wardName\": \"Test\", \"districtId\": 2, \"provinceId\": 1, \"districtName\": \"Hoa Lư\", \"provinceName\": \"Ninh Bình\", \"receiverName\": \"Trần Việt Hoàn\", \"detailAddress\": \"Ngõ 67 Vạn Xuân 1\"}','DELIVERED',NULL,'2026-04-13 09:39:38',2,'2026-04-16 08:14:48',NULL,NULL,NULL,6,3,'VTPOST-20260415141946-1','2026-04-16 08:14:48','Giao hàng thành công',NULL,NULL),(2,1,400000,30000,100000,330000,'PREPAY','PENDING',10,1,'{\"phone\": \"012345678\", \"wardId\": 3, \"wardName\": \"Test\", \"districtId\": 2, \"provinceId\": 1, \"districtName\": \"Hoa Lư\", \"provinceName\": \"Ninh Bình\", \"receiverName\": \"Trần Việt Hoàn\", \"detailAddress\": \"Ngõ 67 Vạn Xuân 1\"}','CANCELLED',NULL,'2026-04-14 09:19:39',1,'2026-04-14 09:27:38',1,'2026-04-14 16:27:38','Trả',NULL,NULL,NULL,NULL,NULL,NULL,NULL),(9,7,398000,30000,100000,328000,'PREPAY','REFUNDED',10,1,'{\"phone\": \"012345678\", \"wardId\": 3, \"wardName\": \"Test\", \"districtId\": 2, \"provinceId\": 1, \"districtName\": \"Hoa Lư\", \"provinceName\": \"Ninh Bình\", \"receiverName\": \"Trần Việt Hoàn\", \"detailAddress\": \"Ngõ 67 Vạn Xuân 1\"}','REFUNDED',NULL,'2026-04-16 10:03:42',2,'2026-04-17 07:01:36',NULL,NULL,NULL,6,3,'VTPOST-20260417103540-9',NULL,NULL,NULL,NULL);
 /*!40000 ALTER TABLE `orders` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -495,4 +495,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2026-04-16 17:06:36
+-- Dump completed on 2026-04-17 17:02:19

@@ -9,7 +9,7 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 @EnableMethodSecurity
 @EnableScheduling
 public class MiniTrackingProjectApplication {
-	// NHỚ TÌM HIỀU KĨ VỀ REFLECTION VÀ TẠI SAO LẠI ƯU TIÊN DÙNG CONSTRUCTOR INJECTION THAY VÌ FIELD INJECTION
+    // NHỚ TÌM HIỀU KĨ VỀ REFLECTION VÀ TẠI SAO LẠI ƯU TIÊN DÙNG CONSTRUCTOR INJECTION THAY VÌ FIELD INJECTION
 
 //	1. Nhóm Luồng Thuận (Happy Path)
 //	Đây là luồng từ khi khách đặt hàng đến khi nhận hàng thành công.
@@ -42,8 +42,8 @@ public class MiniTrackingProjectApplication {
 //
 //	REFUNDED: Tiền đã được hoàn lại cho khách. Kết thúc quy trình trả hàng.
 
-	public static void main(String[] args) {
-		SpringApplication.run(MiniTrackingProjectApplication.class, args);
-	}
+    public static void main(String[] args) {
+        SpringApplication.run(MiniTrackingProjectApplication.class, args);
+    }
 
 }

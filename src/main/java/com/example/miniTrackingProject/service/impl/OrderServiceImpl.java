@@ -10,11 +10,13 @@ import com.example.miniTrackingProject.mapper.OrderMapper;
 import com.example.miniTrackingProject.repository.*;
 import com.example.miniTrackingProject.repository.projection.OrderOverviewProjection;
 import com.example.miniTrackingProject.service.OrderService;
+import com.example.miniTrackingProject.service.spec.OrderSpecification;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import tools.jackson.databind.ObjectMapper;
@@ -57,7 +59,7 @@ public class OrderServiceImpl implements OrderService {
         if (order == null || order.getId() == null) return;
         if (from == to) return;
 
-        OrderStatusLog log = new OrderStatusLog();
+        OrderStatusLogEntity log = new OrderStatusLogEntity();
         log.setOrderId(order);
         log.setStatus(to);
         log.setNote(note);
@@ -189,13 +191,28 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public Page<OrderResponse> getBySeller(Integer pageSize, Integer pageNumber) {
+    public Page<OrderResponse> getBySeller(Integer pageSize, Integer pageNumber, Boolean isReturn, OrderStatus status) {
         UserEntity seller = securityHelper.getCurrentUser();
-        int page = (pageNumber == null || pageNumber < 1) ? 1 : pageNumber;
-        int size = (pageSize == null || pageSize < 1) ? DEFAULT_PAGE_SIZE : Math.min(pageSize, MAX_PAGE_SIZE);
-        Pageable pageable = PageRequest.of(page - 1, size, Sort.by("id").ascending());
 
-        Page<OrdersEntity> entityPage = orderRepository.findBySeller(seller, pageable);
+        // Tối ưu khởi tạo Pageable
+        int page = (pageNumber == null || pageNumber < 1) ? 0 : pageNumber - 1;
+        int size = (pageSize == null || pageSize < 1) ? DEFAULT_PAGE_SIZE : Math.min(pageSize, MAX_PAGE_SIZE);
+        Pageable pageable = PageRequest.of(page, size, Sort.by("id").ascending());
+
+        Page<OrdersEntity> entityPage;
+
+        if (Boolean.TRUE.equals(isReturn)) {
+            Specification<OrdersEntity> spec = OrderSpecification.filterStatusOrder(seller, status);
+            entityPage = orderRepository.findAll(spec, pageable);
+        } else {
+            List<OrderStatus> excludeStatuses = List.of(
+                    OrderStatus.WAREHOUSE_RECEIVED,
+                    OrderStatus.RESTOCKED,
+                    OrderStatus.REFUNDED
+            );
+            entityPage = orderRepository.findBySellerAndOrderStatusNotIn(seller, excludeStatuses, pageable);
+        }
+
         return entityPage.map(orderMapper::toOrderResponse);
     }
 
@@ -258,7 +275,6 @@ public class OrderServiceImpl implements OrderService {
 
         OrderStatus from = order.getOrderStatus();
         order.setOrderStatus(OrderStatus.CANCELLED);
-        order.setUpdatedAt(LocalDateTime.now());
         order.setUpdatedAt(LocalDateTime.now());
         orderRepository.save(order);
         logOrderStatusChange(order, from, OrderStatus.CANCELLED, request.getReason(), user);
@@ -333,25 +349,125 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
+    @Transactional
     public OrderStatusResponse returnPendingOrder(CancelOrderRequest request) {
+        OrdersEntity order = findOrderOrThrow(request.getOrderId());
         UserEntity user = securityHelper.getCurrentUser();
-        OrdersEntity order = orderRepository.findById(request.getOrderId())
-                .orElseThrow(() -> new JavaBuilderException(ErrorCode.NOT_FOUND));
-        boolean isNotBuyer = order.getBuyer() == null || !order.getBuyer().getId().equals(user.getId());
-        if (isNotBuyer) {
+
+        if (order.getBuyer() == null || !order.getBuyer().getId().equals(user.getId())) {
             throw new JavaBuilderException(ErrorCode.ACCESS_DENIED);
         }
 
-        if (!order.getOrderStatus().equals(OrderStatus.DELIVERED)) {
+        return updateOrderStatus(order, OrderStatus.DELIVERED, OrderStatus.RETURN_PENDING, request.getReason(), user);
+    }
+
+    @Override
+    @Transactional
+    public OrderStatusResponse returnOrder(OrderStatusRequest request) {
+        return handleShipperAction(request.getOrderId(), OrderStatus.RETURN_PENDING, OrderStatus.RETURNED, "RETURNED");
+    }
+
+    @Override
+    @Transactional
+    public OrderStatusResponse warehouseReceivedOrder(OrderStatusRequest request) {
+        return handleShipperAction(request.getOrderId(), OrderStatus.RETURNED, OrderStatus.WAREHOUSE_RECEIVED, "RETURNED");
+    }
+
+    @Override
+    @Transactional
+    public OrderStatusResponse restockedOrder(OrderStatusRequest request) {
+        UserEntity user = securityHelper.getCurrentUser();
+        OrdersEntity order = requireOrderOwnedBySeller(request.getOrderId(), user);
+
+        boolean isSeller = order.getSeller() != null && order.getSeller().getId().equals(user.getId());
+        if (!isSeller) {
+            throw new JavaBuilderException(ErrorCode.ACCESS_DENIED);
+        }
+
+        if (!order.getOrderStatus().equals(OrderStatus.WAREHOUSE_RECEIVED)) {
+            throw new JavaBuilderException(ErrorCode.INVALID_STATUS);
+        }
+        if (order.getItems() != null) {
+            for (OrderItemsEntity item : order.getItems()) {
+                if (item.getProduct() == null || item.getProduct().getId() == null) continue;
+                long qty = item.getQuantity() == null ? 0L : item.getQuantity().longValue();
+                InventoryEntity inv = inventoryRepository.findByProductIdForUpdate(item.getProduct().getId())
+                        .orElseThrow(() -> new JavaBuilderException(ErrorCode.NOT_FOUND));
+                long currentReserved = inv.getReservedQuantity() == null ? 0L : inv.getReservedQuantity();
+                long newReserved = currentReserved - qty;
+                if (newReserved < 0) {
+                    newReserved = 0;
+                }
+                inv.setReservedQuantity(newReserved);
+                inv.setUpdatedAt(LocalDateTime.now());
+                inventoryRepository.save(inv);
+            }
+        }
+
+        OrderStatus from = order.getOrderStatus();
+        order.setOrderStatus(OrderStatus.RESTOCKED);
+        order.setUpdatedAt(LocalDateTime.now());
+        orderRepository.save(order);
+        logOrderStatusChange(order, from, OrderStatus.RESTOCKED, "RESTOCKED", user);
+
+        return mapToConfirmOrderResponse("RESTOCKED", List.of(order), 1);
+    }
+
+    @Override
+    @Transactional
+    public OrderStatusResponse refundedOrder(OrderStatusRequest request) {
+        UserEntity user = securityHelper.getCurrentUser();
+        OrdersEntity order = requireOrderOwnedBySeller(request.getOrderId(), user);
+
+        boolean isSeller = order.getSeller() != null && order.getSeller().getId().equals(user.getId());
+        if (!isSeller) {
+            throw new JavaBuilderException(ErrorCode.ACCESS_DENIED);
+        }
+
+        if (!order.getOrderStatus().equals(OrderStatus.RESTOCKED)) {
             throw new JavaBuilderException(ErrorCode.INVALID_STATUS);
         }
 
         OrderStatus from = order.getOrderStatus();
-        order.setOrderStatus(OrderStatus.RETURN_PENDING);
+        order.setOrderStatus(OrderStatus.REFUNDED);
+        order.setPaymentStatus(PaymentStatus.REFUNDED);
         order.setUpdatedAt(LocalDateTime.now());
         orderRepository.save(order);
-        logOrderStatusChange(order, from, OrderStatus.RETURN_PENDING, request.getReason(), user);
-        return mapToConfirmOrderResponse("RETURN_PENDING", List.of(order), 1);
+        logOrderStatusChange(order, from, OrderStatus.REFUNDED, "Hoàn tiền thành công", user);
+        return mapToConfirmOrderResponse("REFUNDED", List.of(order), 1);
+    }
+
+    private OrderStatusResponse handleShipperAction(Long orderId, OrderStatus requiredStatus, OrderStatus targetStatus, String reason) {
+        OrdersEntity order = findOrderOrThrow(orderId);
+        UserEntity user = securityHelper.getCurrentUser();
+
+        if (order.getShipper() == null || !order.getShipper().getId().equals(user.getId())) {
+            throw new JavaBuilderException(ErrorCode.ACCESS_DENIED);
+        }
+
+        return updateOrderStatus(order, requiredStatus, targetStatus, reason, user);
+    }
+
+    /**
+     * Core logic để cập nhật trạng thái và lưu log
+     */
+    private OrderStatusResponse updateOrderStatus(OrdersEntity order, OrderStatus fromStatus, OrderStatus toStatus, String reason, UserEntity user) {
+        if (!order.getOrderStatus().equals(fromStatus)) {
+            throw new JavaBuilderException(ErrorCode.INVALID_STATUS);
+        }
+
+        order.setOrderStatus(toStatus);
+        order.setUpdatedAt(LocalDateTime.now());
+        orderRepository.save(order);
+
+        logOrderStatusChange(order, fromStatus, toStatus, reason, user);
+
+        return mapToConfirmOrderResponse(toStatus.name(), List.of(order), 1);
+    }
+
+    private OrdersEntity findOrderOrThrow(Long orderId) {
+        return orderRepository.findById(orderId)
+                .orElseThrow(() -> new JavaBuilderException(ErrorCode.NOT_FOUND));
     }
 
     private OrdersEntity requireOrderOwnedBySeller(Long orderId, UserEntity user) {
@@ -428,7 +544,7 @@ public class OrderServiceImpl implements OrderService {
             throw new JavaBuilderException(ErrorCode.VOUCHER_EXPIRES);
         }
 
-        if(voucher.getUsedCount() >= voucher.getQuantity()) {
+        if (voucher.getUsedCount() >= voucher.getQuantity()) {
             throw new JavaBuilderException(ErrorCode.VOUCHER_EXPIRES);
         }
     }

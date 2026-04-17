@@ -15,7 +15,7 @@ import java.time.LocalDateTime;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class OrderStatusLog {
+public class OrderStatusLogEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
