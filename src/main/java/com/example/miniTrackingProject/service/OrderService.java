@@ -32,4 +32,6 @@ public interface OrderService {
     OrderStatusResponse restockedOrder(OrderStatusRequest request);
 
     OrderStatusResponse refundedOrder(OrderStatusRequest request);
+
+    OrderResponse orderDetail(Long id);
 }

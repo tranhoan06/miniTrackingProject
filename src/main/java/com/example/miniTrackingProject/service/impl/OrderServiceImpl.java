@@ -60,7 +60,7 @@ public class OrderServiceImpl implements OrderService {
         if (from == to) return;
 
         OrderStatusLogEntity log = new OrderStatusLogEntity();
-        log.setOrderId(order);
+        log.setOrder(order);
         log.setStatus(to);
         log.setNote(note);
 
@@ -435,6 +435,21 @@ public class OrderServiceImpl implements OrderService {
         orderRepository.save(order);
         logOrderStatusChange(order, from, OrderStatus.REFUNDED, "Hoàn tiền thành công", user);
         return mapToConfirmOrderResponse("REFUNDED", List.of(order), 1);
+    }
+
+    @Override
+    public OrderResponse orderDetail(Long id) {
+        UserEntity user = securityHelper.getCurrentUser();
+        OrdersEntity order = orderRepository.findById(id)
+                .orElseThrow(() -> new JavaBuilderException(ErrorCode.NOT_FOUND));
+        boolean isSeller = order.getSeller() != null && order.getSeller().getId().equals(user.getId());
+        boolean isBuyer = order.getBuyer() != null && order.getBuyer().getId().equals(user.getId());
+        boolean isShipper = order.getShipper() != null && order.getShipper().getId().equals(user.getId());
+        if (!isSeller && !isBuyer && !isShipper) {
+            throw new JavaBuilderException(ErrorCode.ACCESS_DENIED);
+        }
+
+        return orderMapper.toOrderResponse(order);
     }
 
     private OrderStatusResponse handleShipperAction(Long orderId, OrderStatus requiredStatus, OrderStatus targetStatus, String reason) {

@@ -3,6 +3,7 @@ package com.example.miniTrackingProject.service.impl;
 import com.example.miniTrackingProject.common.*;
 import com.example.miniTrackingProject.dto.request.DeliveredOrderRequest;
 import com.example.miniTrackingProject.dto.request.ShippingOrderRequest;
+import com.example.miniTrackingProject.dto.request.ShippingProviderRequest;
 import com.example.miniTrackingProject.dto.response.ShippingProviderResponse;
 import com.example.miniTrackingProject.entity.OrderStatusLogEntity;
 import com.example.miniTrackingProject.entity.OrdersEntity;
@@ -20,6 +21,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -36,7 +38,7 @@ public class ShippingProviderServiceImpl implements ShippingProviderService {
         if (from == to) return;
 
         OrderStatusLogEntity log = new OrderStatusLogEntity();
-        log.setOrderId(order);
+        log.setOrder(order);
         log.setStatus(to);
         log.setNote(note);
 
@@ -49,7 +51,41 @@ public class ShippingProviderServiceImpl implements ShippingProviderService {
     }
 
     @Override
-    public ShippingProviderResponse getAllById(Long id) {
+    public ShippingProviderResponse create(ShippingProviderRequest request) {
+        ShippingProviderEntity shippingProvider = new ShippingProviderEntity();
+        shippingProvider.setName(request.getName());
+        shippingProvider.setCode(request.getCode());
+        shippingProvider.setPhone(request.getPhone());
+        shippingProvider.setEmail(request.getEmail());
+        shippingProvider.setWebsite(request.getWebsite());
+        return shippingProviderMapper.toResponse(shippingProvider);
+    }
+
+    @Override
+    @Transactional
+    public ShippingProviderResponse update(Long id, ShippingProviderRequest request) {
+        ShippingProviderEntity shippingProvider = shippingProviderRepository.findById(id)
+                .orElseThrow(() -> new JavaBuilderException(ErrorCode.NOT_FOUND));
+
+        shippingProvider.setName(request.getName());
+        shippingProvider.setCode(request.getCode());
+        shippingProvider.setPhone(request.getPhone());
+        shippingProvider.setEmail(request.getEmail());
+        shippingProvider.setWebsite(request.getWebsite());
+        return shippingProviderMapper.toResponse(shippingProvider);
+    }
+
+    @Override
+    public List<ShippingProviderResponse> getAll() {
+        List<ShippingProviderEntity> list = shippingProviderRepository.findAll();
+        if (list.isEmpty()) {
+            throw new JavaBuilderException(ErrorCode.NOT_FOUND);
+        }
+        return shippingProviderMapper.toResponse(list);
+    }
+
+    @Override
+    public ShippingProviderResponse getById(Long id) {
         ShippingProviderEntity shippingProvider = shippingProviderRepository.findById(id)
                 .orElseThrow(() -> new JavaBuilderException(ErrorCode.USER_NOT_FOUND));
 

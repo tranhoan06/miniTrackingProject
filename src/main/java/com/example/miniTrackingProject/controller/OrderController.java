@@ -124,4 +124,12 @@ public class OrderController {
                 .body(BaseResponseFactory.success(response));
     }
 
+    @GetMapping("order-detail/{id}")
+    public ResponseEntity<BaseResponse<OrderResponse>> orderDetail(@PathVariable Long id) {
+        OrderResponse response = orderService.orderDetail(id);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(BaseResponseFactory.success(response));
+    }
+
+
 }

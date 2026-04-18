@@ -15,6 +15,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+
 @RestController
 @Validated
 @RequestMapping("/v1/api/log")
@@ -23,8 +25,8 @@ public class OrderStatusController {
     private final OrderStatusService orderStatusService;
 
     @PostMapping("")
-    public ResponseEntity<BaseResponse<OrderStatusLogResponse>> getLog(@Valid @RequestBody OrderStatusLogRequest request) {
-        OrderStatusLogResponse response = orderStatusService.getLog(request);
+    public ResponseEntity<BaseResponse<List<OrderStatusLogResponse>>> getLog(@Valid @RequestBody OrderStatusLogRequest request) {
+        List<OrderStatusLogResponse> response = orderStatusService.getLog(request);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(BaseResponseFactory.success(response));
 
