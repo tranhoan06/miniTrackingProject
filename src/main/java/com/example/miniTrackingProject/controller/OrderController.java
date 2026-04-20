@@ -145,7 +145,6 @@ public class OrderController {
         Page<OrderResponse> response = orderService.getByBuyer(pageSize, pageNumber, status);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(BaseResponseFactory.success(response.getContent()));
-
     }
 
 

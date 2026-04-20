@@ -339,6 +339,80 @@ INSERT INTO `product_images` VALUES (1,1,'https://example.com/image1.jpg',1,1,1)
 UNLOCK TABLES;
 
 --
+-- Table structure for table `product_review_media`
+--
+
+DROP TABLE IF EXISTS `product_review_media`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `product_review_media` (
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `review_id` bigint NOT NULL,
+  `url` varchar(500) NOT NULL,
+  `media_type` varchar(20) NOT NULL,
+  `sort_order` int NOT NULL DEFAULT '0',
+  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `is_delete` tinyint(1) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`id`),
+  KEY `idx_product_review_media_review` (`review_id`),
+  CONSTRAINT `fk_product_review_media_review` FOREIGN KEY (`review_id`) REFERENCES `product_reviews` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `product_review_media`
+--
+
+LOCK TABLES `product_review_media` WRITE;
+/*!40000 ALTER TABLE `product_review_media` DISABLE KEYS */;
+/*!40000 ALTER TABLE `product_review_media` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `product_reviews`
+--
+
+DROP TABLE IF EXISTS `product_reviews`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `product_reviews` (
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `order_item_id` bigint NOT NULL,
+  `order_id` bigint NOT NULL,
+  `product_id` bigint NOT NULL,
+  `buyer_id` bigint NOT NULL,
+  `seller_id` bigint NOT NULL,
+  `rating` tinyint NOT NULL,
+  `content` text,
+  `is_anonymous` tinyint(1) NOT NULL DEFAULT '0',
+  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` datetime DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+  `is_delete` tinyint(1) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uk_product_reviews_order_item` (`order_item_id`),
+  KEY `idx_product_reviews_product` (`product_id`,`is_delete`,`created_at`),
+  KEY `idx_product_reviews_seller` (`seller_id`,`is_delete`,`created_at`),
+  KEY `idx_product_reviews_buyer` (`buyer_id`,`created_at`),
+  KEY `idx_product_reviews_order` (`order_id`),
+  CONSTRAINT `fk_product_reviews_buyer` FOREIGN KEY (`buyer_id`) REFERENCES `users` (`id`),
+  CONSTRAINT `fk_product_reviews_order` FOREIGN KEY (`order_id`) REFERENCES `orders` (`id`),
+  CONSTRAINT `fk_product_reviews_order_item` FOREIGN KEY (`order_item_id`) REFERENCES `order_items` (`id`),
+  CONSTRAINT `fk_product_reviews_product` FOREIGN KEY (`product_id`) REFERENCES `products` (`id`),
+  CONSTRAINT `fk_product_reviews_seller` FOREIGN KEY (`seller_id`) REFERENCES `users` (`id`),
+  CONSTRAINT `ck_product_reviews_rating` CHECK ((`rating` between 1 and 5))
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `product_reviews`
+--
+
+LOCK TABLES `product_reviews` WRITE;
+/*!40000 ALTER TABLE `product_reviews` DISABLE KEYS */;
+/*!40000 ALTER TABLE `product_reviews` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `products`
 --
 
@@ -495,4 +569,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2026-04-20 13:07:48
+-- Dump completed on 2026-04-20 16:42:52

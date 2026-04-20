@@ -473,8 +473,8 @@ public class OrderServiceImpl implements OrderService {
         int size = (pageSize == null || pageSize < 1) ? DEFAULT_PAGE_SIZE : Math.min(pageSize, MAX_PAGE_SIZE);
         Pageable pageable = PageRequest.of(page, size, Sort.by("id").ascending());
         Specification<OrdersEntity> spec = OrderSpecification.filterStatusOrder(user, status);
-        Page<OrdersEntity> entityPage;
-        return null;
+        Page<OrdersEntity> entityPage = orderRepository.findAll(spec, pageable);
+        return entityPage.map(orderMapper::toOrderResponse);
     }
 
     private OrderStatusResponse handleShipperAction(Long orderId, OrderStatus requiredStatus, OrderStatus targetStatus, String reason) {
