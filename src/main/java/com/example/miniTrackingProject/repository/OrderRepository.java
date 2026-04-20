@@ -44,14 +44,23 @@ public interface OrderRepository extends JpaRepository<OrdersEntity, Long>, JpaS
     @Query(value = "SELECT " +
             "COALESCE(SUM(final_amount), 0) AS totalAmount, " +
             "COUNT(*) AS totalOrder, " +
-            "COUNT(CASE WHEN order_status = 'PENDING' THEN 1 ELSE 0 END) AS totalPending, " +
-            "COUNT(CASE WHEN order_status = 'IN_TRANSIT' THEN 1 ELSE 0 END) AS totalIntransit, " +
-            "COUNT(CASE WHEN order_status = 'CANCELLED' THEN 1 ELSE 0 END) AS totalCancel, " +
-            "COUNT(CASE WHEN order_status = 'FAILED' THEN 1 ELSE 0 END) AS totalFailed, " +
-            "COUNT(CASE WHEN order_status = 'RETURNED' THEN 1 ELSE 0 END) AS totalReturn, " +
+            "COALESCE(SUM(CASE WHEN order_status = 'PENDING' THEN 1 ELSE 0 END), 0) AS totalPending, " +
+            "COALESCE(SUM(CASE WHEN order_status = 'IN_TRANSIT' THEN 1 ELSE 0 END), 0) AS totalIntransit, " +
+            "COALESCE(SUM(CASE WHEN order_status = 'CANCELLED' THEN 1 ELSE 0 END), 0) AS totalCancel, " +
+            "COALESCE(SUM(CASE WHEN order_status = 'FAILED' THEN 1 ELSE 0 END), 0) AS totalFailed, " +
+            "COALESCE(SUM(CASE WHEN order_status = 'RETURNED' THEN 1 ELSE 0 END), 0) AS totalReturn, " +
             "0 AS awaitingInspection, " +
-            "0 AS totalRefunds " +
+            "0 AS totalPriceRefunds " +
             "FROM orders WHERE seller_id = :#{#seller.id}",
             nativeQuery = true)
     OrderOverviewProjection getOverviewBySeller(@Param("seller") UserEntity seller);
+
+    @Query(value = "SELECT " +
+            "COALESCE(SUM(CASE WHEN order_status = 'IN_TRANSIT' THEN 1 ELSE 0 END), 0) AS totalIntransit, " +
+            "COALESCE(SUM(CASE WHEN order_status = 'DELIVERED' THEN 1 ELSE 0 END), 0) AS totalComplete " +
+            "FROM orders WHERE buyer_id = :#{#buyer.id}",
+            nativeQuery = true)
+    OrderOverviewProjection getOverviewByBuyer(@Param("buyer") UserEntity buyer);
+
+
 }

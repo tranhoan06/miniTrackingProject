@@ -34,4 +34,8 @@ public interface OrderService {
     OrderStatusResponse refundedOrder(OrderStatusRequest request);
 
     OrderResponse orderDetail(Long id);
+
+    OverviewOrderResponse getOverviewUser();
+
+    Page<OrderResponse> getByBuyer(Integer pageSize, Integer pageNumber, OrderStatus status);
 }

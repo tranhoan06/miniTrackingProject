@@ -336,15 +336,18 @@ public class OrderServiceImpl implements OrderService {
         OrderOverviewProjection projection = orderRepository.getOverviewBySeller(seller);
 
         OverviewOrderResponse response = new OverviewOrderResponse();
-        response.setTotalAmount(projection.getTotalAmount());
-        response.setTotalOrder(projection.getTotalOrder());
-        response.setTotalPending(projection.getTotalPending());
-        response.setTotalIntransit(projection.getTotalIntransit());
-        response.setTotalCancel(projection.getTotalCancel());
-        response.setTotalFailed(projection.getTotalFailed());
-        response.setTotalReturn(projection.getTotalReturn());
-        response.setAwaitingInspection(projection.getAwaitingInspection());
-        response.setTotalRefunds(projection.getTotalRefunds());
+        if(type.equals("orders")) {
+            response.setTotalAmount(projection.getTotalAmount());
+            response.setTotalOrder(projection.getTotalOrder());
+            response.setTotalPending(projection.getTotalPending());
+            response.setTotalIntransit(projection.getTotalIntransit());
+            response.setTotalCancel(projection.getTotalCancel());
+            response.setTotalFailed(projection.getTotalFailed());
+        } else if(type.equals("return")) {
+            response.setTotalReturn(projection.getTotalReturn());
+            response.setAwaitingInspection(projection.getAwaitingInspection());
+            response.setTotalPriceRefunds(projection.getTotalPriceRefunds());
+        }
         return response;
     }
 
@@ -450,6 +453,28 @@ public class OrderServiceImpl implements OrderService {
         }
 
         return orderMapper.toOrderResponse(order);
+    }
+
+    @Override
+    public OverviewOrderResponse getOverviewUser() {
+        UserEntity buyer = securityHelper.getCurrentUser();
+        OrderOverviewProjection projection = orderRepository.getOverviewByBuyer(buyer);
+
+        OverviewOrderResponse response = new OverviewOrderResponse();
+            response.setTotalComplete(projection.getTotalComplete());
+            response.setTotalIntransit(projection.getTotalIntransit());
+        return response;
+    }
+
+    @Override
+    public Page<OrderResponse> getByBuyer(Integer pageSize, Integer pageNumber, OrderStatus status) {
+        UserEntity user = securityHelper.getCurrentUser();
+        int page = (pageNumber == null || pageNumber < 1) ? 0 : pageNumber - 1;
+        int size = (pageSize == null || pageSize < 1) ? DEFAULT_PAGE_SIZE : Math.min(pageSize, MAX_PAGE_SIZE);
+        Pageable pageable = PageRequest.of(page, size, Sort.by("id").ascending());
+        Specification<OrdersEntity> spec = OrderSpecification.filterStatusOrder(user, status);
+        Page<OrdersEntity> entityPage;
+        return null;
     }
 
     private OrderStatusResponse handleShipperAction(Long orderId, OrderStatus requiredStatus, OrderStatus targetStatus, String reason) {

@@ -131,5 +131,22 @@ public class OrderController {
                 .body(BaseResponseFactory.success(response));
     }
 
+    @GetMapping("overview-user")
+    @PreAuthorize("hasAnyRole('ROLE_BUYER')")
+    public ResponseEntity<BaseResponse<OverviewOrderResponse>> overviewUser() {
+        OverviewOrderResponse response = orderService.getOverviewUser();
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(BaseResponseFactory.success(response));
+    }
+
+    @GetMapping("order-buyer")
+    @PreAuthorize("hasAnyRole('ROLE_BUYER')")
+    public ResponseEntity<BaseResponse<List<?>>> orderBuyer(Integer pageSize, Integer pageNumber, OrderStatus status) {
+        Page<OrderResponse> response = orderService.getByBuyer(pageSize, pageNumber, status);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(BaseResponseFactory.success(response.getContent()));
+
+    }
+
 
 }

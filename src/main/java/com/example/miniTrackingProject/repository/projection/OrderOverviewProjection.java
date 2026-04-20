@@ -11,5 +11,6 @@ public interface OrderOverviewProjection {
     Long getTotalFailed();
     Long getTotalReturn();
     Long getAwaitingInspection();
-    Long getTotalRefunds();
+    Long getTotalPriceRefunds();
+    Long getTotalComplete();
 }

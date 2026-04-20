@@ -1,5 +1,6 @@
 package com.example.miniTrackingProject.dto.response;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -12,6 +13,7 @@ import java.math.BigDecimal;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class OverviewOrderResponse implements Serializable {
     private BigDecimal totalAmount;
     private Long totalOrder;
@@ -21,5 +23,6 @@ public class OverviewOrderResponse implements Serializable {
     private Long totalFailed;
     private Long totalReturn; // (Đơn hàng đang trong quá trình đổi trả)
     private Long awaitingInspection; // (Đang chờ kiểm tra)
-    private Long totalRefunds; // (Tổng số tiền hoàn lại)
+    private Long totalPriceRefunds; // (Tổng số tiền hoàn lại)
+    private Long totalComplete;
 }
