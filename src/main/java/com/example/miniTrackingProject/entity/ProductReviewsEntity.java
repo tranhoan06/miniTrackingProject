@@ -16,38 +16,27 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ProductReviewsEntity implements Serializable {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "order_item_id", nullable = false, unique = true)
-    private OrderItemsEntity orderItem;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "order_id", nullable = false)
-    private OrdersEntity orders;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "product_id", nullable = false)
-    private ProductsEntity products;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "buyer_id", nullable = false)
     private UserEntity buyer;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "seller_id", nullable = false)
-    private UserEntity seller;
+    @JoinColumn(name = "product_id", nullable = false)
+    private ProductsEntity product;
 
     @Column(nullable = false)
-    private Long rating;
+    private Integer rating;
 
     @Column(length = 500)
     private String content;
 
-    @Column(name = "is_anonymous", nullable = false, columnDefinition = "BOOLEAN DEFAULT FALSE")
-    private Boolean isAnonymous;
+    @Column(nullable = false)
+    private Boolean isAnonymous = false;
 
     @Column(name = "created_at")
     private LocalDateTime createdAt;
@@ -55,6 +44,6 @@ public class ProductReviewsEntity implements Serializable {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
-    @Column(name = "is_delete", nullable = false, columnDefinition = "BOOLEAN DEFAULT FALSE")
-    private Boolean isDelete;
+    @Column(name = "is_delete", nullable = false)
+    private Boolean isDelete = false;
 }
