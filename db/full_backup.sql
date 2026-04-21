@@ -1,8 +1,8 @@
--- MySQL dump 10.13  Distrib 8.0.45, for Win64 (x86_64)
+-- MySQL dump 10.13  Distrib 8.0.43, for Win64 (x86_64)
 --
--- Host: 127.0.0.1    Database: minitracking
+-- Host: 127.0.0.1    Database: minitrackingproject
 -- ------------------------------------------------------
--- Server version	8.0.45
+-- Server version	8.0.43
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -339,6 +339,36 @@ INSERT INTO `product_images` VALUES (1,1,'https://example.com/image1.jpg',1,1,1)
 UNLOCK TABLES;
 
 --
+-- Table structure for table `product_review_media`
+--
+
+DROP TABLE IF EXISTS `product_review_media`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `product_review_media` (
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `review_id` bigint NOT NULL,
+  `url` varchar(500) NOT NULL,
+  `media_type` varchar(20) NOT NULL,
+  `sort_order` int NOT NULL DEFAULT '0',
+  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `is_delete` tinyint(1) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`id`),
+  KEY `idx_product_review_media_review` (`review_id`),
+  CONSTRAINT `fk_product_review_media_review` FOREIGN KEY (`review_id`) REFERENCES `product_reviews` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `product_review_media`
+--
+
+LOCK TABLES `product_review_media` WRITE;
+/*!40000 ALTER TABLE `product_review_media` DISABLE KEYS */;
+/*!40000 ALTER TABLE `product_review_media` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `product_reviews`
 --
 
@@ -370,7 +400,7 @@ CREATE TABLE `product_reviews` (
 
 LOCK TABLES `product_reviews` WRITE;
 /*!40000 ALTER TABLE `product_reviews` DISABLE KEYS */;
-INSERT INTO `product_reviews` VALUES (1,2,7,5,'Đẹp',0,'2026-04-20 22:54:22',NULL,0);
+INSERT INTO `product_reviews` VALUES (1,2,7,5,'Đẹp',0,'2026-04-20 22:54:22','2026-04-21 16:43:09',0);
 /*!40000 ALTER TABLE `product_reviews` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -531,4 +561,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2026-04-20 22:57:06
+-- Dump completed on 2026-04-21 17:18:01

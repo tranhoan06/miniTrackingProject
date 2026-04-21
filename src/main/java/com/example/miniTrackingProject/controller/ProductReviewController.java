@@ -9,13 +9,13 @@ import com.example.miniTrackingProject.dto.response.ProductReviewResponse;
 import com.example.miniTrackingProject.service.ProductReviewService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -29,5 +29,28 @@ public class ProductReviewController {
         String productResponse = productReviewService.create(request);
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(BaseResponseFactory.success(productResponse));
+    }
+
+    @GetMapping("/product/{productId}")
+    public ResponseEntity<BaseResponse<List<ProductReviewResponse>>> getProductReviews(
+            @PathVariable Long productId,
+            @RequestParam(defaultValue = "0") int offset, // Số lượng đã hiển thị
+            @RequestParam(defaultValue = "3") int limit) { // Số lượng muốn lấy thêm
+
+        return ResponseEntity.ok(BaseResponseFactory.success(
+                productReviewService.getReviewByProduct(productId, limit, offset)
+        ));
+    }
+
+    @PostMapping("/update/{id}")
+    public ResponseEntity<BaseResponse<ProductReviewResponse>> updateProductReview(@PathVariable Long id, @Valid @RequestBody ProductReviewRequest request) {
+        ProductReviewResponse response = productReviewService.updateProductReview(id, request);
+        return ResponseEntity.ok(BaseResponseFactory.success(response));
+    }
+
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<BaseResponse<String>> deleteReview(@PathVariable Long id) {
+        String response = productReviewService.deleteReview(id);
+        return ResponseEntity.ok(BaseResponseFactory.success(response));
     }
 }

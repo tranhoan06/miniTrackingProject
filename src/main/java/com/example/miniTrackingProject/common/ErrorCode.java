@@ -29,6 +29,7 @@ public enum ErrorCode {
     VOUCHER_NOT_FOUND(400, "Voucher does not exist", HttpStatus.BAD_REQUEST),
     VOUCHER_EXPIRES(400, "Voucher expires", HttpStatus.BAD_REQUEST),
     VOUCHER_HAS_NOT_STARTED_YET(400, "Voucher has not started yet", HttpStatus.BAD_REQUEST),
+    REVIEW_ALREADY_EXISTS(400, "Can't be evaluated", HttpStatus.BAD_REQUEST),
     // Course Management
     COURSE_NOT_FOUND(404, "Course not found", HttpStatus.NOT_FOUND),
     PRODUCT_NOT_ENOUGH_STOCK(404, "Product not enough stock", HttpStatus.NOT_FOUND),
