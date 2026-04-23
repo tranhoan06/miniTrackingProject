@@ -5,13 +5,27 @@ spring:
     username: root
     password: 123456
     url: jdbc:mysql://localhost:3306/minitrackingproject
-#    url: jdbc:mysql://localhost:3306/minitracking
 
   jpa:
     properties:
       hibernate:
         format_sql: true
     show-sql: true
+
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username:
+    password:
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+            required: true
+        debug: false
+    default-encoding: UTF-8
 
 server:
   port: 8080

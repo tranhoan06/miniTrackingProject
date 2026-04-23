@@ -36,6 +36,8 @@ public class UserEntity implements Serializable, UserDetails {
 
     private String fullname;
 
+    private String email;
+
     @Enumerated(EnumType.STRING)
     private RoleEnum role;
 

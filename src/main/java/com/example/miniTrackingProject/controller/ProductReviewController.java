@@ -24,6 +24,7 @@ import java.util.List;
 public class ProductReviewController {
     private final ProductReviewService productReviewService;
 
+    // api tạo đánh giá sp
     @PostMapping("create")
     public ResponseEntity<BaseResponse<String>> create(@Valid @RequestBody ProductReviewRequest request) {
         String productResponse = productReviewService.create(request);
@@ -31,6 +32,7 @@ public class ProductReviewController {
                 .body(BaseResponseFactory.success(productResponse));
     }
 
+    // api hiện ds đánh giá
     @GetMapping("/product/{productId}")
     public ResponseEntity<BaseResponse<List<ProductReviewResponse>>> getProductReviews(
             @PathVariable Long productId,
@@ -42,12 +44,14 @@ public class ProductReviewController {
         ));
     }
 
+    // api sửa đánh giá
     @PostMapping("/update/{id}")
     public ResponseEntity<BaseResponse<ProductReviewResponse>> updateProductReview(@PathVariable Long id, @Valid @RequestBody ProductReviewRequest request) {
         ProductReviewResponse response = productReviewService.updateProductReview(id, request);
         return ResponseEntity.ok(BaseResponseFactory.success(response));
     }
 
+    // api xóa
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<BaseResponse<String>> deleteReview(@PathVariable Long id) {
         String response = productReviewService.deleteReview(id);

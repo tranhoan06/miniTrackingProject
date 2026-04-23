@@ -62,6 +62,7 @@ public class ShippingProviderController {
                 ));
     }
 
+    // api vận chuyển
     @PostMapping("/shippingOrder")
     public ResponseEntity<BaseResponse<String>> shippingOrder (@Valid  @RequestBody ShippingOrderRequest request) {
 
@@ -72,6 +73,7 @@ public class ShippingProviderController {
                 ));
     }
 
+    // api giao hàng thành công
     @PostMapping("/delivered")
     @PreAuthorize("hasAnyRole('ROLE_SHIPPER')")
     public ResponseEntity<BaseResponse<String>> deliveredOrder (@Valid  @RequestBody DeliveredOrderRequest request) {

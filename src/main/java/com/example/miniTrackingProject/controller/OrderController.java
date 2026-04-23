@@ -22,6 +22,7 @@ import java.util.List;
 public class OrderController {
     private final OrderService orderService;
 
+    // api preview trc khi tạo đơn
     @PostMapping("/preview")
     public ResponseEntity<BaseResponse<PreviewOrderResponse>> previewOrder(@RequestBody PreviewOrderRequest request) {
         PreviewOrderResponse response = orderService.previewOrder(request);
@@ -29,6 +30,7 @@ public class OrderController {
                 .body(BaseResponseFactory.success(response));
     }
 
+    // api tạo đơn hàng
     @PostMapping("/create")
     public ResponseEntity<BaseResponse<String>> createOrder(@Valid @RequestBody OrderRequest request) {
         String response = orderService.createOrder(request);
@@ -36,6 +38,7 @@ public class OrderController {
                 .body(BaseResponseFactory.success(response));
     }
 
+    // api danh sách đơn hàng
     @GetMapping("/seller")
     @PreAuthorize("hasAnyRole('ROLE_SELLER')")
     public ResponseEntity<BaseResponse<List<?>>> getBySeller(Integer pageSize, Integer pageNumber, @RequestParam(required = false) Boolean isReturn, OrderStatus status) {
@@ -44,6 +47,7 @@ public class OrderController {
                 .body(BaseResponseFactory.success(response.getContent()));
     }
 
+    // api xác nhận
     @PostMapping("/confirm")
     @PreAuthorize("hasAnyRole('ROLE_SELLER')")
     public ResponseEntity<BaseResponse<OrderStatusResponse>> confirmOrder(@Valid @RequestBody ConfirmStatusRequest request) {
@@ -52,6 +56,7 @@ public class OrderController {
                 .body(BaseResponseFactory.success(response));
     }
 
+    // api hủy đơn
     @PostMapping("/cancel")
     @PreAuthorize("hasAnyRole('ROLE_SELLER', 'ROLE_BUYER')")
     public ResponseEntity<BaseResponse<OrderStatusResponse>> cancelOrder(@Valid @RequestBody CancelOrderRequest request) {
@@ -60,6 +65,7 @@ public class OrderController {
                 .body(BaseResponseFactory.success(response));
     }
 
+    // api đóng gói hàng
     @PostMapping("/packed")
     @PreAuthorize("hasAnyRole('ROLE_SELLER')")
     public ResponseEntity<BaseResponse<OrderStatusResponse>> packedOrder(@Valid @RequestBody OrderStatusRequest request) {
@@ -68,6 +74,7 @@ public class OrderController {
                 .body(BaseResponseFactory.success(response));
     }
 
+    // api giao dvvc
     @PostMapping("/assign-provider")
     @PreAuthorize("hasAnyRole('ROLE_SELLER')")
     public ResponseEntity<BaseResponse<OrderStatusResponse>> assignProviderOrder(@Valid @RequestBody OrderStatusRequest request) {
@@ -76,6 +83,7 @@ public class OrderController {
                 .body(BaseResponseFactory.success(response));
     }
 
+    // api overview đơn hàng
     @GetMapping("/overview")
     @PreAuthorize("hasAnyRole('ROLE_SELLER')")
     public ResponseEntity<BaseResponse<OverviewOrderResponse>> overviewOrder(@RequestParam("type") String type) {
@@ -84,6 +92,7 @@ public class OrderController {
                 .body(BaseResponseFactory.success(response));
     }
 
+    // api user trả hàng
     @PostMapping("/return-pending")
     @PreAuthorize("hasAnyRole('ROLE_BUYER')")
     public ResponseEntity<BaseResponse<OrderStatusResponse>> returnPendingOrder(@Valid @RequestBody CancelOrderRequest request) {
@@ -92,6 +101,7 @@ public class OrderController {
                 .body(BaseResponseFactory.success(response));
     }
 
+    // api shipper nhận hàng trả về từ user
     @PostMapping("/return")
     @PreAuthorize("hasAnyRole('ROLE_SHIPPER')")
     public ResponseEntity<BaseResponse<OrderStatusResponse>> returnOrder(@Valid @RequestBody OrderStatusRequest request) {
@@ -100,6 +110,7 @@ public class OrderController {
                 .body(BaseResponseFactory.success(response));
     }
 
+    // api nhận hàng trả về
     @PostMapping("/warehouse-received")
     @PreAuthorize("hasAnyRole('ROLE_SHIPPER')")
     public ResponseEntity<BaseResponse<OrderStatusResponse>> warehouseReceivedOrder(@Valid @RequestBody OrderStatusRequest request) {
@@ -108,6 +119,7 @@ public class OrderController {
                 .body(BaseResponseFactory.success(response));
     }
 
+    // api trả hàng về kho
     @PostMapping("/restocked")
     @PreAuthorize("hasAnyRole('ROLE_SELLER')")
     public ResponseEntity<BaseResponse<OrderStatusResponse>> restockedOrder(@Valid @RequestBody OrderStatusRequest request) {
@@ -116,6 +128,7 @@ public class OrderController {
                 .body(BaseResponseFactory.success(response));
     }
 
+    // api hoàn tiền
     @PostMapping("/refunded")
     @PreAuthorize("hasAnyRole('ROLE_SELLER')")
     public ResponseEntity<BaseResponse<OrderStatusResponse>> refundedOrder(@Valid @RequestBody OrderStatusRequest request) {
@@ -124,6 +137,7 @@ public class OrderController {
                 .body(BaseResponseFactory.success(response));
     }
 
+    // api chi tiết order
     @GetMapping("order-detail/{id}")
     public ResponseEntity<BaseResponse<OrderResponse>> orderDetail(@PathVariable Long id) {
         OrderResponse response = orderService.orderDetail(id);
@@ -131,6 +145,7 @@ public class OrderController {
                 .body(BaseResponseFactory.success(response));
     }
 
+    // api thống kê user
     @GetMapping("overview-user")
     @PreAuthorize("hasAnyRole('ROLE_BUYER')")
     public ResponseEntity<BaseResponse<OverviewOrderResponse>> overviewUser() {
@@ -139,6 +154,7 @@ public class OrderController {
                 .body(BaseResponseFactory.success(response));
     }
 
+    // api quản lý danh sách đơn hàng
     @GetMapping("order-buyer")
     @PreAuthorize("hasAnyRole('ROLE_BUYER')")
     public ResponseEntity<BaseResponse<List<?>>> orderBuyer(Integer pageSize, Integer pageNumber, OrderStatus status) {

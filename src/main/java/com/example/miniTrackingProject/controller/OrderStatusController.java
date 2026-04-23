@@ -24,6 +24,7 @@ import java.util.List;
 public class OrderStatusController {
     private final OrderStatusService orderStatusService;
 
+    // api ghi hành trình
     @PostMapping("")
     public ResponseEntity<BaseResponse<List<OrderStatusLogResponse>>> getLog(@Valid @RequestBody OrderStatusLogRequest request) {
         List<OrderStatusLogResponse> response = orderStatusService.getLog(request);

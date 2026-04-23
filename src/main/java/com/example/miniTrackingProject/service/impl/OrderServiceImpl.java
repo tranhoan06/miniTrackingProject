@@ -9,6 +9,7 @@ import com.example.miniTrackingProject.mapper.AddressMapper;
 import com.example.miniTrackingProject.mapper.OrderMapper;
 import com.example.miniTrackingProject.repository.*;
 import com.example.miniTrackingProject.repository.projection.OrderOverviewProjection;
+import com.example.miniTrackingProject.service.NotificationService;
 import com.example.miniTrackingProject.service.OrderService;
 import com.example.miniTrackingProject.service.spec.OrderSpecification;
 import lombok.RequiredArgsConstructor;
@@ -54,6 +55,7 @@ public class OrderServiceImpl implements OrderService {
     private final OrderMapper orderMapper;
     private final ShippingProviderRepository shippingProviderRepository;
     private final OrderStatusLogRepository orderStatusLogRepository;
+    private final NotificationService notificationService;
 
     private void logOrderStatusChange(OrdersEntity order, OrderStatus from, OrderStatus to, String note, UserEntity changedBy) {
         if (order == null || order.getId() == null) return;
@@ -109,10 +111,12 @@ public class OrderServiceImpl implements OrderService {
         AddresesEntity address = addressRepository.findById(request.getAddressId())
                 .orElseThrow(() -> new JavaBuilderException(ErrorCode.ADDRESS_NOT_FOUND));
 
-        VouchersEntity voucher = voucherRepository.findVoucher(request.getVoucherId(), today)
-                .orElseThrow(() -> new JavaBuilderException(ErrorCode.VOUCHER_NOT_FOUND));
-
-        validateVoucher(voucher);
+        VouchersEntity voucher = null;
+        if (request.getVoucherId() != null) {
+            voucher = voucherRepository.findVoucher(request.getVoucherId(), today)
+                    .orElseThrow(() -> new JavaBuilderException(ErrorCode.VOUCHER_NOT_FOUND));
+            validateVoucher(voucher);
+        }
 
         String addressSnapshot = objectMapper.writeValueAsString(
                 addressMapper.toSnapshot(address)
@@ -186,7 +190,9 @@ public class OrderServiceImpl implements OrderService {
 
             orderItemRepository.saveAll(itemsBySeller.get(sellerId));
         }
-        voucher.setUsedCount(voucher.getUsedCount() + 1);
+        if (voucher != null) {
+            voucher.setUsedCount(voucher.getUsedCount() + 1);
+        }
         return "Create order success";
     }
 
