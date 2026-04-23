@@ -13,6 +13,7 @@ import com.example.miniTrackingProject.service.MailService;
 import com.example.miniTrackingProject.service.NotificationService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -23,10 +24,12 @@ public class NotificationServiceImpl implements NotificationService {
     private final MailService mailService;
     private final SecurityHelper securityHelper;
 
+    @Value("${spring.mail.username}")
+    private String mailFrom;
+
     @Override
     @Transactional
     public void notifyOrderStatus(UserEntity recipient, OrdersEntity order, OrderStatus status) {
-        UserEntity user = securityHelper.getCurrentUser();
 
         String recipientType = RoleEnum.BUYER.name();
 
@@ -37,7 +40,8 @@ public class NotificationServiceImpl implements NotificationService {
         String subject = tpl.getSubject()
                 .replace("{{orderCode}}", String.valueOf(order.getId()));
         String content = tpl.getContent()
-                .replace("{{name}}", user.getFullname())
+                .replace("{{orderCode}}", String.valueOf(order.getId()))
+                .replace("{{name}}", recipient.getFullname())
                 .replace("{{status}}", status.name());
 
         NotificationsEntity noti = NotificationsEntity.builder()
@@ -53,7 +57,7 @@ public class NotificationServiceImpl implements NotificationService {
         noti = notificationsRepository.save(noti);
 
         try {
-            mailService.send(noti.getEmailTo(), noti.getTitle(), noti.getContent());
+            mailService.send(noti.getEmailTo(), noti.getTitle(), noti.getContent(), mailFrom);
             noti.setDeliveryStatus("SUCCESS");
         } catch (Exception ex) {
             noti.setDeliveryStatus("FAILED");

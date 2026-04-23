@@ -4,7 +4,8 @@ spring:
   datasource:
     username: root
     password: 123456
-    url: jdbc:mysql://localhost:3306/minitrackingproject
+#    url: jdbc:mysql://localhost:3306/minitrackingproject
+    url: jdbc:mysql://localhost:3306/minitracking
 
   jpa:
     properties:
@@ -15,8 +16,8 @@ spring:
   mail:
     host: smtp.gmail.com
     port: 587
-    username:
-    password:
+    username: cuoilamvay123@gmail.com
+    password: vnavrxqqigqebngw
     properties:
       mail:
         smtp:
@@ -24,7 +25,7 @@ spring:
           starttls:
             enable: true
             required: true
-        debug: false
+        debug: true
     default-encoding: UTF-8
 
 server:

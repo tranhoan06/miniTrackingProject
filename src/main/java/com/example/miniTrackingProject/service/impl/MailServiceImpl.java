@@ -12,12 +12,13 @@ public class MailServiceImpl implements MailService {
     private final JavaMailSender mailSender;
 
     @Override
-    public void send(String to, String subject, String htmlOrTextBody) {
+    public void send(String to, String subject, String htmlOrTextBody, String mailFrom) {
         SimpleMailMessage msg = new SimpleMailMessage();
 
         msg.setTo(to);
         msg.setSubject(subject);
         msg.setText(htmlOrTextBody);
+        msg.setFrom(mailFrom);
         mailSender.send(msg);
     }
 }

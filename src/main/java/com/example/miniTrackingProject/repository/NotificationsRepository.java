@@ -17,4 +17,6 @@ public interface NotificationsRepository extends JpaRepository<NotificationsEnti
             String deliveryStatus,
             String notificationType
     );
+
+    boolean existsByOrders_IdAndTemplates_StatusCodeAndNotificationType(Long orderId, String statusCode, String notificationType);
 }
