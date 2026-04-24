@@ -9,7 +9,6 @@ import com.example.miniTrackingProject.mapper.AddressMapper;
 import com.example.miniTrackingProject.mapper.OrderMapper;
 import com.example.miniTrackingProject.repository.*;
 import com.example.miniTrackingProject.repository.projection.OrderOverviewProjection;
-import com.example.miniTrackingProject.service.NotificationService;
 import com.example.miniTrackingProject.service.OrderService;
 import com.example.miniTrackingProject.service.spec.OrderSpecification;
 import lombok.RequiredArgsConstructor;
@@ -55,7 +54,6 @@ public class OrderServiceImpl implements OrderService {
     private final OrderMapper orderMapper;
     private final ShippingProviderRepository shippingProviderRepository;
     private final OrderStatusLogRepository orderStatusLogRepository;
-    private final NotificationService notificationService;
 
     private void logOrderStatusChange(OrdersEntity order, OrderStatus from, OrderStatus to, String note, UserEntity changedBy) {
         if (order == null || order.getId() == null) return;
