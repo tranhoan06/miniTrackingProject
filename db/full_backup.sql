@@ -1,8 +1,8 @@
--- MySQL dump 10.13  Distrib 8.0.45, for Win64 (x86_64)
+-- MySQL dump 10.13  Distrib 8.0.43, for Win64 (x86_64)
 --
--- Host: localhost    Database: minitracking
+-- Host: 127.0.0.1    Database: minitrackingproject
 -- ------------------------------------------------------
--- Server version	8.0.45
+-- Server version	8.0.43
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -174,7 +174,7 @@ CREATE TABLE `inventory` (
 
 LOCK TABLES `inventory` WRITE;
 /*!40000 ALTER TABLE `inventory` DISABLE KEYS */;
-INSERT INTO `inventory` VALUES (1,2,100,0,NULL,1),(2,3,100,0,NULL,NULL),(3,7,100,0,NULL,NULL),(4,8,100,0,NULL,NULL),(5,9,100,0,NULL,NULL),(9,1,100,10,'2026-04-02 07:33:15',NULL),(10,2,100,0,NULL,1),(11,2,100,0,NULL,1),(12,2,100,0,NULL,1),(13,2,100,0,NULL,1),(14,2,100,0,NULL,1),(15,2,9,0,'2026-04-06 02:53:50',1),(16,10,100,0,NULL,0),(17,11,100,16,'2026-04-23 08:40:37',0),(18,2,100,0,'2026-04-14 09:27:38',0);
+INSERT INTO `inventory` VALUES (1,2,100,0,NULL,1),(2,3,100,0,NULL,NULL),(3,7,100,0,NULL,NULL),(4,8,100,0,NULL,NULL),(5,9,100,0,NULL,NULL),(9,1,100,10,'2026-04-02 07:33:15',NULL),(10,2,100,0,NULL,1),(11,2,100,0,NULL,1),(12,2,100,0,NULL,1),(13,2,100,0,NULL,1),(14,2,100,0,NULL,1),(15,2,9,0,'2026-04-06 02:53:50',1),(16,10,100,2,'2026-04-24 03:52:22',0),(17,11,100,16,'2026-04-23 08:40:37',0),(18,2,100,0,'2026-04-14 09:27:38',0);
 /*!40000 ALTER TABLE `inventory` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -237,7 +237,7 @@ CREATE TABLE `notifications` (
   CONSTRAINT `fk_noti_order` FOREIGN KEY (`order_id`) REFERENCES `orders` (`id`) ON DELETE SET NULL,
   CONSTRAINT `fk_noti_template` FOREIGN KEY (`template_id`) REFERENCES `notification_templates` (`id`) ON DELETE SET NULL,
   CONSTRAINT `fk_noti_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -246,7 +246,7 @@ CREATE TABLE `notifications` (
 
 LOCK TABLES `notifications` WRITE;
 /*!40000 ALTER TABLE `notifications` DISABLE KEYS */;
-INSERT INTO `notifications` VALUES (1,7,11,2,'Đơn hàng #11 đã xác nhận','Chào mua hàng, đơn hàng đã được xác nhận thành công.',0,'MAIL','2026-04-23 16:12:43','nguyenquan5101@gmail.com','SUCCESS',NULL);
+INSERT INTO `notifications` VALUES (1,7,11,2,'Đơn hàng #11 đã xác nhận','Chào mua hàng, đơn hàng đã được xác nhận thành công.',0,'MAIL','2026-04-23 16:12:43','nguyenquan5101@gmail.com','SUCCESS',NULL),(2,7,12,2,'Đơn hàng #12 đã xác nhận','Chào mua hàng, đơn hàng đã được xác nhận thành công.',0,'MAIL','2026-04-24 03:56:11','nguyenquan5101@gmail.com','SUCCESS',NULL);
 /*!40000 ALTER TABLE `notifications` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -275,7 +275,7 @@ CREATE TABLE `order_items` (
   CONSTRAINT `fk_order_items_order` FOREIGN KEY (`order_id`) REFERENCES `orders` (`id`),
   CONSTRAINT `fk_order_items_product` FOREIGN KEY (`product_id`) REFERENCES `products` (`id`),
   CONSTRAINT `fk_order_items_seller` FOREIGN KEY (`seller_id`) REFERENCES `users` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -284,7 +284,7 @@ CREATE TABLE `order_items` (
 
 LOCK TABLES `order_items` WRITE;
 /*!40000 ALTER TABLE `order_items` DISABLE KEYS */;
-INSERT INTO `order_items` VALUES (1,1,11,2,2,199000,398000,'Áo thun nam 17','https://example.com/image1.jpg','2026-04-13 09:39:39'),(2,2,2,1,2,200000,400000,'Áo thun nam 02','https://example.com/image1.jpg','2026-04-14 09:19:39'),(3,9,11,2,2,199000,398000,'Áo thun nam 17','https://example.com/image1.jpg','2026-04-16 10:03:43'),(4,10,11,2,2,199000,398000,'Áo thun nam 17','https://example.com/image1.jpg','2026-04-23 03:10:59'),(5,11,11,2,2,199000,398000,'Áo thun nam 17','https://example.com/image1.jpg','2026-04-23 08:40:37');
+INSERT INTO `order_items` VALUES (1,1,11,2,2,199000,398000,'Áo thun nam 17','https://example.com/image1.jpg','2026-04-13 09:39:39'),(2,2,2,1,2,200000,400000,'Áo thun nam 02','https://example.com/image1.jpg','2026-04-14 09:19:39'),(3,9,11,2,2,199000,398000,'Áo thun nam 17','https://example.com/image1.jpg','2026-04-16 10:03:43'),(4,10,11,2,2,199000,398000,'Áo thun nam 17','https://example.com/image1.jpg','2026-04-23 03:10:59'),(5,11,11,2,2,199000,398000,'Áo thun nam 17','https://example.com/image1.jpg','2026-04-23 08:40:37'),(6,12,10,1,2,199000,398000,'Áo thun nam 17','https://example.com/image1.jpg','2026-04-24 03:52:22');
 /*!40000 ALTER TABLE `order_items` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -305,7 +305,7 @@ CREATE TABLE `order_status_logs` (
   PRIMARY KEY (`id`),
   KEY `idx_order_status_logs_order_id` (`order_id`),
   CONSTRAINT `fk_order_status_logs_order` FOREIGN KEY (`order_id`) REFERENCES `orders` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=29 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=31 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -314,7 +314,7 @@ CREATE TABLE `order_status_logs` (
 
 LOCK TABLES `order_status_logs` WRITE;
 /*!40000 ALTER TABLE `order_status_logs` DISABLE KEYS */;
-INSERT INTO `order_status_logs` VALUES (1,9,'PENDING','CREATE_ORDER','mua hàng','2026-04-16 17:03:42.514'),(2,9,'CONFIRMED','CONFIRM','hoan2','2026-04-17 10:32:01.987'),(3,9,'PACKED','PACKED','hoan2','2026-04-17 10:34:11.254'),(4,9,'SHIPPED','VTPOST-20260417103540-9','hoan2','2026-04-17 10:35:40.420'),(5,9,'IN_TRANSIT','SHIPPER_START','Macbook Grabfood','2026-04-17 10:36:21.605'),(6,9,'DELIVERED','Giao hàng thành công','Macbook Grabfood','2026-04-17 10:37:48.242'),(7,9,'RETURN_PENDING','K thích','mua hàng','2026-04-17 10:54:14.675'),(8,9,'RETURNED','','Macbook Grabfood','2026-04-17 10:55:52.013'),(9,9,'WAREHOUSE_RECEIVED','RETURNED','Macbook Grabfood','2026-04-17 13:43:57.778'),(10,9,'RESTOCKED','RESTOCKED','hoan2','2026-04-17 13:46:57.141'),(11,9,'REFUNDED','Hoàn tiền thành công','hoan2','2026-04-17 14:01:35.763'),(12,10,'PENDING','CREATE_ORDER','mua hàng','2026-04-23 10:10:59.054'),(13,11,'PENDING','CREATE_ORDER','mua hàng','2026-04-23 15:40:37.120'),(14,11,'CONFIRMED','CONFIRM','hoan2','2026-04-23 15:58:34.336'),(15,11,'CONFIRMED','CONFIRM','hoan2','2026-04-23 16:09:56.470'),(16,11,'CONFIRMED','CONFIRM','hoan2','2026-04-23 16:29:40.636'),(17,11,'CONFIRMED','CONFIRM','hoan2','2026-04-23 22:17:52.059'),(18,11,'CONFIRMED','CONFIRM','hoan2','2026-04-23 22:30:21.952'),(19,11,'CONFIRMED','CONFIRM','hoan2','2026-04-23 22:36:39.656'),(20,11,'CONFIRMED','CONFIRM','hoan2','2026-04-23 22:42:48.805'),(21,11,'CONFIRMED','CONFIRM','hoan2','2026-04-23 22:44:22.289'),(22,11,'CONFIRMED','CONFIRM','hoan2','2026-04-23 22:50:00.936'),(23,11,'CONFIRMED','CONFIRM','hoan2','2026-04-23 22:52:48.190'),(24,11,'CONFIRMED','CONFIRM','hoan2','2026-04-23 22:57:19.845'),(25,11,'CONFIRMED','CONFIRM','hoan2','2026-04-23 23:03:04.155'),(26,11,'CONFIRMED','CONFIRM','hoan2','2026-04-23 23:12:12.260'),(27,11,'CONFIRMED','CONFIRM','hoan2','2026-04-23 23:13:22.873'),(28,11,'CONFIRMED','CONFIRM','hoan2','2026-04-23 23:14:55.690');
+INSERT INTO `order_status_logs` VALUES (1,9,'PENDING','CREATE_ORDER','mua hàng','2026-04-16 17:03:42.514'),(2,9,'CONFIRMED','CONFIRM','hoan2','2026-04-17 10:32:01.987'),(3,9,'PACKED','PACKED','hoan2','2026-04-17 10:34:11.254'),(4,9,'SHIPPED','VTPOST-20260417103540-9','hoan2','2026-04-17 10:35:40.420'),(5,9,'IN_TRANSIT','SHIPPER_START','Macbook Grabfood','2026-04-17 10:36:21.605'),(6,9,'DELIVERED','Giao hàng thành công','Macbook Grabfood','2026-04-17 10:37:48.242'),(7,9,'RETURN_PENDING','K thích','mua hàng','2026-04-17 10:54:14.675'),(8,9,'RETURNED','','Macbook Grabfood','2026-04-17 10:55:52.013'),(9,9,'WAREHOUSE_RECEIVED','RETURNED','Macbook Grabfood','2026-04-17 13:43:57.778'),(10,9,'RESTOCKED','RESTOCKED','hoan2','2026-04-17 13:46:57.141'),(11,9,'REFUNDED','Hoàn tiền thành công','hoan2','2026-04-17 14:01:35.763'),(12,10,'PENDING','CREATE_ORDER','mua hàng','2026-04-23 10:10:59.054'),(13,11,'PENDING','CREATE_ORDER','mua hàng','2026-04-23 15:40:37.120'),(14,11,'CONFIRMED','CONFIRM','hoan2','2026-04-23 15:58:34.336'),(15,11,'CONFIRMED','CONFIRM','hoan2','2026-04-23 16:09:56.470'),(16,11,'CONFIRMED','CONFIRM','hoan2','2026-04-23 16:29:40.636'),(17,11,'CONFIRMED','CONFIRM','hoan2','2026-04-23 22:17:52.059'),(18,11,'CONFIRMED','CONFIRM','hoan2','2026-04-23 22:30:21.952'),(19,11,'CONFIRMED','CONFIRM','hoan2','2026-04-23 22:36:39.656'),(20,11,'CONFIRMED','CONFIRM','hoan2','2026-04-23 22:42:48.805'),(21,11,'CONFIRMED','CONFIRM','hoan2','2026-04-23 22:44:22.289'),(22,11,'CONFIRMED','CONFIRM','hoan2','2026-04-23 22:50:00.936'),(23,11,'CONFIRMED','CONFIRM','hoan2','2026-04-23 22:52:48.190'),(24,11,'CONFIRMED','CONFIRM','hoan2','2026-04-23 22:57:19.845'),(25,11,'CONFIRMED','CONFIRM','hoan2','2026-04-23 23:03:04.155'),(26,11,'CONFIRMED','CONFIRM','hoan2','2026-04-23 23:12:12.260'),(27,11,'CONFIRMED','CONFIRM','hoan2','2026-04-23 23:13:22.873'),(28,11,'CONFIRMED','CONFIRM','hoan2','2026-04-23 23:14:55.690'),(29,12,'PENDING','CREATE_ORDER','mua hàng','2026-04-24 10:52:22.078'),(30,12,'CONFIRMED','CONFIRM','hoan11','2026-04-24 10:55:19.537');
 /*!40000 ALTER TABLE `order_status_logs` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -367,7 +367,7 @@ CREATE TABLE `orders` (
   CONSTRAINT `fk_orders_user` FOREIGN KEY (`buyer_id`) REFERENCES `users` (`id`),
   CONSTRAINT `fk_orders_voucher` FOREIGN KEY (`voucher_id`) REFERENCES `vouchers` (`id`),
   CONSTRAINT `fk_shipping_provider` FOREIGN KEY (`shipping_provider_id`) REFERENCES `shipping_providers` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -376,7 +376,7 @@ CREATE TABLE `orders` (
 
 LOCK TABLES `orders` WRITE;
 /*!40000 ALTER TABLE `orders` DISABLE KEYS */;
-INSERT INTO `orders` VALUES (1,7,398000,30000,100000,328000,'PREPAY','PAID',10,1,'{\"phone\": \"012345678\", \"wardId\": 3, \"wardName\": \"Test\", \"districtId\": 2, \"provinceId\": 1, \"districtName\": \"Hoa Lư\", \"provinceName\": \"Ninh Bình\", \"receiverName\": \"Trần Việt Hoàn\", \"detailAddress\": \"Ngõ 67 Vạn Xuân 1\"}','DELIVERED',NULL,'2026-04-13 09:39:38',2,'2026-04-16 08:14:48',NULL,NULL,NULL,6,3,'VTPOST-20260415141946-1','2026-04-16 08:14:48','Giao hàng thành công',NULL,NULL),(2,1,400000,30000,100000,330000,'PREPAY','PENDING',10,1,'{\"phone\": \"012345678\", \"wardId\": 3, \"wardName\": \"Test\", \"districtId\": 2, \"provinceId\": 1, \"districtName\": \"Hoa Lư\", \"provinceName\": \"Ninh Bình\", \"receiverName\": \"Trần Việt Hoàn\", \"detailAddress\": \"Ngõ 67 Vạn Xuân 1\"}','CANCELLED',NULL,'2026-04-14 09:19:39',1,'2026-04-14 09:27:38',1,'2026-04-14 16:27:38','Trả',NULL,NULL,NULL,NULL,NULL,NULL,NULL),(9,7,398000,30000,100000,328000,'PREPAY','REFUNDED',10,1,'{\"phone\": \"012345678\", \"wardId\": 3, \"wardName\": \"Test\", \"districtId\": 2, \"provinceId\": 1, \"districtName\": \"Hoa Lư\", \"provinceName\": \"Ninh Bình\", \"receiverName\": \"Trần Việt Hoàn\", \"detailAddress\": \"Ngõ 67 Vạn Xuân 1\"}','REFUNDED',NULL,'2026-04-16 10:03:42',2,'2026-04-17 07:01:36',NULL,NULL,NULL,6,3,'VTPOST-20260417103540-9',NULL,NULL,NULL,NULL),(10,7,398000,30000,0,428000,'PREPAY','PAID',NULL,1,'{\"phone\": \"012345678\", \"wardId\": 3, \"wardName\": \"Test\", \"districtId\": 2, \"provinceId\": 1, \"districtName\": \"Hoa Lư\", \"provinceName\": \"Ninh Bình\", \"receiverName\": \"Trần Việt Hoàn\", \"detailAddress\": \"Ngõ 67 Vạn Xuân 1\"}','CONFIRMED',NULL,'2026-04-23 03:10:59',2,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL),(11,7,398000,30000,0,428000,'BNPL','PENDING',NULL,1,'{\"phone\": \"012345678\", \"wardId\": 3, \"wardName\": \"Test\", \"districtId\": 2, \"provinceId\": 1, \"districtName\": \"Hoa Lư\", \"provinceName\": \"Ninh Bình\", \"receiverName\": \"Trần Việt Hoàn\", \"detailAddress\": \"Ngõ 67 Vạn Xuân 1\"}','CONFIRMED',NULL,'2026-04-23 08:40:37',2,'2026-04-23 16:14:56',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL);
+INSERT INTO `orders` VALUES (1,7,398000,30000,100000,328000,'PREPAY','PAID',10,1,'{\"phone\": \"012345678\", \"wardId\": 3, \"wardName\": \"Test\", \"districtId\": 2, \"provinceId\": 1, \"districtName\": \"Hoa Lư\", \"provinceName\": \"Ninh Bình\", \"receiverName\": \"Trần Việt Hoàn\", \"detailAddress\": \"Ngõ 67 Vạn Xuân 1\"}','DELIVERED',NULL,'2026-04-13 09:39:38',2,'2026-04-16 08:14:48',NULL,NULL,NULL,6,3,'VTPOST-20260415141946-1','2026-04-16 08:14:48','Giao hàng thành công',NULL,NULL),(2,1,400000,30000,100000,330000,'PREPAY','PENDING',10,1,'{\"phone\": \"012345678\", \"wardId\": 3, \"wardName\": \"Test\", \"districtId\": 2, \"provinceId\": 1, \"districtName\": \"Hoa Lư\", \"provinceName\": \"Ninh Bình\", \"receiverName\": \"Trần Việt Hoàn\", \"detailAddress\": \"Ngõ 67 Vạn Xuân 1\"}','CANCELLED',NULL,'2026-04-14 09:19:39',1,'2026-04-14 09:27:38',1,'2026-04-14 16:27:38','Trả',NULL,NULL,NULL,NULL,NULL,NULL,NULL),(9,7,398000,30000,100000,328000,'PREPAY','REFUNDED',10,1,'{\"phone\": \"012345678\", \"wardId\": 3, \"wardName\": \"Test\", \"districtId\": 2, \"provinceId\": 1, \"districtName\": \"Hoa Lư\", \"provinceName\": \"Ninh Bình\", \"receiverName\": \"Trần Việt Hoàn\", \"detailAddress\": \"Ngõ 67 Vạn Xuân 1\"}','REFUNDED',NULL,'2026-04-16 10:03:42',2,'2026-04-17 07:01:36',NULL,NULL,NULL,6,3,'VTPOST-20260417103540-9',NULL,NULL,NULL,NULL),(10,7,398000,30000,0,428000,'PREPAY','PAID',NULL,1,'{\"phone\": \"012345678\", \"wardId\": 3, \"wardName\": \"Test\", \"districtId\": 2, \"provinceId\": 1, \"districtName\": \"Hoa Lư\", \"provinceName\": \"Ninh Bình\", \"receiverName\": \"Trần Việt Hoàn\", \"detailAddress\": \"Ngõ 67 Vạn Xuân 1\"}','CONFIRMED',NULL,'2026-04-23 03:10:59',2,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL),(11,7,398000,30000,0,428000,'BNPL','PENDING',NULL,1,'{\"phone\": \"012345678\", \"wardId\": 3, \"wardName\": \"Test\", \"districtId\": 2, \"provinceId\": 1, \"districtName\": \"Hoa Lư\", \"provinceName\": \"Ninh Bình\", \"receiverName\": \"Trần Việt Hoàn\", \"detailAddress\": \"Ngõ 67 Vạn Xuân 1\"}','CONFIRMED',NULL,'2026-04-23 08:40:37',2,'2026-04-23 16:14:56',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL),(12,7,398000,30000,0,428000,'BNPL','PENDING',NULL,1,'{\"phone\": \"012345678\", \"wardId\": 3, \"wardName\": \"Test\", \"districtId\": 2, \"provinceId\": 1, \"districtName\": \"Hoa Lư\", \"provinceName\": \"Ninh Bình\", \"receiverName\": \"Trần Việt Hoàn\", \"detailAddress\": \"Ngõ 67 Vạn Xuân 1\"}','CONFIRMED',NULL,'2026-04-24 03:52:22',1,'2026-04-24 03:55:20',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL);
 /*!40000 ALTER TABLE `orders` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -634,4 +634,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2026-04-23 23:18:11
+-- Dump completed on 2026-04-24 16:31:27
