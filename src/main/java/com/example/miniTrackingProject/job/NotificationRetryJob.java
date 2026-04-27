@@ -36,7 +36,7 @@ public class NotificationRetryJob {
     @Scheduled(fixedDelay = 60_000)
     @Transactional
     public void sendConfirmedOrderNotifications() {
-
+        // TODO : tính count bản ghi trc
         LocalDateTime since = LocalDateTime.now().minusMinutes(10);
         List<OrdersEntity> orders = orderRepository
                 .findTop100ByOrderStatusAndUpdatedAtAfterOrderByUpdatedAtAsc(OrderStatus.CONFIRMED, since);
@@ -68,7 +68,7 @@ public class NotificationRetryJob {
             return;
         }
 
-        // 2. Đã tồn tại bản ghi (PENDING hoặc FAILED) → không tạo thêm
+        // 2. Đã tồn tại bản ghi → không tạo thêm
         boolean alreadyExists = notificationsRepository
                 .existsByOrders_IdAndTemplates_StatusCodeAndNotificationType(
                         order.getId(), statusCode, "MAIL");

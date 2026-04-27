@@ -15,6 +15,7 @@ import java.util.Optional;
 public interface InventoryRepository extends JpaRepository<InventoryEntity, Long> {
     List<InventoryEntity> findByProduct_IdInAndIsDeleteFalse(Collection<Long> productIds);
 
+    // TODO: sửa từ tìm 1 sang tìm tìm nhiều
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query("SELECT i FROM InventoryEntity i WHERE i.product.id = :productId AND i.isDelete = false")
     Optional<InventoryEntity> findByProductIdForUpdate(Long productId);

@@ -72,6 +72,8 @@ public class OrderServiceImpl implements OrderService {
         orderStatusLogRepository.save(log);
     }
 
+
+    // TODO: request truyền thêm quantity
     @Override
     public PreviewOrderResponse previewOrder(PreviewOrderRequest request) {
         UserEntity user = securityHelper.getCurrentUser();
@@ -126,6 +128,7 @@ public class OrderServiceImpl implements OrderService {
         BigDecimal totalProductAmount = BigDecimal.ZERO;
 
         // build items
+        // TODO: sửa lại câu query k nằm trong for + reserveInventory
         for (OrderItemRequest item : request.getItems()) {
 
             ProductsEntity product = productRepository.findById(item.getProductId())
@@ -151,6 +154,7 @@ public class OrderServiceImpl implements OrderService {
         BigDecimal totalDiscount = calculateDiscount(totalProductAmount, voucher);
 
         // create orders
+        // TODO: query để ngoài vòng for
         for (Long sellerId : itemsBySeller.keySet()) {
 
             BigDecimal sellerSubtotal = subtotalBySeller.get(sellerId);
