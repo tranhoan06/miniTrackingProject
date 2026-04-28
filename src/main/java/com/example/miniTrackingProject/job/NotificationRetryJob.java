@@ -14,6 +14,9 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
@@ -35,19 +38,61 @@ public class NotificationRetryJob {
 
     @Scheduled(fixedDelay = 60_000)
     @Transactional
-    public void sendConfirmedOrderNotifications() {
-        // TODO : tính count bản ghi trc
-        LocalDateTime since = LocalDateTime.now().minusMinutes(10);
-        List<OrdersEntity> orders = orderRepository
-                .findTop100ByOrderStatusAndUpdatedAtAfterOrderByUpdatedAtAsc(OrderStatus.CONFIRMED, since);
+//    public void sendConfirmedOrderNotifications() {
+//        Integer pageSize = 20;
+//        Integer pageNumber = 0;
+//        Pageable pageable = PageRequest.of(pageNumber, pageSize);
+//        // TODO : tính count bản ghi trc
+//        LocalDateTime since = LocalDateTime.now().minusMinutes(10);
+//        Page<OrdersEntity> page = orderRepository
+//                .findByOrderStatusAndUpdatedAtAfterOrderByUpdatedAtAsc(
+//                        OrderStatus.CONFIRMED,
+//                        since,
+//                        pageable
+//                );
+//
+//        List<OrdersEntity> orders = page.getContent();
+//
+//        for (OrdersEntity order : orders) {
+//            try {
+//                processOrder(order);
+//            } catch (Exception e) {
+//                log.error("Unexpected error processing orderId={}", order.getId(), e);
+//            }
+//        }
+//    }
 
-        for (OrdersEntity order : orders) {
-            try {
-                processOrder(order);
-            } catch (Exception e) {
-                log.error("Unexpected error processing orderId={}", order.getId(), e);
+    public void sendConfirmedOrderNotifications() {
+        int pageSize = 4;
+        int pageNumber = 0;
+
+        LocalDateTime since = LocalDateTime.now().minusMinutes(10);
+
+        Page<OrdersEntity> page;
+
+        do {
+            Pageable pageable = PageRequest.of(pageNumber, pageSize);
+
+            page = orderRepository
+                    .findByOrderStatusAndUpdatedAtAfterOrderByUpdatedAtAsc(
+                            OrderStatus.CONFIRMED,
+                            since,
+                            pageable
+                    );
+
+            List<OrdersEntity> orders = page.getContent();
+
+            for (OrdersEntity order : orders) {
+                try {
+                    processOrder(order);
+                } catch (Exception e) {
+                    log.error("Unexpected error processing orderId={}", order.getId(), e);
+                }
             }
-        }
+
+            pageNumber++;
+
+        } while (page.hasNext());
     }
 
     private void processOrder(OrdersEntity order) {

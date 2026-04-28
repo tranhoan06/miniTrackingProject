@@ -63,8 +63,9 @@ public interface OrderRepository extends JpaRepository<OrdersEntity, Long>, JpaS
             nativeQuery = true)
     OrderOverviewProjection getOverviewByBuyer(@Param("buyer") UserEntity buyer);
 
-    List<OrdersEntity> findTop100ByOrderStatusAndUpdatedAtAfterOrderByUpdatedAtAsc(
+    Page<OrdersEntity> findByOrderStatusAndUpdatedAtAfterOrderByUpdatedAtAsc(
             OrderStatus orderStatus,
-            LocalDateTime updatedAt
+            LocalDateTime updatedAt,
+            Pageable pageable
     );
 }
