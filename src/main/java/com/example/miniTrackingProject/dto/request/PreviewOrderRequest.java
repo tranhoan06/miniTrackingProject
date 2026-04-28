@@ -11,10 +11,9 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class PreviewOrderRequest implements Serializable {
+    private List<OrderItemRequest> items;
 
-    @NonNull
-    private List<Long> productId;
-
-    @NonNull
     private Long voucherId;
+
+    private Boolean isBuyNow = false;
 }

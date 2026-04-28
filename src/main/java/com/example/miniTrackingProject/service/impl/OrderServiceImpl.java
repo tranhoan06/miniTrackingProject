@@ -73,33 +73,71 @@ public class OrderServiceImpl implements OrderService {
     }
 
 
-    // TODO: request truyền thêm quantity
+    // TODO: request truyền thêm quantity - done
     @Override
     public PreviewOrderResponse previewOrder(PreviewOrderRequest request) {
         UserEntity user = securityHelper.getCurrentUser();
         LocalDateTime today = LocalDateTime.now();
-        VouchersEntity voucher = voucherRepository.findVoucher(request.getVoucherId(), today)
-                .orElseThrow(() -> new JavaBuilderException(ErrorCode.VOUCHER_NOT_FOUND));
+        VouchersEntity voucher = null;
+        if (request.getVoucherId() != null) {
+            voucher = voucherRepository
+                    .findVoucher(request.getVoucherId(), today)
+                    .orElseThrow(() -> new JavaBuilderException(ErrorCode.VOUCHER_NOT_FOUND));
 
-        validateVoucher(voucher);
+            validateVoucher(voucher);
+        }
+        List<CartItemsEntity> orderItems;
 
-        List<CartItemsEntity> orderItems = new ArrayList<>();
-        for (Long productId : request.getProductId()) {
-            CartItemsEntity line = cartItemRepository
-                    .findActiveByUserAndProduct(user.getId(), productId)
-                    .orElseThrow(() -> new JavaBuilderException(ErrorCode.CART_NOT_FOUND));
-            orderItems.add(line);
+        if (Boolean.TRUE.equals(request.getIsBuyNow())) {
+
+            orderItems = request.getItems().stream().map(item -> {
+                ProductsEntity product = productRepository.findById(item.getProductId())
+                        .orElseThrow(() -> new JavaBuilderException(ErrorCode.PRODUCT_NOT_FOUND));
+
+                CartItemsEntity cartItem = new CartItemsEntity();
+                cartItem.setProduct(product);
+                cartItem.setQuantity(item.getQuantity());
+
+                return cartItem;
+            }).toList();
+
+        } else {
+            orderItems = new ArrayList<>();
+
+            List<Long> productIds = request.getItems().stream()
+                    .map(OrderItemRequest::getProductId)
+                    .distinct()
+                    .toList();
+
+            List<CartItemsEntity> lines = cartItemRepository.findActiveByUserAndProducts(user.getId(), productIds);
+
+            Map<Long, CartItemsEntity> lineByProductId = lines.stream()
+                    .collect(Collectors.toMap(ci -> ci.getProduct().getId(), ci -> ci));
+
+            if (lineByProductId.size() != productIds.size()) {
+                throw new JavaBuilderException(ErrorCode.CART_NOT_FOUND);
+            }
+
+            for (OrderItemRequest item : request.getItems()) {
+                CartItemsEntity line = lineByProductId.get(item.getProductId());
+                if (line == null) throw new JavaBuilderException(ErrorCode.CART_NOT_FOUND);
+                orderItems.add(line);
+            }
         }
 
         BigDecimal subtotal = calculateSubtotal(orderItems);
 
-        if (subtotal.compareTo(voucher.getMinOrderAmount()) < 0) {
+        if (voucher != null && subtotal.compareTo(voucher.getMinOrderAmount()) < 0) {
             throw new JavaBuilderException(ErrorCode.ORDER_BELOW_MIN_AMOUNT);
         }
 
         BigDecimal discount = calculateDiscount(subtotal, voucher);
 
-        return new PreviewOrderResponse(subtotal, discount, subtotal.subtract(discount));
+        return new PreviewOrderResponse(
+                subtotal,
+                discount,
+                subtotal.subtract(discount)
+        );
     }
 
     @Override
@@ -128,39 +166,59 @@ public class OrderServiceImpl implements OrderService {
         BigDecimal totalProductAmount = BigDecimal.ZERO;
 
         // build items
-        // TODO: sửa lại câu query k nằm trong for + reserveInventory
+        // TODO: sửa lại câu query k nằm trong for + reserveInventory - done
+        // 1) gom tất cả productId
+        List<Long> productIds = request.getItems().stream()
+                .map(OrderItemRequest::getProductId)
+                .distinct() // lọc tránh trùng lặp
+                .toList();
+
+        // 2) query 1 lần
+        List<ProductsEntity> products = productRepository.findAllById(productIds);
+
+        // 3) map để tra nhanh
+        Map<Long, ProductsEntity> productById = products.stream()
+                .collect(Collectors.toMap(ProductsEntity::getId, p -> p));
+
+        // 4) validate đủ product
+        if (productById.size() != productIds.size()) {
+            throw new JavaBuilderException(ErrorCode.PRODUCT_NOT_FOUND);
+        }
+
+        // 5) loop xử lý, KHÔNG query DB nữa
         for (OrderItemRequest item : request.getItems()) {
+            ProductsEntity product = productById.get(item.getProductId());
+            if (product == null) {
+                throw new JavaBuilderException(ErrorCode.PRODUCT_NOT_FOUND);
+            }
 
-            ProductsEntity product = productRepository.findById(item.getProductId())
-                    .orElseThrow(() -> new JavaBuilderException(ErrorCode.PRODUCT_NOT_FOUND));
-
-            reserveInventory(product.getId(), item.getQuantity());
-
+            reserveInventories(request.getItems());
             OrderItemsEntity orderItem = buildOrderItem(product, item.getQuantity());
 
             Long sellerId = product.getSeller().getId();
-
             itemsBySeller.computeIfAbsent(sellerId, k -> new ArrayList<>()).add(orderItem);
 
-            subtotalBySeller.merge(
-                    sellerId,
-                    orderItem.getTotalAmount(),
-                    BigDecimal::add
-            );
-
+            subtotalBySeller.merge(sellerId, orderItem.getTotalAmount(), BigDecimal::add);
             totalProductAmount = totalProductAmount.add(orderItem.getTotalAmount());
         }
 
         BigDecimal totalDiscount = calculateDiscount(totalProductAmount, voucher);
 
         // create orders
-        // TODO: query để ngoài vòng for
+        // TODO: query để ngoài vòng for - done
+
+        List<Long> sellerIds = new ArrayList<>(itemsBySeller.keySet());
+        List<UserEntity> sellers = userRepository.findAllById(sellerIds);
+        Map<Long, UserEntity> sellerById = sellers.stream()
+                .collect(Collectors.toMap(UserEntity::getId, s -> s));
+        if (sellerById.size() != sellerIds.size()) {
+            throw new JavaBuilderException(ErrorCode.USER_NOT_FOUND);
+        }
         for (Long sellerId : itemsBySeller.keySet()) {
 
             BigDecimal sellerSubtotal = subtotalBySeller.get(sellerId);
-            UserEntity seller = userRepository.findById(sellerId)
-                    .orElseThrow(() -> new JavaBuilderException(ErrorCode.USER_NOT_FOUND));
-
+            UserEntity seller = sellerById.get(sellerId);
+            if (seller == null) throw new JavaBuilderException(ErrorCode.USER_NOT_FOUND);
             BigDecimal sellerDiscount = totalProductAmount.compareTo(BigDecimal.ZERO) == 0
                     ? BigDecimal.ZERO
                     : sellerSubtotal
@@ -264,21 +322,32 @@ public class OrderServiceImpl implements OrderService {
             throw new JavaBuilderException(ErrorCode.INVALID_STATUS);
         }
 
-        if (order.getItems() != null) {
+        if (order.getItems() != null && !order.getItems().isEmpty()) {
+            Map<Long, Long> qtyByProductId = new HashMap<>();
             for (OrderItemsEntity item : order.getItems()) {
                 if (item.getProduct() == null || item.getProduct().getId() == null) continue;
                 long qty = item.getQuantity() == null ? 0L : item.getQuantity().longValue();
-                InventoryEntity inv = inventoryRepository.findByProductIdForUpdate(item.getProduct().getId())
-                        .orElseThrow(() -> new JavaBuilderException(ErrorCode.NOT_FOUND));
+                qtyByProductId.merge(item.getProduct().getId(), qty, Long::sum); // cộng dồn các phần tử theo productId
+            }
+            List<Long> productIds = new ArrayList<>(qtyByProductId.keySet()); // lấy ra các productId
+            List<InventoryEntity> invs = inventoryRepository.findByProductIdsForUpdate(productIds);
+            Map<Long, InventoryEntity> invByProductId = invs.stream()
+                    .collect(Collectors.toMap(i -> i.getProduct().getId(), i -> i));
+            if (invByProductId.size() != productIds.size()) {
+                throw new JavaBuilderException(ErrorCode.NOT_FOUND);
+            }
+            LocalDateTime now = LocalDateTime.now();
+            for (Map.Entry<Long, Long> e : qtyByProductId.entrySet()) {
+                Long productId = e.getKey();
+                long qty = e.getValue();
+                InventoryEntity inv = invByProductId.get(productId);
                 long currentReserved = inv.getReservedQuantity() == null ? 0L : inv.getReservedQuantity();
                 long newReserved = currentReserved - qty;
-                if (newReserved < 0) {
-                    newReserved = 0;
-                }
+                if (newReserved < 0) newReserved = 0;
                 inv.setReservedQuantity(newReserved);
-                inv.setUpdatedAt(LocalDateTime.now());
-                inventoryRepository.save(inv);
+                inv.setUpdatedAt(now);
             }
+            inventoryRepository.saveAll(invs);
         }
 
         OrderStatus from = order.getOrderStatus();
@@ -344,14 +413,14 @@ public class OrderServiceImpl implements OrderService {
         OrderOverviewProjection projection = orderRepository.getOverviewBySeller(seller);
 
         OverviewOrderResponse response = new OverviewOrderResponse();
-        if(type.equals("orders")) {
+        if (type.equals("orders")) {
             response.setTotalAmount(projection.getTotalAmount());
             response.setTotalOrder(projection.getTotalOrder());
             response.setTotalPending(projection.getTotalPending());
             response.setTotalIntransit(projection.getTotalIntransit());
             response.setTotalCancel(projection.getTotalCancel());
             response.setTotalFailed(projection.getTotalFailed());
-        } else if(type.equals("return")) {
+        } else if (type.equals("return")) {
             response.setTotalReturn(projection.getTotalReturn());
             response.setAwaitingInspection(projection.getAwaitingInspection());
             response.setTotalPriceRefunds(projection.getTotalPriceRefunds());
@@ -398,21 +467,33 @@ public class OrderServiceImpl implements OrderService {
         if (!order.getOrderStatus().equals(OrderStatus.WAREHOUSE_RECEIVED)) {
             throw new JavaBuilderException(ErrorCode.INVALID_STATUS);
         }
-        if (order.getItems() != null) {
+        if (order.getItems() != null && !order.getItems().isEmpty()) {
+
+            Map<Long, Long> qtyByProductId = new HashMap<>();
             for (OrderItemsEntity item : order.getItems()) {
                 if (item.getProduct() == null || item.getProduct().getId() == null) continue;
                 long qty = item.getQuantity() == null ? 0L : item.getQuantity().longValue();
-                InventoryEntity inv = inventoryRepository.findByProductIdForUpdate(item.getProduct().getId())
-                        .orElseThrow(() -> new JavaBuilderException(ErrorCode.NOT_FOUND));
+                qtyByProductId.merge(item.getProduct().getId(), qty, Long::sum);
+            }
+            List<Long> productIds = new ArrayList<>(qtyByProductId.keySet());
+            List<InventoryEntity> invs = inventoryRepository.findByProductIdsForUpdate(productIds);
+            Map<Long, InventoryEntity> invByProductId = invs.stream()
+                    .collect(Collectors.toMap(i -> i.getProduct().getId(), i -> i));
+            if (invByProductId.size() != productIds.size()) {
+                throw new JavaBuilderException(ErrorCode.NOT_FOUND);
+            }
+            LocalDateTime now = LocalDateTime.now();
+            for (Map.Entry<Long, Long> e : qtyByProductId.entrySet()) {
+                Long productId = e.getKey();
+                long qty = e.getValue();
+                InventoryEntity inv = invByProductId.get(productId);
                 long currentReserved = inv.getReservedQuantity() == null ? 0L : inv.getReservedQuantity();
                 long newReserved = currentReserved - qty;
-                if (newReserved < 0) {
-                    newReserved = 0;
-                }
+                if (newReserved < 0) newReserved = 0;
                 inv.setReservedQuantity(newReserved);
-                inv.setUpdatedAt(LocalDateTime.now());
-                inventoryRepository.save(inv);
+                inv.setUpdatedAt(now);
             }
+            inventoryRepository.saveAll(invs);
         }
 
         OrderStatus from = order.getOrderStatus();
@@ -469,8 +550,8 @@ public class OrderServiceImpl implements OrderService {
         OrderOverviewProjection projection = orderRepository.getOverviewByBuyer(buyer);
 
         OverviewOrderResponse response = new OverviewOrderResponse();
-            response.setTotalComplete(projection.getTotalComplete());
-            response.setTotalIntransit(projection.getTotalIntransit());
+        response.setTotalComplete(projection.getTotalComplete());
+        response.setTotalIntransit(projection.getTotalIntransit());
         return response;
     }
 
@@ -630,26 +711,44 @@ public class OrderServiceImpl implements OrderService {
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 
-    private void reserveInventory(Long productId, Integer quantity) {
-
-        InventoryEntity inventory = inventoryRepository
-                .findByProductIdForUpdate(productId)
-                .orElseThrow(() -> new JavaBuilderException(ErrorCode.NOT_FOUND));
-
-        long qty = quantity == null ? 0L : quantity.longValue();
-        long inStock = Objects.requireNonNullElse(inventory.getQuantityInStock(), 0L);
-        long reserved = Objects.requireNonNullElse(inventory.getReservedQuantity(), 0L);
-
-        long available = inStock - reserved;
-
-        if (available < qty) {
-            throw new JavaBuilderException(ErrorCode.PRODUCT_NOT_ENOUGH_STOCK);
+    private void reserveInventories(List<OrderItemRequest> items) {
+        // 1) gộp qty theo productId
+        Map<Long, Long> qtyByProductId = new HashMap<>();
+        for (OrderItemRequest it : items) {
+            long qty = it.getQuantity() == null ? 0L : it.getQuantity().longValue();
+            qtyByProductId.merge(it.getProductId(), qty, Long::sum);
         }
 
-        inventory.setReservedQuantity(reserved + qty);
+        List<Long> productIds = new ArrayList<>(qtyByProductId.keySet());
 
-        inventory.setUpdatedAt(LocalDateTime.now());
+        List<InventoryEntity> inventories = inventoryRepository.findByProductIdsForUpdate(productIds);
 
-        inventoryRepository.save(inventory);
+        Map<Long, InventoryEntity> invByProductId = inventories.stream()
+                .collect(Collectors.toMap(i -> i.getProduct().getId(), i -> i));
+
+        if (invByProductId.size() != productIds.size()) {
+            throw new JavaBuilderException(ErrorCode.NOT_FOUND);
+        }
+
+        LocalDateTime now = LocalDateTime.now();
+        for (Map.Entry<Long, Long> e : qtyByProductId.entrySet()) {
+            Long productId = e.getKey();
+            long qty = e.getValue();
+
+            InventoryEntity inv = invByProductId.get(productId);
+
+            long inStock = Objects.requireNonNullElse(inv.getQuantityInStock(), 0L);
+            long reserved = Objects.requireNonNullElse(inv.getReservedQuantity(), 0L);
+            long available = inStock - reserved;
+
+            if (available < qty) {
+                throw new JavaBuilderException(ErrorCode.PRODUCT_NOT_ENOUGH_STOCK);
+            }
+
+            inv.setReservedQuantity(reserved + qty);
+            inv.setUpdatedAt(now);
+        }
+
+        inventoryRepository.saveAll(inventories);
     }
 }

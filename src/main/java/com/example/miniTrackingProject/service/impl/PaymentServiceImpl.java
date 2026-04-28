@@ -43,17 +43,6 @@ public class PaymentServiceImpl implements PaymentService {
             for(OrdersEntity orders: ordersEntityList) {
                 orders.setPaymentStatus(PaymentStatus.PAID);
                 orders.setOrderStatus(OrderStatus.CONFIRMED);
-                // TODO: bỏ
-//                for(OrderItemsEntity orderItems: orders.getItems()) {
-//                    Long productId = orderItems.getProduct().getId();
-//                    CartItemsEntity ci = cartItemRepository
-//                            .findActiveByUserAndProduct(user.getId(), productId)
-//                            .orElse(null);
-//                    if (ci != null) {
-//                        ci.setIsDelete(true);
-//                        cartItemRepository.save(ci);
-//                    }
-//                }
             }
             orderRepository.saveAll(ordersEntityList);
         }
