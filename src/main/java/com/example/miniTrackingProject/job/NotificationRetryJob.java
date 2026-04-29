@@ -38,32 +38,8 @@ public class NotificationRetryJob {
 
     @Scheduled(fixedDelay = 60_000)
     @Transactional
-//    public void sendConfirmedOrderNotifications() {
-//        Integer pageSize = 20;
-//        Integer pageNumber = 0;
-//        Pageable pageable = PageRequest.of(pageNumber, pageSize);
-//        // TODO : tính count bản ghi trc
-//        LocalDateTime since = LocalDateTime.now().minusMinutes(10);
-//        Page<OrdersEntity> page = orderRepository
-//                .findByOrderStatusAndUpdatedAtAfterOrderByUpdatedAtAsc(
-//                        OrderStatus.CONFIRMED,
-//                        since,
-//                        pageable
-//                );
-//
-//        List<OrdersEntity> orders = page.getContent();
-//
-//        for (OrdersEntity order : orders) {
-//            try {
-//                processOrder(order);
-//            } catch (Exception e) {
-//                log.error("Unexpected error processing orderId={}", order.getId(), e);
-//            }
-//        }
-//    }
-
     public void sendConfirmedOrderNotifications() {
-        int pageSize = 4;
+        int pageSize = 1;
         int pageNumber = 0;
 
         LocalDateTime since = LocalDateTime.now().minusMinutes(10);
