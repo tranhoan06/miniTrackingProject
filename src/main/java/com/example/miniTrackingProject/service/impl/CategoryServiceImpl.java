@@ -10,6 +10,7 @@ import com.example.miniTrackingProject.repository.CategoryRepository;
 import com.example.miniTrackingProject.service.CategoryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -21,6 +22,7 @@ public class CategoryServiceImpl implements CategoryService {
     private final BaseMapper baseMapper;
 
     @Override
+    @Transactional
     public CategoryResponse createCategory(CategoryRequest request) {
 
         CategoriesEntity parent = getParent(request.getParentId());
@@ -38,6 +40,7 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public CategoryResponse getCategoryById(Long id) {
         CategoriesEntity categories = categoryRepository.findById(id)
                 .orElseThrow(() -> new JavaBuilderException(ErrorCode.CATEGORYID_NOT_FOUND));
@@ -45,6 +48,7 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
+    @Transactional
     public CategoryResponse updateCategory(Long id, CategoryRequest request) {
 
         CategoriesEntity category = categoryRepository.findById(id)
@@ -63,6 +67,7 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
+    @Transactional
     public void deleteCategory(Long id) {
         CategoriesEntity categories = categoryRepository.findById(id)
                 .orElseThrow(() -> new JavaBuilderException(ErrorCode.CATEGORYID_NOT_FOUND));

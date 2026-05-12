@@ -18,6 +18,7 @@ import com.example.miniTrackingProject.service.CartService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.swing.text.html.Option;
 import java.math.BigDecimal;
@@ -35,6 +36,7 @@ public class CartServiceImpl implements CartService {
     private final SecurityHelper securityHelper;
 
     @Override
+    @Transactional
     public void addCart(CartRequest request) {
         UserEntity userEntity = securityHelper.getCurrentUser();
 
@@ -70,6 +72,7 @@ public class CartServiceImpl implements CartService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public CartResponse getAllCartByUser() {
         UserEntity userEntity = securityHelper.getCurrentUser();
 
@@ -79,6 +82,7 @@ public class CartServiceImpl implements CartService {
     }
 
     @Override
+    @Transactional
     public void removeFromCart(Long id) {
         UserEntity userEntity = securityHelper.getCurrentUser();
 

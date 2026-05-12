@@ -1,7 +1,7 @@
 package com.example.miniTrackingProject.dto.response;
 
 import com.example.miniTrackingProject.common.RoleEnum;
-import com.example.miniTrackingProject.entity.AddresesEntity;
+import com.example.miniTrackingProject.entity.AddressesEntity;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -24,7 +24,7 @@ public class UserResponse implements Serializable {
 
     private RoleEnum role;
 
-    private List<AddresesEntity> addresses;
+    private List<AddressesEntity> addresses;
 
     private LocalDateTime createdAt;
 

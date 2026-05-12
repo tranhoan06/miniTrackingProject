@@ -35,7 +35,7 @@ public class UserController {
     @PostMapping("/update/{id}")
     @PreAuthorize("hasAnyRole('ROLE_SELLER')")
     public ResponseEntity<BaseResponse<UserResponse>> updateUser(@PathVariable Long id,
-                                                                 @RequestBody UserRequest request) {
+                                                                 @Valid @RequestBody UserRequest request) {
         return ResponseEntity.status(HttpStatus.OK)
                 .body(BaseResponseFactory.success(
                         userService.updateUser(id, request)

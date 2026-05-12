@@ -11,6 +11,7 @@ import com.example.miniTrackingProject.repository.VoucherRepository;
 import com.example.miniTrackingProject.service.VoucherService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 
@@ -24,6 +25,7 @@ public class VoucherServiceImpl implements VoucherService {
     private final VoucherRepository voucherRepository;
 
     @Override
+    @Transactional
     public VoucherResponse createVoucher(VoucherRequest request) {
         UserEntity userEntity = securityHelper.getCurrentUser();
 

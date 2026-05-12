@@ -27,6 +27,7 @@ public class ProductRequest implements Serializable {
     @NotEmpty(message = "Không được để trống")
     private String productName;
 
+    @NotNull
     private BigDecimal price;
 
     @NotNull

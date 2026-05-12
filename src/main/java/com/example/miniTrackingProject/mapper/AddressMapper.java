@@ -2,7 +2,7 @@ package com.example.miniTrackingProject.mapper;
 
 import com.example.miniTrackingProject.dto.response.AddressResponse;
 import com.example.miniTrackingProject.dto.response.AddressSnapshotResponse;
-import com.example.miniTrackingProject.entity.AddresesEntity;
+import com.example.miniTrackingProject.entity.AddressesEntity;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
@@ -13,7 +13,7 @@ public interface AddressMapper {
     // user.id trong entity → field user trong response
     // src: lấy dữ liệu từ đâu, target: đặt dữ liệu vào đâu
     @Mapping(source = "user.id", target = "user")
-    AddressResponse toResponse(AddresesEntity entity);
+    AddressResponse toResponse(AddressesEntity entity);
 
-    AddressSnapshotResponse toSnapshot(AddresesEntity entity);
+    AddressSnapshotResponse toSnapshot(AddressesEntity entity);
 }

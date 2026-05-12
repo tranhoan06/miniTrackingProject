@@ -51,6 +51,7 @@ public class ShippingProviderServiceImpl implements ShippingProviderService {
     }
 
     @Override
+    @Transactional
     public ShippingProviderResponse create(ShippingProviderRequest request) {
         ShippingProviderEntity shippingProvider = new ShippingProviderEntity();
         shippingProvider.setName(request.getName());
@@ -76,6 +77,7 @@ public class ShippingProviderServiceImpl implements ShippingProviderService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<ShippingProviderResponse> getAll() {
         List<ShippingProviderEntity> list = shippingProviderRepository.findAll();
         if (list.isEmpty()) {
@@ -85,6 +87,7 @@ public class ShippingProviderServiceImpl implements ShippingProviderService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public ShippingProviderResponse getById(Long id) {
         ShippingProviderEntity shippingProvider = shippingProviderRepository.findById(id)
                 .orElseThrow(() -> new JavaBuilderException(ErrorCode.USER_NOT_FOUND));

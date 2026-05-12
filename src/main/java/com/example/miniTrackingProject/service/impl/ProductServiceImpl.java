@@ -19,6 +19,7 @@ import org.springframework.data.domain.*;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -40,6 +41,7 @@ public class ProductServiceImpl implements ProductService {
     private final InventoryRepository inventoryRepository;
 
     @Override
+    @Transactional(readOnly = true)
     public Page<ProductResponse> getAll(Integer pageSize, Integer pageNumber, FilterProductRequest request) {
         // tạo một điều kiện ban đầu luôn đúng để có thể .and() thêm các filter sau đó
         Specification<ProductsEntity> specification =
@@ -69,6 +71,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
+    @Transactional
     public ProductResponse createProduct(ProductRequest request) {
         String username = SecurityContextHolder
                 .getContext()
@@ -107,6 +110,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
+    @Transactional
     public ProductResponse updateProduct(Long id, ProductRequest request) {
         ProductsEntity productsEntity = productRepository.findById(id)
                 .orElseThrow(() -> new JavaBuilderException(ErrorCode.PRODUCT_NOT_FOUND));
@@ -131,10 +135,17 @@ public class ProductServiceImpl implements ProductService {
         }
 
         if (productsEntity.getInventories() != null) {
-            validateNoReserved(productsEntity.getInventories());
+            List<InventoryEntity> inventories =
+                    inventoryRepository.findAllByProductIdForUpdate(id);
 
-            productsEntity.getInventories().forEach(inv -> inv.setIsDelete(true));
-            inventoryRepository.saveAll(productsEntity.getInventories());
+            if (!inventories.isEmpty()) {
+
+                validateNoReserved(inventories);
+
+                inventories.forEach(inv -> inv.setIsDelete(true));
+
+                inventoryRepository.saveAll(inventories);
+            }
         }
 
         if (request.getImages() != null && !request.getImages().isEmpty()) {
@@ -150,6 +161,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public ProductResponse getProductDetail(Long id) {
         ProductsEntity productsEntity = productRepository.findById(id)
                 .orElseThrow(() -> new JavaBuilderException(ErrorCode.PRODUCT_NOT_FOUND));
@@ -167,6 +179,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public ProductOverviewResponse getProductOverview() {
         ProductOverviewResponse productOverviewResponse = new ProductOverviewResponse();
         Long count = productRepository.countProduct();
@@ -180,6 +193,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
+    @Transactional
     public void deleteProduct(Long id) {
         ProductsEntity productsEntity = productRepository.findById(id)
                 .orElseThrow(() -> new JavaBuilderException(ErrorCode.PRODUCT_NOT_FOUND));

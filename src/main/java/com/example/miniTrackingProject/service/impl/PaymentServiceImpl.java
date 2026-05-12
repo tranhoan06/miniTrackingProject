@@ -2,8 +2,6 @@ package com.example.miniTrackingProject.service.impl;
 
 import com.example.miniTrackingProject.common.*;
 import com.example.miniTrackingProject.dto.request.PaymentRequest;
-import com.example.miniTrackingProject.entity.CartItemsEntity;
-import com.example.miniTrackingProject.entity.OrderItemsEntity;
 import com.example.miniTrackingProject.entity.OrdersEntity;
 import com.example.miniTrackingProject.entity.UserEntity;
 import com.example.miniTrackingProject.exception.JavaBuilderException;

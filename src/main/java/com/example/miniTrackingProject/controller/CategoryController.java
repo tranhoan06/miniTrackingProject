@@ -23,7 +23,7 @@ public class CategoryController {
 
     @PostMapping("/create")
     @PreAuthorize("hasAnyRole('ROLE_SELLER')")
-    public ResponseEntity<BaseResponse<CategoryResponse>> createCategory(@RequestBody CategoryRequest request) {
+    public ResponseEntity<BaseResponse<CategoryResponse>> createCategory(@Valid @RequestBody CategoryRequest request) {
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(BaseResponseFactory.success(
                         categoryService.createCategory(request)
@@ -41,7 +41,7 @@ public class CategoryController {
 
     @PostMapping("/updateCategory/{id}")
     @PreAuthorize("hasAnyRole('ROLE_SELLER')")
-    public ResponseEntity<BaseResponse<CategoryResponse>> updateCategory(@PathVariable Long id, @RequestBody CategoryRequest categoryRequest) {
+    public ResponseEntity<BaseResponse<CategoryResponse>> updateCategory(@PathVariable Long id, @Valid @RequestBody CategoryRequest categoryRequest) {
         return ResponseEntity.status(HttpStatus.OK)
                 .body(BaseResponseFactory.success(
                         categoryService.updateCategory(id, categoryRequest)

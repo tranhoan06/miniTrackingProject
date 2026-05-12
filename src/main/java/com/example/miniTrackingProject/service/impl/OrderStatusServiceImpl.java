@@ -12,6 +12,7 @@ import com.example.miniTrackingProject.repository.OrderStatusLogRepository;
 import com.example.miniTrackingProject.service.OrderStatusService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -23,6 +24,7 @@ public class OrderStatusServiceImpl implements OrderStatusService {
     private final OrderRepository orderRepository;
 
     @Override
+    @Transactional(readOnly = true)
     public List<OrderStatusLogResponse> getLog(OrderStatusLogRequest request) {
         OrdersEntity order = orderRepository.findById(request.getOrderId())
                 .orElseThrow(() -> new JavaBuilderException(ErrorCode.NOT_FOUND));

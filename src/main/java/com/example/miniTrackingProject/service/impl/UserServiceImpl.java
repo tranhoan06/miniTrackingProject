@@ -16,6 +16,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
@@ -32,6 +33,7 @@ public class UserServiceImpl implements UserService {
     private final ShippingProviderRepository shippingProviderRepository;
 
     @Override
+    @Transactional
     public UserResponse createUser(UserRequest request) {
         log.info("Checking username: {}", request.getUsername());
         if (userRepository.findByUsername(request.getUsername()).isPresent()) {
@@ -56,6 +58,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional
     public UserResponse updateUser(Long id, UserRequest request) {
         UserEntity userEntity = userRepository.findById(id)
                 .orElseThrow(() -> new JavaBuilderException(ErrorCode.USER_NOT_FOUND));
@@ -67,6 +70,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public UserResponse getUserById(Long id) {
         UserEntity userEntity = userRepository.findById(id)
                 .orElseThrow(() -> new JavaBuilderException(ErrorCode.USER_NOT_FOUND));

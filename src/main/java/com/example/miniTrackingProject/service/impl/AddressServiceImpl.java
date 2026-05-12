@@ -3,17 +3,17 @@ package com.example.miniTrackingProject.service.impl;
 import com.example.miniTrackingProject.common.ErrorCode;
 import com.example.miniTrackingProject.dto.request.AddressRequest;
 import com.example.miniTrackingProject.dto.response.AddressResponse;
-import com.example.miniTrackingProject.entity.AddresesEntity;
+import com.example.miniTrackingProject.entity.AddressesEntity;
 import com.example.miniTrackingProject.entity.UserEntity;
 import com.example.miniTrackingProject.exception.JavaBuilderException;
 import com.example.miniTrackingProject.mapper.AddressMapper;
 import com.example.miniTrackingProject.repository.AddressRepository;
 import com.example.miniTrackingProject.repository.UserRepository;
 import com.example.miniTrackingProject.service.AddressService;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -27,48 +27,49 @@ public class AddressServiceImpl implements AddressService {
     private final AddressMapper addressMapper;
 
     @Override
+    @Transactional
     public AddressResponse createAddress(AddressRequest request) {
         UserEntity userEntity = userRepository.findById(request.getUser())
                 .orElseThrow(() -> new JavaBuilderException(ErrorCode.USER_NOT_FOUND));
 
-        AddresesEntity addresesEntity = new AddresesEntity();
-        addresesEntity.setUser(userEntity);
-        addresesEntity.setReceiverName(request.getReceiverName());
-        addresesEntity.setPhone(request.getPhone());
-        addresesEntity.setProvinceId(request.getProvinceId());
-        addresesEntity.setProvinceName(request.getProvinceName());
-        addresesEntity.setDistrictId(request.getDistrictId());
-        addresesEntity.setDistrictName(request.getDistrictName());
-        addresesEntity.setWardId(request.getWardId());
-        addresesEntity.setWardName(request.getWardName());
-        addresesEntity.setDetailAddress(request.getDetailAddress());
-        addresesEntity.setIsDefault(request.getIsDefault());
-        addresesEntity.setIsDelete(false);
-        addresesEntity.setCreatedAt(LocalDateTime.now());
-        addressRepository.save(addresesEntity);
+        AddressesEntity addressesEntity = new AddressesEntity();
+        addressesEntity.setUser(userEntity);
+        addressesEntity.setReceiverName(request.getReceiverName());
+        addressesEntity.setPhone(request.getPhone());
+        addressesEntity.setProvinceId(request.getProvinceId());
+        addressesEntity.setProvinceName(request.getProvinceName());
+        addressesEntity.setDistrictId(request.getDistrictId());
+        addressesEntity.setDistrictName(request.getDistrictName());
+        addressesEntity.setWardId(request.getWardId());
+        addressesEntity.setWardName(request.getWardName());
+        addressesEntity.setDetailAddress(request.getDetailAddress());
+        addressesEntity.setIsDefault(request.getIsDefault());
+        addressesEntity.setIsDelete(false);
+        addressesEntity.setCreatedAt(LocalDateTime.now());
+        addressRepository.save(addressesEntity);
 
-        return addressMapper.toResponse(addresesEntity);
+        return addressMapper.toResponse(addressesEntity);
     }
 
     @Override
     @Transactional
     public AddressResponse updateAddress(Long id, AddressRequest request) {
-        AddresesEntity addresesEntity = addressRepository.findById(id).orElseThrow(() -> new JavaBuilderException(ErrorCode.ADDRESS_NOT_FOUND));
+        AddressesEntity addressesEntity = addressRepository.findById(id).orElseThrow(() -> new JavaBuilderException(ErrorCode.ADDRESS_NOT_FOUND));
 
-        addresesEntity.setReceiverName(request.getReceiverName());
-        addresesEntity.setPhone(request.getPhone());
-        addresesEntity.setProvinceId(request.getProvinceId());
-        addresesEntity.setProvinceName(request.getProvinceName());
-        addresesEntity.setDistrictId(request.getDistrictId());
-        addresesEntity.setDistrictName(request.getDistrictName());
-        addresesEntity.setWardId(request.getWardId());
-        addresesEntity.setWardName(request.getWardName());
-        addresesEntity.setDetailAddress(request.getDetailAddress());
-        addresesEntity.setIsDefault(request.getIsDefault());
-        addresesEntity.setUpdatedAt(LocalDateTime.now());
-        addressRepository.save(addresesEntity);
+        addressesEntity.setReceiverName(request.getReceiverName());
+        addressesEntity.setPhone(request.getPhone());
+        addressesEntity.setProvinceId(request.getProvinceId());
+        addressesEntity.setProvinceName(request.getProvinceName());
+        addressesEntity.setDistrictId(request.getDistrictId());
+        addressesEntity.setDistrictName(request.getDistrictName());
+        addressesEntity.setWardId(request.getWardId());
+        addressesEntity.setWardName(request.getWardName());
+        addressesEntity.setDetailAddress(request.getDetailAddress());
+        addressesEntity.setIsDefault(request.getIsDefault());
+        addressesEntity.setUpdatedAt(LocalDateTime.now());
+        addressRepository.save(addressesEntity);
 
-        return addressMapper.toResponse(addresesEntity);
+        return addressMapper.toResponse(addressesEntity);
     }
 
     @Override
@@ -76,9 +77,9 @@ public class AddressServiceImpl implements AddressService {
         UserEntity userEntity = userRepository.findById(id)
                 .orElseThrow(() -> new JavaBuilderException(ErrorCode.USER_NOT_FOUND));
 
-        List<AddresesEntity> addresesEntityList = addressRepository.findByUser_IdAndIsDeleteFalse(userEntity.getId());
+        List<AddressesEntity> addressesEntityList = addressRepository.findByUser_IdAndIsDeleteFalse(userEntity.getId());
 
-        List<AddressResponse> responseList = addresesEntityList.stream()
+        List<AddressResponse> responseList = addressesEntityList.stream()
                 .map(item -> {
                     AddressResponse res = addressMapper.toResponse(item);
 
@@ -97,7 +98,7 @@ public class AddressServiceImpl implements AddressService {
     @Override
     @Transactional
     public void deleteAddress(Long id) {
-        AddresesEntity entity = addressRepository.findById(id)
+        AddressesEntity entity = addressRepository.findById(id)
                 .orElseThrow(() -> new JavaBuilderException(ErrorCode.ADDRESS_NOT_FOUND));
 
         entity.setIsDelete(true);

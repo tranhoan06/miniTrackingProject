@@ -24,7 +24,7 @@ public class OrderController {
 
     // api preview trc khi tạo đơn
     @PostMapping("/preview")
-    public ResponseEntity<BaseResponse<PreviewOrderResponse>> previewOrder(@RequestBody PreviewOrderRequest request) {
+    public ResponseEntity<BaseResponse<PreviewOrderResponse>> previewOrder(@Valid @RequestBody PreviewOrderRequest request) {
         PreviewOrderResponse response = orderService.previewOrder(request);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(BaseResponseFactory.success(response));

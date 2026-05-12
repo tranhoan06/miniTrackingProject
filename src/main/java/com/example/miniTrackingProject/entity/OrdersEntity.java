@@ -62,7 +62,7 @@ public class OrdersEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "shipping_address_id", nullable = false)
-    private AddresesEntity address;
+    private AddressesEntity address;
 
     @Column(name = "shipping_address_snapshot", columnDefinition = "JSON")
     private String shippingAddressSnapshot;

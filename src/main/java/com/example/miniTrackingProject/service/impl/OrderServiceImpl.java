@@ -75,6 +75,7 @@ public class OrderServiceImpl implements OrderService {
 
     // TODO: request truyền thêm quantity - done
     @Override
+    @Transactional(readOnly = true)
     public PreviewOrderResponse previewOrder(PreviewOrderRequest request) {
         UserEntity user = securityHelper.getCurrentUser();
         LocalDateTime today = LocalDateTime.now();
@@ -146,7 +147,7 @@ public class OrderServiceImpl implements OrderService {
 
         UserEntity user = securityHelper.getCurrentUser();
         LocalDateTime today = LocalDateTime.now();
-        AddresesEntity address = addressRepository.findById(request.getAddressId())
+        AddressesEntity address = addressRepository.findById(request.getAddressId())
                 .orElseThrow(() -> new JavaBuilderException(ErrorCode.ADDRESS_NOT_FOUND));
 
         VouchersEntity voucher = null;

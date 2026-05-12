@@ -69,6 +69,7 @@ public class ProductReviewServiceImpl implements ProductReviewService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<ProductReviewResponse> getReviewByProduct(Long productId, int limit, int offset) {
         return productReviewRepository.findReviewsWithOffset(productId, limit, offset)
                 .stream()

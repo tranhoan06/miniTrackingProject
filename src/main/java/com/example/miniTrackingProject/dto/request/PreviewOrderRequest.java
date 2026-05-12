@@ -11,6 +11,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class PreviewOrderRequest implements Serializable {
+    @NonNull
     private List<OrderItemRequest> items;
 
     private Long voucherId;

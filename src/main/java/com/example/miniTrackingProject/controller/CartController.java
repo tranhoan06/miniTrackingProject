@@ -9,6 +9,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,6 +23,7 @@ public class CartController implements Serializable {
     private final CartService cartService;
 
     @GetMapping("")
+    @PreAuthorize("hasAnyRole('ROLE_SELLER', 'ROLE_BUYER')")
     public ResponseEntity<BaseResponse<CartResponse>> getAllCartByUser() {
         CartResponse response = cartService.getAllCartByUser();
         return ResponseEntity.status(HttpStatus.OK)
@@ -29,6 +31,7 @@ public class CartController implements Serializable {
     }
 
     @PostMapping("/add")
+    @PreAuthorize("hasAnyRole('ROLE_SELLER', 'ROLE_BUYER')")
     public ResponseEntity<BaseResponse<String>> addCart(@Valid @RequestBody CartRequest request) {
         cartService.addCart(request);
         return ResponseEntity.status(HttpStatus.CREATED)
@@ -36,6 +39,7 @@ public class CartController implements Serializable {
     }
 
     @DeleteMapping("remove-from-cart/{id}")
+    @PreAuthorize("hasAnyRole('ROLE_SELLER', 'ROLE_BUYER')")
     public ResponseEntity<BaseResponse<String>> removeFromCart(@PathVariable Long id) {
         cartService.removeFromCart(id);
         return ResponseEntity.status(HttpStatus.OK)
