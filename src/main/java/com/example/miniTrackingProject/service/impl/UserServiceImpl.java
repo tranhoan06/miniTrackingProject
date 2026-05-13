@@ -13,13 +13,11 @@ import com.example.miniTrackingProject.repository.UserRepository;
 import com.example.miniTrackingProject.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.modelmapper.ModelMapper;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -27,7 +25,6 @@ import java.util.Optional;
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
-    private final ModelMapper modelMapper;
     private final PasswordEncoder passwordEncoder;
     private final UserMapper userMapper;
     private final ShippingProviderRepository shippingProviderRepository;
@@ -40,13 +37,7 @@ public class UserServiceImpl implements UserService {
             throw new JavaBuilderException(ErrorCode.USERNAME_IS_DUPLICATED);
         }
 
-        UserEntity userEntity = new UserEntity();
-        userEntity.setUsername(request.getUsername());
-        userEntity.setPassword(passwordEncoder.encode(request.getPassword()));
-        userEntity.setFullname(request.getFullname());
-        userEntity.setRole(request.getRole());
-        userEntity.setCreatedAt(LocalDateTime.now());
-        userEntity.setIsDelete(false);
+        UserEntity userEntity = userMapper.toEntity(request);
         if(request.getRole().equals(RoleEnum.SHIPPER) && request.getShippingProviderId() != null) {
             ShippingProviderEntity provider = shippingProviderRepository
                     .findById(request.getShippingProviderId())

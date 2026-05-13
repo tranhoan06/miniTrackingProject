@@ -45,7 +45,7 @@ public class ProductReviewController {
     }
 
     // api sửa đánh giá
-    @PostMapping("/update/{id}")
+    @PutMapping("/update/{id}")
     public ResponseEntity<BaseResponse<ProductReviewResponse>> updateProductReview(@PathVariable Long id, @Valid @RequestBody ProductReviewRequest request) {
         ProductReviewResponse response = productReviewService.updateProductReview(id, request);
         return ResponseEntity.ok(BaseResponseFactory.success(response));

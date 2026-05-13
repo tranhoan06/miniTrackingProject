@@ -39,7 +39,7 @@ public class CategoryController {
                 ));
     }
 
-    @PostMapping("/updateCategory/{id}")
+    @PutMapping("/updateCategory/{id}")
     @PreAuthorize("hasAnyRole('ROLE_SELLER')")
     public ResponseEntity<BaseResponse<CategoryResponse>> updateCategory(@PathVariable Long id, @Valid @RequestBody CategoryRequest categoryRequest) {
         return ResponseEntity.status(HttpStatus.OK)

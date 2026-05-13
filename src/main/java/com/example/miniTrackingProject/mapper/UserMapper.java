@@ -1,5 +1,6 @@
 package com.example.miniTrackingProject.mapper;
 
+import com.example.miniTrackingProject.dto.request.UserRequest;
 import com.example.miniTrackingProject.dto.response.UserResponse;
 import com.example.miniTrackingProject.entity.UserEntity;
 import org.mapstruct.Mapper;
@@ -10,4 +11,6 @@ import org.mapstruct.Mapping;
 public interface UserMapper {
     @Mapping(target = "shippingProviderId", source = "shippingProvider.id")
     UserResponse toResponse(UserEntity entity);
+
+    UserEntity toEntity(UserRequest request);
 }

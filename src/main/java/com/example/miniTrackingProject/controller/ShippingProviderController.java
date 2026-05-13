@@ -43,7 +43,7 @@ public class ShippingProviderController {
                 ));
     }
 
-    @PostMapping("update/{id}")
+    @PutMapping("update/{id}")
     public ResponseEntity<BaseResponse<ShippingProviderResponse>> update (@PathVariable Long id, @Valid @RequestBody ShippingProviderRequest request) {
         ShippingProviderResponse response = shippingProviderService.update(id, request);
         return ResponseEntity.status(HttpStatus.OK)

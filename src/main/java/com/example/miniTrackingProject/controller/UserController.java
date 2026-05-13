@@ -5,7 +5,6 @@ import com.example.miniTrackingProject.dto.request.UserRequest;
 import com.example.miniTrackingProject.dto.response.BaseResponse;
 import com.example.miniTrackingProject.dto.response.UserResponse;
 import com.example.miniTrackingProject.service.UserService;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -32,7 +31,7 @@ public class UserController {
                 ));
     }
 
-    @PostMapping("/update/{id}")
+    @PutMapping("/update/{id}")
     @PreAuthorize("hasAnyRole('ROLE_SELLER')")
     public ResponseEntity<BaseResponse<UserResponse>> updateUser(@PathVariable Long id,
                                                                  @Valid @RequestBody UserRequest request) {

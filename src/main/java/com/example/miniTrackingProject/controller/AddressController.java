@@ -32,7 +32,7 @@ public class AddressController {
                 ));
     }
 
-    @PostMapping("/update/{id}")
+    @PutMapping("/update/{id}")
     @PreAuthorize("hasAnyRole('ROLE_SELLER', 'ROLE_BUYER')")
     public ResponseEntity<BaseResponse<AddressResponse>> updateAddress(@Valid @PathVariable Long id,
                                                                        @RequestBody AddressRequest request){

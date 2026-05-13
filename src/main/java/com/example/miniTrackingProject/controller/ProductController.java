@@ -47,7 +47,7 @@ public class ProductController {
                 .body(BaseResponseFactory.success(productResponse));
     }
 
-    @PostMapping("/update/{id}")
+    @PutMapping("/update/{id}")
     @PreAuthorize("hasAnyRole('ROLE_SELLER')")
     public ResponseEntity<BaseResponse<ProductResponse>> updateProduct(@PathVariable Long id, @Valid @RequestBody ProductRequest request) {
         ProductResponse productResponse = productService.updateProduct(id, request);
