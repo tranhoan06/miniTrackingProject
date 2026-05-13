@@ -1,6 +1,5 @@
 package com.example.miniTrackingProject.repository;
 
-import com.example.miniTrackingProject.common.StatusVoucher;
 import com.example.miniTrackingProject.entity.VouchersEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -8,7 +7,6 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Optional;
 
 @Repository

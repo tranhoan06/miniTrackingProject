@@ -26,7 +26,6 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 
@@ -64,8 +63,6 @@ public class ProductServiceImpl implements ProductService {
         }
 
         Pageable pageable = PageRequest.of(pageNumber - 1, pageSize, Sort.by("id").ascending());
-//        Page<ProductsEntity> entityPage = productRepository.findByIsDeleteFalse(specification, pageable);
-//        Page<ProductsEntity> entityPage = productRepository.findAllActive(pageable);
         Page<ProductsEntity> entityPage = productRepository.findAll(specification, pageable);
         return entityPage.map(baseMapper::toProductResponse);
     }
