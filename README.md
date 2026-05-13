@@ -4,7 +4,7 @@
 
 + Thiếu readOnly = true cho toàn bộ các hàm query dữ liệu (như getUserById, getAll,...). cái này giúp tối ưu performance ở tầng DB nhiều. - done
 
-+ Phần race-condition thì Toàn bộ Entity (User, Product, Category,...) đều đang thiếu @Version. Đặc biệt là InventoryEntity, nếu 2 request cùng trừ kho một lúc mà không có Optimistic Locking là sai số lượng ngay. => khong thì e dùng permistic lock như a có chỉ nhé.
++ Phần race-condition thì Toàn bộ Entity (User, Product, Category,...) đều đang thiếu @Version. Đặc biệt là InventoryEntity, nếu 2 request cùng trừ kho một lúc mà không có Optimistic Locking là sai số lượng ngay. => khong thì e dùng permistic lock như a có chỉ nhé. - done
 
 + Hàm validateNoReserved đang check-then-act mà không có khóa bi quan (PESSIMISTIC_WRITE). Trong thực tế, lúc e check xong mà chưa kịp lưu thì thằng khác đã nhảy vào sửa rồi. - done
 
