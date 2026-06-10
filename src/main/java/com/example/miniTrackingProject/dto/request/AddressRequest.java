@@ -1,9 +1,6 @@
 package com.example.miniTrackingProject.dto.request;
 
-import com.example.miniTrackingProject.entity.UserEntity;
-import jakarta.persistence.Column;
-import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -19,28 +16,30 @@ public class AddressRequest implements Serializable {
     @NotNull
     private Long user;
 
-    @NotEmpty(message = "Không được để trống")
+    @NotBlank(message = "Không được để trống")
     private String receiverName;
 
-    @NotEmpty(message = "Không được để trống")
+    @NotBlank(message = "Không được để trống")
+    @Size(max = 10, message = "Số điện thoại tối đa 10 ký tự")
+    @Pattern(regexp = "^0\\d{9}$", message = "Số điện thoại không hợp lệ")
     private String phone;
 
     @NotNull
     private Long provinceId;
 
-    @NotEmpty(message = "Không được để trống")
+    @NotBlank(message = "Không được để trống")
     private String provinceName;
 
     @NotNull
     private Long districtId;
 
-    @NotEmpty(message = "Không được để trống")
+    @NotBlank(message = "Không được để trống")
     private String districtName;
 
     @NotNull
     private Long wardId;
 
-    @NotEmpty(message = "Không được để trống")
+    @NotBlank(message = "Không được để trống")
     private String wardName;
 
     @NotEmpty(message = "Không được để trống")

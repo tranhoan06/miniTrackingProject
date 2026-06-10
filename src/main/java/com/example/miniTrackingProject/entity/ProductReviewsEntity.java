@@ -46,4 +46,7 @@ public class ProductReviewsEntity implements Serializable {
 
     @Column(name = "is_delete", nullable = false)
     private Boolean isDelete = false;
+
+    @Version
+    private Long version;
 }

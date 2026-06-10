@@ -6,13 +6,15 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.io.Serializable;
+
 @Entity
 @Table(name = "product_images")
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class ProductImagesEntity {
+public class ProductImagesEntity implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -32,4 +34,7 @@ public class ProductImagesEntity {
 
     @Column(name = "is_Delete", columnDefinition = "BOOLEAN DEFAULT FALSE")
     private Boolean isDelete;
+
+    @Version
+    private Long version;
 }

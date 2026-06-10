@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -26,6 +27,7 @@ public class ProductReviewController {
 
     // api tạo đánh giá sp
     @PostMapping("create")
+    @PreAuthorize("hasAnyRole('ROLE_SELLER', 'ROLE_BUYER')")
     public ResponseEntity<BaseResponse<String>> create(@Valid @RequestBody ProductReviewRequest request) {
         String productResponse = productReviewService.create(request);
         return ResponseEntity.status(HttpStatus.CREATED)
@@ -34,6 +36,7 @@ public class ProductReviewController {
 
     // api hiện ds đánh giá
     @GetMapping("/product/{productId}")
+    @PreAuthorize("hasAnyRole('ROLE_SELLER', 'ROLE_BUYER')")
     public ResponseEntity<BaseResponse<List<ProductReviewResponse>>> getProductReviews(
             @PathVariable Long productId,
             @RequestParam(defaultValue = "0") int offset, // Số lượng đã hiển thị
@@ -46,6 +49,7 @@ public class ProductReviewController {
 
     // api sửa đánh giá
     @PutMapping("/update/{id}")
+    @PreAuthorize("hasAnyRole('ROLE_SELLER', 'ROLE_BUYER')")
     public ResponseEntity<BaseResponse<ProductReviewResponse>> updateProductReview(@PathVariable Long id, @Valid @RequestBody ProductReviewRequest request) {
         ProductReviewResponse response = productReviewService.updateProductReview(id, request);
         return ResponseEntity.ok(BaseResponseFactory.success(response));
@@ -53,6 +57,7 @@ public class ProductReviewController {
 
     // api xóa
     @DeleteMapping("/delete/{id}")
+    @PreAuthorize("hasAnyRole('ROLE_SELLER', 'ROLE_BUYER')")
     public ResponseEntity<BaseResponse<String>> deleteReview(@PathVariable Long id) {
         String response = productReviewService.deleteReview(id);
         return ResponseEntity.ok(BaseResponseFactory.success(response));

@@ -20,5 +20,6 @@ public class PaymentRequest implements Serializable {
     @NotNull
     private List<Long> orderIds;
 
+    @NotNull
     private PayMethodEnum payMethod;
 }

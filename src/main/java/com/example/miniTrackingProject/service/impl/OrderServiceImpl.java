@@ -167,7 +167,6 @@ public class OrderServiceImpl implements OrderService {
         BigDecimal totalProductAmount = BigDecimal.ZERO;
 
         // build items
-        // TODO: sửa lại câu query k nằm trong for + reserveInventory - done
         // 1) gom tất cả productId
         List<Long> productIds = request.getItems().stream()
                 .map(OrderItemRequest::getProductId)
@@ -175,7 +174,7 @@ public class OrderServiceImpl implements OrderService {
                 .toList();
 
         // 2) query 1 lần
-        List<ProductsEntity> products = productRepository.findAllById(productIds);
+        List<ProductsEntity> products = productRepository.findAllByIdWithSellerAndImages(productIds);
 
         // 3) map để tra nhanh
         Map<Long, ProductsEntity> productById = products.stream()
@@ -186,6 +185,8 @@ public class OrderServiceImpl implements OrderService {
             throw new JavaBuilderException(ErrorCode.PRODUCT_NOT_FOUND);
         }
 
+        reserveInventories(request.getItems());
+
         // 5) loop xử lý, KHÔNG query DB nữa
         for (OrderItemRequest item : request.getItems()) {
             ProductsEntity product = productById.get(item.getProductId());
@@ -193,7 +194,6 @@ public class OrderServiceImpl implements OrderService {
                 throw new JavaBuilderException(ErrorCode.PRODUCT_NOT_FOUND);
             }
 
-            reserveInventories(request.getItems());
             OrderItemsEntity orderItem = buildOrderItem(product, item.getQuantity());
 
             Long sellerId = product.getSeller().getId();
@@ -254,10 +254,12 @@ public class OrderServiceImpl implements OrderService {
         if (voucher != null) {
             voucher.setUsedCount(voucher.getUsedCount() + 1);
         }
+        voucherRepository.save(voucher);
         return "Create order success";
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Page<OrderResponse> getBySeller(Integer pageSize, Integer pageNumber, Boolean isReturn, OrderStatus status) {
         UserEntity seller = securityHelper.getCurrentUser();
 
@@ -310,7 +312,7 @@ public class OrderServiceImpl implements OrderService {
     @Transactional
     public OrderStatusResponse cancelOrder(CancelOrderRequest request) {
         UserEntity user = securityHelper.getCurrentUser();
-        OrdersEntity order = orderRepository.findById(request.getOrderId())
+        OrdersEntity order = orderRepository.findWithItemsById(request.getOrderId())
                 .orElseThrow(() -> new JavaBuilderException(ErrorCode.NOT_FOUND));
 
         boolean isSeller = order.getSeller() != null && order.getSeller().getId().equals(user.getId());
@@ -458,7 +460,7 @@ public class OrderServiceImpl implements OrderService {
     @Transactional
     public OrderStatusResponse restockedOrder(OrderStatusRequest request) {
         UserEntity user = securityHelper.getCurrentUser();
-        OrdersEntity order = requireOrderOwnedBySeller(request.getOrderId(), user);
+        OrdersEntity order = requireOrderOwnedBySellerWithItems(request.getOrderId(), user);
 
         boolean isSeller = order.getSeller() != null && order.getSeller().getId().equals(user.getId());
         if (!isSeller) {
@@ -531,9 +533,10 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public OrderResponse orderDetail(Long id) {
         UserEntity user = securityHelper.getCurrentUser();
-        OrdersEntity order = orderRepository.findById(id)
+        OrdersEntity order = orderRepository.findWithDetailsById(id)
                 .orElseThrow(() -> new JavaBuilderException(ErrorCode.NOT_FOUND));
         boolean isSeller = order.getSeller() != null && order.getSeller().getId().equals(user.getId());
         boolean isBuyer = order.getBuyer() != null && order.getBuyer().getId().equals(user.getId());
@@ -557,6 +560,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Page<OrderResponse> getByBuyer(Integer pageSize, Integer pageNumber, OrderStatus status) {
         UserEntity user = securityHelper.getCurrentUser();
         int page = (pageNumber == null || pageNumber < 1) ? 0 : pageNumber - 1;
@@ -596,12 +600,22 @@ public class OrderServiceImpl implements OrderService {
     }
 
     private OrdersEntity findOrderOrThrow(Long orderId) {
-        return orderRepository.findById(orderId)
+        return orderRepository.findWithDetailsById(orderId)
                 .orElseThrow(() -> new JavaBuilderException(ErrorCode.NOT_FOUND));
     }
 
     private OrdersEntity requireOrderOwnedBySeller(Long orderId, UserEntity user) {
-        OrdersEntity order = orderRepository.findById(orderId)
+        OrdersEntity order = orderRepository.findWithDetailsById(orderId)
+                .orElseThrow(() -> new JavaBuilderException(ErrorCode.NOT_FOUND));
+        boolean isNotSeller = order.getSeller() == null || !order.getSeller().getId().equals(user.getId());
+        if (isNotSeller) {
+            throw new JavaBuilderException(ErrorCode.ACCESS_DENIED);
+        }
+        return order;
+    }
+
+    private OrdersEntity requireOrderOwnedBySellerWithItems(Long orderId, UserEntity user) {
+        OrdersEntity order = orderRepository.findWithItemsById(orderId)
                 .orElseThrow(() -> new JavaBuilderException(ErrorCode.NOT_FOUND));
         boolean isNotSeller = order.getSeller() == null || !order.getSeller().getId().equals(user.getId());
         if (isNotSeller) {

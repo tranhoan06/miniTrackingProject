@@ -35,4 +35,7 @@ public class ShippingProviderEntity implements Serializable {
 
     @OneToMany(mappedBy = "shippingProvider", cascade = CascadeType.ALL)
     private List<OrdersEntity> orders = new ArrayList<>();
+
+    @Version
+    private Long version;
 }

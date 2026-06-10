@@ -12,5 +12,6 @@ public interface UserMapper {
     @Mapping(target = "shippingProviderId", source = "shippingProvider.id")
     UserResponse toResponse(UserEntity entity);
 
+    @Mapping(target = "password", ignore = true)
     UserEntity toEntity(UserRequest request);
 }

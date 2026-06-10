@@ -26,6 +26,7 @@ public class ShippingProviderController {
     private final ShippingProviderService shippingProviderService;
 
     @GetMapping("")
+    @PreAuthorize("hasAnyRole('ROLE_SHIPPER')")
     public ResponseEntity<BaseResponse<List<ShippingProviderResponse>>> getAll () {
         List<ShippingProviderResponse> response = shippingProviderService.getAll();
         return ResponseEntity.status(HttpStatus.OK)
@@ -35,6 +36,7 @@ public class ShippingProviderController {
     }
 
     @GetMapping("/create")
+    @PreAuthorize("hasAnyRole('ROLE_SHIPPER')")
     public ResponseEntity<BaseResponse<ShippingProviderResponse>> create (@Valid @RequestBody ShippingProviderRequest request) {
         ShippingProviderResponse response = shippingProviderService.create(request);
         return ResponseEntity.status(HttpStatus.CREATED)
@@ -44,6 +46,7 @@ public class ShippingProviderController {
     }
 
     @PutMapping("update/{id}")
+    @PreAuthorize("hasAnyRole('ROLE_SHIPPER')")
     public ResponseEntity<BaseResponse<ShippingProviderResponse>> update (@PathVariable Long id, @Valid @RequestBody ShippingProviderRequest request) {
         ShippingProviderResponse response = shippingProviderService.update(id, request);
         return ResponseEntity.status(HttpStatus.OK)
@@ -53,6 +56,7 @@ public class ShippingProviderController {
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasAnyRole('ROLE_SHIPPER')")
     public ResponseEntity<BaseResponse<ShippingProviderResponse>> getById (@PathVariable Long id) {
 
         ShippingProviderResponse response = shippingProviderService.getById(id);
@@ -64,6 +68,7 @@ public class ShippingProviderController {
 
     // api vận chuyển
     @PostMapping("/shippingOrder")
+    @PreAuthorize("hasAnyRole('ROLE_SHIPPER')")
     public ResponseEntity<BaseResponse<String>> shippingOrder (@Valid  @RequestBody ShippingOrderRequest request) {
 
         String response = shippingProviderService.shippingOrder(request);

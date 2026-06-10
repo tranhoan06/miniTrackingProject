@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.SQLRestriction;
 
 import java.io.Serializable;
@@ -20,6 +21,7 @@ import java.util.List;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@BatchSize(size = 20)
 public class ProductsEntity implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -68,10 +70,12 @@ public class ProductsEntity implements Serializable {
 
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
     @SQLRestriction("is_Delete = false")
+    @BatchSize(size = 20)
     private List<ProductImagesEntity> images = new ArrayList<>();
 
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
     @SQLRestriction("is_Delete = false")
+    @BatchSize(size = 20)
     private List<InventoryEntity> inventories = new ArrayList<>();
 
     @Column(name = "created_at")
@@ -79,4 +83,7 @@ public class ProductsEntity implements Serializable {
 
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
+
+    @Version
+    private Long version;
 }

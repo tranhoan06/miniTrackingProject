@@ -4,6 +4,7 @@ import com.example.miniTrackingProject.common.RoleEnum;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import org.hibernate.annotations.BatchSize;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -27,6 +28,7 @@ import java.util.List;
 @AllArgsConstructor
 @Table(name = "users")
 @EntityListeners(AuditingEntityListener.class)
+@BatchSize(size = 10)
 public class UserEntity implements Serializable, UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -96,4 +98,7 @@ public class UserEntity implements Serializable, UserDetails {
     public boolean isEnabled() {
         return UserDetails.super.isEnabled();
     }
+
+    @Version
+    private Long version;
 }

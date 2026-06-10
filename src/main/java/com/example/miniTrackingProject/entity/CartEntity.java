@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.SQLRestriction;
 
 import java.io.Serializable;
@@ -29,6 +30,7 @@ public class CartEntity implements Serializable {
 
     @OneToMany(mappedBy = "cart", cascade = CascadeType.ALL)
     @SQLRestriction("is_delete = false")
+    @BatchSize(size = 10)
     private List<CartItemsEntity> cartItems = new ArrayList<>();
 
     @Column(name = "created_at")
@@ -36,5 +38,8 @@ public class CartEntity implements Serializable {
 
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
+
+    @Version
+    private Long version;
 
 }

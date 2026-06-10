@@ -14,6 +14,9 @@ import com.example.miniTrackingProject.repository.ProductRepository;
 import com.example.miniTrackingProject.repository.ProductReviewRepository;
 import com.example.miniTrackingProject.service.ProductReviewService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -66,7 +69,11 @@ public class ProductReviewServiceImpl implements ProductReviewService {
     @Override
     @Transactional(readOnly = true)
     public List<ProductReviewResponse> getReviewByProduct(Long productId, int limit, int offset) {
-        return productReviewRepository.findReviewsWithOffset(productId, limit, offset)
+        int safeLimit = limit > 0 ? limit : 10;
+        int page = safeLimit > 0 ? offset / safeLimit : 0;
+        Pageable pageable = PageRequest.of(page, safeLimit, Sort.by(Sort.Direction.DESC, "createdAt"));
+        return productReviewRepository.findByProductIdWithBuyer(productId, pageable)
+                .getContent()
                 .stream()
                 .map(reviewMapper::toResponse)
                 .collect(Collectors.toList());
@@ -107,7 +114,7 @@ public class ProductReviewServiceImpl implements ProductReviewService {
     }
 
     private ProductReviewsEntity findAndValidateOwner(Long reviewId, UserEntity user) {
-        ProductReviewsEntity review = productReviewRepository.findById(reviewId)
+        ProductReviewsEntity review = productReviewRepository.findWithBuyerById(reviewId)
                 .orElseThrow(() -> new JavaBuilderException(ErrorCode.NOT_FOUND));
 
         if (!user.getId().equals(review.getBuyer().getId())) {

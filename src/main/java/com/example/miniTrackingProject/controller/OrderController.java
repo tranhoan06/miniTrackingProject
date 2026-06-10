@@ -24,6 +24,7 @@ public class OrderController {
 
     // api preview trc khi tạo đơn
     @PostMapping("/preview")
+    @PreAuthorize("hasAnyRole('ROLE_SELLER', 'ROLE_BUYER')")
     public ResponseEntity<BaseResponse<PreviewOrderResponse>> previewOrder(@Valid @RequestBody PreviewOrderRequest request) {
         PreviewOrderResponse response = orderService.previewOrder(request);
         return ResponseEntity.status(HttpStatus.OK)
@@ -139,6 +140,7 @@ public class OrderController {
 
     // api chi tiết order
     @GetMapping("order-detail/{id}")
+    @PreAuthorize("hasAnyRole('ROLE_SELLER', 'ROLE_BUYER')")
     public ResponseEntity<BaseResponse<OrderResponse>> orderDetail(@PathVariable Long id) {
         OrderResponse response = orderService.orderDetail(id);
         return ResponseEntity.status(HttpStatus.OK)

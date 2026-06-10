@@ -109,7 +109,7 @@ public class ProductServiceImpl implements ProductService {
     @Override
     @Transactional
     public ProductResponse updateProduct(Long id, ProductRequest request) {
-        ProductsEntity productsEntity = productRepository.findById(id)
+        ProductsEntity productsEntity = productRepository.findByIdWithImages(id)
                 .orElseThrow(() -> new JavaBuilderException(ErrorCode.PRODUCT_NOT_FOUND));
 
         CategoriesEntity categories = categoryRepository.findById(request.getCategory())
@@ -160,7 +160,7 @@ public class ProductServiceImpl implements ProductService {
     @Override
     @Transactional(readOnly = true)
     public ProductResponse getProductDetail(Long id) {
-        ProductsEntity productsEntity = productRepository.findById(id)
+        ProductsEntity productsEntity = productRepository.findDetailById(id)
                 .orElseThrow(() -> new JavaBuilderException(ErrorCode.PRODUCT_NOT_FOUND));
         List<ProductImagesEntity> productImagesEntityList = productsEntity.getImages().stream()
                 .filter(img -> !img.getIsDelete())

@@ -10,7 +10,6 @@ import com.example.miniTrackingProject.repository.NotificationTemplatesRepositor
 import com.example.miniTrackingProject.repository.NotificationsRepository;
 import com.example.miniTrackingProject.repository.OrderRepository;
 import com.example.miniTrackingProject.service.MailService;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -19,6 +18,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;

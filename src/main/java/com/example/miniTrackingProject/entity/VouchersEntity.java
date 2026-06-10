@@ -17,7 +17,7 @@ import java.time.LocalDateTime;
 @Getter @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class VouchersEntity {
+public class VouchersEntity implements Serializable{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -72,6 +72,9 @@ public class VouchersEntity {
             this.status = StatusVoucher.ACTIVE;
         }
     }
+
+    @Version
+    private Long version;
 
     @PreUpdate
     public void preUpdate() {

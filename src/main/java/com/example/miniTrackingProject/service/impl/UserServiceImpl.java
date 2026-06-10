@@ -38,6 +38,7 @@ public class UserServiceImpl implements UserService {
         }
 
         UserEntity userEntity = userMapper.toEntity(request);
+        userEntity.setPassword(passwordEncoder.encode(request.getPassword()));
         if(request.getRole().equals(RoleEnum.SHIPPER) && request.getShippingProviderId() != null) {
             ShippingProviderEntity provider = shippingProviderRepository
                     .findById(request.getShippingProviderId())

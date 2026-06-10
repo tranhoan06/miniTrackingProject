@@ -8,7 +8,6 @@ import java.util.List;
 
 @Repository
 public interface NotificationsRepository extends JpaRepository<NotificationsEntity, Long> {
-    List<NotificationsEntity> findTop50ByDeliveryStatusOrderByIdAsc(String deliveryStatus);
 
     boolean existsByOrders_IdAndTemplates_StatusCodeAndDeliveryStatusAndNotificationType(
             Long orderId,

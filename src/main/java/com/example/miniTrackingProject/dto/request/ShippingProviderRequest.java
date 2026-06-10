@@ -1,5 +1,6 @@
 package com.example.miniTrackingProject.dto.request;
 
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -13,19 +14,19 @@ import java.io.Serializable;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ShippingProviderRequest implements Serializable {
-    @NotEmpty(message = "k dc de trong")
+    @NotBlank(message = "k dc de trong")
     private String name;
 
-    @NotEmpty(message = "k dc de trong")
+    @NotBlank(message = "k dc de trong")
     private String code;
 
-    @NotEmpty(message = "k dc de trong")
+    @NotBlank(message = "k dc de trong")
     private String phone;
 
-    @NotEmpty(message = "k dc de trong")
+    @NotBlank(message = "k dc de trong")
     private String email;
 
-    @NotEmpty(message = "k dc de trong")
+    @NotBlank(message = "k dc de trong")
     private String website;
 
     private Boolean isActive = true;

@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
@@ -15,7 +16,7 @@ import java.time.LocalDateTime;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class OrderItemsEntity {
+public class OrderItemsEntity implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -58,4 +59,7 @@ public class OrderItemsEntity {
     public void prePersist() {
         this.createdAt = LocalDateTime.now();
     }
+
+    @Version
+    private Long version;
 }

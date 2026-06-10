@@ -126,7 +126,7 @@ public class ShippingProviderServiceImpl implements ShippingProviderService {
     @Transactional
     public String deliveredOrder(DeliveredOrderRequest request) {
         UserEntity user = securityHelper.getCurrentUser();
-        OrdersEntity order = orderRepository.findByTrackingCode(request.getTrackingCode())
+        OrdersEntity order = orderRepository.findByTrackingCodeWithShipper(request.getTrackingCode())
                 .orElseThrow(() -> new JavaBuilderException(ErrorCode.NOT_FOUND));
 
         boolean isShipper = order.getShipper() != null && order.getShipper().getId().equals(user.getId());

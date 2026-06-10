@@ -8,6 +8,8 @@ import com.example.miniTrackingProject.entity.UserEntity;
 import com.example.miniTrackingProject.repository.projection.OrderOverviewProjection;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
@@ -20,6 +22,22 @@ import java.util.Optional;
 
 @Repository
 public interface OrderRepository extends JpaRepository<OrdersEntity, Long>, JpaSpecificationExecutor<OrdersEntity> {
+
+    @EntityGraph(attributePaths = {"buyer", "seller", "shipper", "items", "items.product"})
+    @Override
+    Page<OrdersEntity> findAll(Specification<OrdersEntity> spec, Pageable pageable);
+
+    @EntityGraph(attributePaths = {"buyer", "seller", "shipper", "items", "items.product"})
+    @Query("SELECT o FROM OrdersEntity o WHERE o.id = :id")
+    Optional<OrdersEntity> findWithDetailsById(@Param("id") Long id);
+
+    @EntityGraph(attributePaths = {"buyer", "seller", "items", "items.product"})
+    @Query("SELECT o FROM OrdersEntity o WHERE o.id = :id")
+    Optional<OrdersEntity> findWithItemsById(@Param("id") Long id);
+
+    @EntityGraph(attributePaths = {"shipper"})
+    @Query("SELECT o FROM OrdersEntity o WHERE o.trackingCode = :trackingCode")
+    Optional<OrdersEntity> findByTrackingCodeWithShipper(@Param("trackingCode") String trackingCode);
 
     @Query("SELECT o FROM OrdersEntity o " +
             "WHERE o.id IN :ids " +
@@ -34,9 +52,11 @@ public interface OrderRepository extends JpaRepository<OrdersEntity, Long>, JpaS
                                         @Param("paymentStatus") PaymentStatus paymentStatus);
 
     // Lấy các đơn hàng KHÔNG THUỘC danh sách (cho đơn hàng bình thường)
+    @EntityGraph(attributePaths = {"buyer", "seller", "shipper", "items", "items.product"})
     Page<OrdersEntity> findBySellerAndOrderStatusNotIn(UserEntity seller, List<OrderStatus> statuses, Pageable pageable);
 
     // Lấy các đơn hàng THUỘC danh sách (cho đơn hàng trả về)
+    @EntityGraph(attributePaths = {"buyer", "seller", "shipper", "items", "items.product"})
     Page<OrdersEntity> findBySellerAndOrderStatusIn(UserEntity seller, List<OrderStatus> statuses, Pageable pageable);
 
     Optional<OrdersEntity> findByTrackingCode(String trackingCode);
@@ -62,6 +82,7 @@ public interface OrderRepository extends JpaRepository<OrdersEntity, Long>, JpaS
             nativeQuery = true)
     OrderOverviewProjection getOverviewByBuyer(@Param("buyer") UserEntity buyer);
 
+    @EntityGraph(attributePaths = {"buyer"})
     Page<OrdersEntity> findByOrderStatusAndUpdatedAtAfterOrderByUpdatedAtAsc(
             OrderStatus orderStatus,
             LocalDateTime updatedAt,
